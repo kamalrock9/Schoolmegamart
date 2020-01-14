@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {Image, StyleSheet, View} from 'react-native';
-import {saveAppSettings, getCartCount} from '../../store/actions';
+import {saveAppSettings, getCartCount} from '../store/actions';
 import {useSelector, useDispatch} from 'react-redux';
 import {isEmpty} from 'lodash';
 import Toast from 'react-native-simple-toast';

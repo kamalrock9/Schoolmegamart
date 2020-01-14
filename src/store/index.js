@@ -5,7 +5,7 @@ import rootReducer from './reducers';
 import {persistStore, persistReducer} from 'redux-persist';
 import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1';
 import AsyncStorage from '@react-native-community/async-storage';
-import Constants from '../rest/Config';
+import Constants from '../../rest/Config';
 
 const client = axios.create({
   //all axios can be used, shown in axios documentation

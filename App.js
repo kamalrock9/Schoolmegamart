@@ -6,6 +6,7 @@ import {createDrawerNavigator} from 'react-navigation-drawer';
 
 //SIDEMENU
 import Drawer from './src/pages/drawer/Drawer';
+import TawkToChat from './src/pages/drawer/TawkToChat';
 
 //pages
 import Home from './src/pages/home/Home';
@@ -15,10 +16,9 @@ import Products from './src/pages/Products';
 import ProductDetails from './src/pages/ProductDetails/ProductDetails';
 import Cart from './src/pages/Cart/Cart';
 import WishList from './src/pages/WishList';
-import TawkToChat from './src/pages/SideMenu/TawkToChat';
 
 //Redux
-import {persistor, store} from './store';
+import {persistor, store} from './src/store';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/lib/integration/react';
 
@@ -65,7 +65,7 @@ const DrawerNavigator = createDrawerNavigator(
     TawkToChat,
   },
   {
-    contentComponent: SideMenu,
+    contentComponent: Drawer,
   },
 );
 

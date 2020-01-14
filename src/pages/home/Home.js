@@ -11,7 +11,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import {isEmpty} from 'lodash';
 import CategoryItem from './CategoryItem';
 import SectonHeader from './SectonHeader';
-import {saveHomeLayout} from '../../../store/actions';
+import {saveHomeLayout} from '../../store/actions';
 import {ApiClient} from '../../service';
 
 function Home({navigation}) {
