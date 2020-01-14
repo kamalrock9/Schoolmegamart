@@ -12,8 +12,8 @@ import TawkToChat from './src/pages/drawer/TawkToChat';
 import Home from './src/pages/home/Home';
 import Category from './src/pages/Category';
 import Splash from './src/pages/Splash';
-import Products from './src/pages/Products';
-import ProductDetails from './src/pages/ProductDetails/ProductDetails';
+import Products from './src/pages/product/Products';
+import ProductDetails from './src/pages/product/ProductDetails';
 import Cart from './src/pages/Cart/Cart';
 import WishList from './src/pages/WishList';
 

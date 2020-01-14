@@ -1,13 +1,13 @@
-import React from "react";
-import { View, FlatList, StyleSheet, Dimensions } from "react-native";
-import { connect } from "react-redux";
-import { getProducts } from "../../rest";
-import { ProductItem, FlatListLoading } from "../components";
-import { Toolbar } from "../components";
+import React from 'react';
+import {View, FlatList, StyleSheet, Dimensions} from 'react-native';
+import {connect} from 'react-redux';
+import {ProductItem, FlatListLoading, Toolbar} from '../../components';
+import Toast from 'react-native-simple-toast';
+import {ApiClient} from '../../service';
 
 class Products extends React.PureComponent {
-  static navigationOptions = ({ navigation }) => ({
-    header: <Toolbar backButton />
+  static navigationOptions = ({navigation}) => ({
+    header: <Toolbar backButton />,
   });
 
   constructor(props) {
@@ -15,11 +15,12 @@ class Products extends React.PureComponent {
     this.state = {
       products: [],
       refreshing: true,
-      flatListEndReached: false
+      flatListEndReached: false,
     };
     this.params = {
       page: 0,
-      per_page: 20
+      per_page: 20,
+      sort: 'default',
     };
     this.loadProducts();
   }
@@ -29,28 +30,28 @@ class Products extends React.PureComponent {
       return;
     }
     this.params.page++;
-    getProducts(this.params)
-      .then(response => {
+    ApiClient.get('custom-products', this.params)
+      .then(({data}) => {
         this.setState({
-          products: [...this.state.products, ...response],
+          products: [...this.state.products, ...data],
           flatListEndReached:
             response.length < this.params.per_page ? true : false,
-          refreshing: false
+          refreshing: false,
         });
       })
-      .catch(error => {
-        alert(error);
+      .catch(e => {
+        Toast.show(e.toString());
       });
   };
 
-  _renderItem = ({ item, index }) => {
+  _renderItem = ({item, index}) => {
     return (
       /***** For providing dynamic width to scaledimages 
       {width - (MarginVertical of Container + borderWidth)}/2] ****/
       <ProductItem
         item={item}
         width={(width - 16) / 2}
-        containerStyle={{ margin: 2 }}
+        containerStyle={{margin: 2}}
       />
     );
   };
@@ -64,7 +65,7 @@ class Products extends React.PureComponent {
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
           numColumns={2}
-          style={{ margin: 2 }}
+          style={{margin: 2}}
           onEndReached={this.loadProducts}
           onEndReachedThreshold={0.1}
           showsVerticalScrollIndicator={!this.state.refreshing}
@@ -80,13 +81,13 @@ class Products extends React.PureComponent {
   }
 }
 
-const { width, height } = Dimensions.get("window");
+const {width} = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
-  }
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export default connect()(Products);

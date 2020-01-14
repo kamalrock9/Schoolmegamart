@@ -2,11 +2,11 @@ import React from 'react';
 import {View, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import {connect} from 'react-redux';
 import {withNavigation} from 'react-navigation';
-import Image from './ScaledImage';
-import Html from './Html';
+import Image from '../../components/ScaledImage';
+import Html from '../../components/Html';
 import StarRating from 'react-native-star-rating';
-import Text from './Text';
-import WishlistIcon from './WishlistIcon';
+import Text from '../../components/Text';
+import WishlistIcon from '../../components/WishlistIcon';
 
 class ProductItem extends React.PureComponent {
   _navigateToProductDetail = () => {

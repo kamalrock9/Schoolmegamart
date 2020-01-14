@@ -2,7 +2,6 @@ import ProductsRow from './ProductsRow';
 import Text from './Text';
 import ScaledImage from './ScaledImage';
 import TreeView from './TreeView';
-import ProductItem from './ProductItem';
 import FlatListLoading from './FlatListLoading';
 import Html from './Html';
 import Slider from './Slider';
@@ -16,7 +15,6 @@ export {
   Text,
   ScaledImage,
   TreeView,
-  ProductItem,
   FlatListLoading,
   Html,
   Slider,

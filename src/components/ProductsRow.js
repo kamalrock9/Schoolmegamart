@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {FlatList} from 'react-native';
-import ProductItem from './ProductItem';
+import ProductItem from '../pages/product/ProductItem';
 
 class ProductsRow extends React.PureComponent {
   _renderFlatItem = ({item, index}) => {
