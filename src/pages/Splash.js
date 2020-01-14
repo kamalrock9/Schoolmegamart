@@ -1,47 +1,43 @@
-import React from 'react';
-import {Image, StyleSheet, View, Text} from 'react-native';
-import {appSettings, getCartCount} from '../../store/actions';
-import {Toast, Root} from 'native-base';
-import {connect} from 'react-redux';
-import {getAppSettings} from '../../rest';
+import React, {useEffect} from 'react';
+import {Image, StyleSheet, View} from 'react-native';
+import {saveAppSettings, getCartCount} from '../../store/actions';
+import {useSelector, useDispatch} from 'react-redux';
+import {isEmpty} from 'lodash';
+import Toast from 'react-native-simple-toast';
+import {ApiClient} from '../service';
 
-class Splash extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    getAppSettings()
-      .then(response => {
-        this.props.appSettings(response);
-        this.props.navigation.navigate('Drawer');
-      })
-      .catch(error => {
-        Toast.show({
-          text: 'Something Went wrong! Try Later',
-          duration: 6000,
+function Splash({navigation}) {
+  const appSettings = useSelector(state => state.appSettings);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isEmpty(appSettings)) {
+      ApiClient.get('/app-settings')
+        .then(({data}) => {
+          dispatch(saveAppSettings(data));
+          navigation.navigate('Drawer');
+        })
+        .catch(() => {
+          Toast.show('Something went wrong! Try again');
         });
+    } else {
+      navigation.navigate('Drawer');
+      ApiClient.get('/app-settings').then(({data}) => {
+        dispatch(saveAppSettings(data));
       });
-    this.props.getCartCount();
-  }
+    }
+    dispatch(getCartCount());
+  }, []);
 
-  render() {
-    return (
-      <Root>
-        <View style={styles.container}>
-          <Image
-            source={require('../assets/icon/icon.png')}
-            style={{width: 112, height: 112}}
-          />
-        </View>
-      </Root>
-    );
-  }
+  return (
+    <View style={styles.container}>
+      <Image
+        source={require('../assets/icon/icon.png')}
+        style={{width: 112, height: 112}}
+      />
+    </View>
+  );
 }
-
-const mapDispatchToProps = {
-  appSettings,
-  getCartCount,
-};
-
-export default connect(null, mapDispatchToProps)(Splash);
 
 const styles = StyleSheet.create({
   container: {
@@ -50,3 +46,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+export default Splash;

@@ -5,7 +5,7 @@ import {createStackNavigator} from 'react-navigation-stack';
 import {createDrawerNavigator} from 'react-navigation-drawer';
 
 //SIDEMENU
-import SideMenu from './src/pages/SideMenu/SideMenu';
+import Drawer from './src/pages/drawer/Drawer';
 
 //pages
 import Home from './src/pages/home/Home';
