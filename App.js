@@ -9,13 +9,13 @@ import Drawer from './src/pages/drawer/Drawer';
 import TawkToChat from './src/pages/drawer/TawkToChat';
 
 //pages
-import Home from './src/pages/home/Home';
-import Category from './src/pages/Category';
-import Splash from './src/pages/Splash';
-import Products from './src/pages/product/Products';
-import ProductDetails from './src/pages/product/ProductDetails';
+import HomeScreen from './src/pages/home/HomeScreen';
+import CategoryScreen from './src/pages/CategoryScreen';
+import SplashScreen from './src/pages/SplashScreen';
+import ProductScreen from './src/pages/product/ProductScreen';
+import ProductDetailScreen from './src/pages/product/ProductDetailScreen';
 import Cart from './src/pages/Cart/Cart';
-import WishList from './src/pages/WishList';
+import WishlistScreen from './src/pages/WishlistScreen';
 
 //Redux
 import {persistor, store} from './src/store';
@@ -37,31 +37,31 @@ class App extends React.Component {
 }
 
 const HomeStack = createStackNavigator({
-  Home,
-  ProductDetails,
+  HomeScreen,
+  ProductDetailScreen,
   Cart,
-  WishList,
+  WishlistScreen,
 });
 
 const CategoryStack = createStackNavigator({
-  Category,
-  ProductDetails,
+  CategoryScreen,
+  ProductDetailScreen,
   Cart,
-  WishList,
+  WishlistScreen,
 });
 
 const ProductStack = createStackNavigator({
-  Products,
-  ProductDetails,
+  ProductScreen,
+  ProductDetailScreen,
   Cart,
-  WishList,
+  WishlistScreen,
 });
 
 const DrawerNavigator = createDrawerNavigator(
   {
-    Home: HomeStack,
-    Products: ProductStack,
-    Category: CategoryStack,
+    HomeStack,
+    ProductStack,
+    CategoryStack,
     TawkToChat,
   },
   {
@@ -71,11 +71,11 @@ const DrawerNavigator = createDrawerNavigator(
 
 const AppNavigator = createSwitchNavigator(
   {
-    Splash: Splash,
+    SplashScreen: SplashScreen,
     Drawer: DrawerNavigator,
   },
   {
-    initialRouteName: 'Splash',
+    initialRouteName: 'SplashScreen',
     backBehavior: 'none',
   },
 );

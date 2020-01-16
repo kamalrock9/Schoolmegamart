@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
 import {ScrollView, StyleSheet} from 'react-native';
 import {connect} from 'react-redux';
-import {Icon, Button} from 'native-base';
-import {Text, Toolbar} from '../components';
+import {Text, Toolbar, Icon} from '../components';
 import {getAllCategories} from '../store/actions';
 import {TreeView} from '../components';
 
-class Category extends React.PureComponent {
+class CategoryScreen extends React.PureComponent {
   static navigationOptions = ({navigation}) => ({
     header: <Toolbar backButton />,
   });
@@ -27,9 +26,9 @@ class Category extends React.PureComponent {
             height: 40,
           }}>
           <Text style={{fontSize: 16}}>{item.name}</Text>
-          {item.collapsed !== null ? (
-            <Icon name={item.collapsed ? 'ios-add' : 'ios-remove'} />
-          ) : null}
+          {item.collapsed !== null && (
+            <Icon name={item.collapsed ? 'ios-add' : 'ios-remove'} size={24} />
+          )}
         </View>
       </View>
     );
@@ -66,4 +65,4 @@ const mapDispatchToProps = {
   getAllCategories,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Category);
+export default connect(mapStateToProps, mapDispatchToProps)(CategoryScreen);

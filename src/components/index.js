@@ -9,6 +9,7 @@ import Toolbar from './Toolbar';
 import QuantitySelector from './QuantitySelector';
 import Button from './Button';
 import Icon from './IconNB';
+import WishlistIcon from './WishlistIcon';
 
 export {
   ProductsRow,
@@ -22,4 +23,5 @@ export {
   QuantitySelector,
   Button,
   Icon,
+  WishlistIcon,
 };

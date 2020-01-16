@@ -63,7 +63,7 @@ class Toolbar extends Component {
           <View style={styles.right}>
             {wishListButton && (
               <Button
-                onPress={this._goTo('WishList')}
+                onPress={this._goTo('WishlistScreen')}
                 style={styles.menuButton}>
                 <Icon
                   color={appSettings.primary_color_text}

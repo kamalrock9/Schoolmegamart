@@ -1,15 +1,14 @@
 import React from 'react';
 import {View, FlatList, StyleSheet, Dimensions} from 'react-native';
-import {connect} from 'react-redux';
-import {ProductItem, FlatListLoading, Toolbar} from '../../components';
+import {FlatListLoading, Toolbar} from '../../components';
 import Toast from 'react-native-simple-toast';
+import ProductItem from './ProductItem';
 import {ApiClient} from '../../service';
+import {FlatGrid} from 'react-native-super-grid';
 
-class Products extends React.PureComponent {
-  static navigationOptions = ({navigation}) => ({
-    header: <Toolbar backButton />,
-  });
+const {width} = Dimensions.get('window');
 
+class ProductScreen extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -22,6 +21,13 @@ class Products extends React.PureComponent {
       per_page: 20,
       sort: 'default',
     };
+  }
+
+  static navigationOptions = ({navigation}) => ({
+    header: <Toolbar backButton />,
+  });
+
+  componentDidMount() {
     this.loadProducts();
   }
 
@@ -34,13 +40,12 @@ class Products extends React.PureComponent {
       .then(({data}) => {
         this.setState({
           products: [...this.state.products, ...data],
-          flatListEndReached:
-            response.length < this.params.per_page ? true : false,
+          flatListEndReached: data.length < this.params.per_page,
           refreshing: false,
         });
       })
       .catch(e => {
-        Toast.show(e.toString());
+        Toast.show(e.toString(), Toast.LONG);
       });
   };
 
@@ -48,40 +53,38 @@ class Products extends React.PureComponent {
     return (
       /***** For providing dynamic width to scaledimages 
       {width - (MarginVertical of Container + borderWidth)}/2] ****/
-      <ProductItem
-        item={item}
-        width={(width - 16) / 2}
-        containerStyle={{margin: 2}}
-      />
+      <ProductItem item={item} />
     );
   };
   _keyExtractor = (item, index) => item.name + item.id;
 
   render() {
+    const {products, flatListEndReached, refreshing} = this.state;
     return (
-      <View style={styles.container}>
-        <FlatList
-          data={this.state.products}
-          keyExtractor={this._keyExtractor}
-          renderItem={this._renderItem}
-          numColumns={2}
-          style={{margin: 2}}
-          onEndReached={this.loadProducts}
-          onEndReachedThreshold={0.1}
-          showsVerticalScrollIndicator={!this.state.refreshing}
-          ListFooterComponent={
-            <FlatListLoading
-              bottomIndicator={!this.state.flatListEndReached}
-              centerIndicator={this.state.refreshing}
-            />
-          }
-        />
-      </View>
+      // <View style={styles.container}>
+      <FlatGrid
+        items={products}
+        //keyExtractor={this._keyExtractor}
+        renderItem={this._renderItem}
+        itemDimension={160}
+        spacing={8}
+        //numColumns={2}
+        // style={{margin: 2}}
+        onEndReached={this.loadProducts}
+        onEndReachedThreshold={0.1}
+        showsVerticalScrollIndicator={!refreshing}
+        ListFooterComponent={
+          <FlatListLoading
+            bottomIndicator={!flatListEndReached}
+            centerIndicator={refreshing}
+          />
+        }
+      />
+      // </View>
     );
   }
 }
 
-const {width} = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -90,4 +93,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default connect()(Products);
+export default ProductScreen;

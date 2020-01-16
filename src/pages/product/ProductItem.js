@@ -2,69 +2,53 @@ import React from 'react';
 import {View, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import {connect} from 'react-redux';
 import {withNavigation} from 'react-navigation';
-import Image from '../../components/ScaledImage';
-import Html from '../../components/Html';
+///import Image from '../../components/ScaledImage';
+import FastImage from 'react-native-fast-image';
+import {Html, Text, WishlistIcon} from '../../components';
 import StarRating from 'react-native-star-rating';
-import Text from '../../components/Text';
-import WishlistIcon from '../../components/WishlistIcon';
 
 class ProductItem extends React.PureComponent {
-  _navigateToProductDetail = () => {
-    this.props.navigation.push('ProductDetails', this.props.item);
+  goToProductDetails = () => {
+    this.props.navigation.push('ProductDetailScreen', this.props.item);
   };
 
   render() {
+    const {containerStyle, width, item, appSettings} = this.props;
     return (
-      <TouchableWithoutFeedback onPress={this._navigateToProductDetail}>
+      <TouchableWithoutFeedback onPress={this.goToProductDetails}>
         <View
-          style={{
-            ...StyleSheet.flatten(this.props.containerStyle),
-            borderRadius: 3,
-            borderWidth: 0.5,
-            borderColor: '#bdbdbd',
-            width: this.props.width,
-          }}>
-          {this.props.item.images.length > 0 && (
-            <Image
-              width={this.props.width}
-              source={{uri: this.props.item.images[0].src}}
+          style={[
+            StyleSheet.flatten(containerStyle),
+            styles.container,
+            {width},
+          ]}>
+          {item.images.length > 0 && (
+            <FastImage
+              style={styles.thumb}
+              source={{uri: item.images[0].src}}
             />
           )}
-          <Text style={[styles.itemMargin, {fontWeight: '700'}]}>
-            {this.props.item.name}
+          <Text style={[styles.itemMargin, {fontWeight: '600'}]}>
+            {item.name}
           </Text>
 
-          {this.props.item.price_html != '' && (
-            <Html
-              html={this.props.item.price_html}
-              containerStyle={styles.itemMargin}
-            />
+          {item.price_html != '' && (
+            <Html html={item.price_html} containerStyle={styles.itemMargin} />
           )}
 
           <StarRating
             disabled
             maxStars={5}
-            rating={parseInt(this.props.item.average_rating)}
-            containerStyle={[
-              styles.itemMargin,
-              {justifyContent: 'flex-start', marginBottom: 5},
-            ]}
+            rating={parseInt(item.average_rating)}
+            containerStyle={[styles.itemMargin, styles.star]}
             starStyle={{marginEnd: 5}}
             starSize={14}
             halfStarEnabled
-            emptyStarColor={this.props.appSettings.accent_color}
-            fullStarColor={this.props.appSettings.accent_color}
-            halfStarColor={this.props.appSettings.accent_color}
+            emptyStarColor={appSettings.accent_color}
+            fullStarColor={appSettings.accent_color}
+            halfStarColor={appSettings.accent_color}
           />
-
-          <WishlistIcon style={styles.right} item={this.props.item} />
-          {/* <Button transparent style={styles.right}>
-                    <Icon name="ios-heart" style={{
-                        color: this.props.appSettings.accent_color,
-                        marginStart: 8,
-                        marginEnd: 8
-                    }} />
-                </Button> */}
+          <WishlistIcon style={styles.right} item={item} />
         </View>
       </TouchableWithoutFeedback>
     );
@@ -78,8 +62,23 @@ mapStateToProps = state => ({
 export default connect(mapStateToProps)(withNavigation(ProductItem));
 
 const styles = StyleSheet.create({
+  container: {
+    borderRadius: 3,
+    borderWidth: 0.5,
+    borderColor: '#bdbdbd',
+    flex: 1,
+    paddingBottom: 8,
+  },
+  thumb: {
+    flex: 1,
+    resizeMode: 'contain',
+    height: 180,
+  },
+  star: {
+    justifyContent: 'flex-start',
+  },
   itemMargin: {
-    marginStart: 5,
+    marginStart: 8,
     marginTop: 4,
   },
   right: {

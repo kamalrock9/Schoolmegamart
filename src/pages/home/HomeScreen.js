@@ -14,7 +14,7 @@ import SectonHeader from './SectonHeader';
 import {saveHomeLayout} from '../../store/actions';
 import {ApiClient} from '../../service';
 
-function Home({navigation}) {
+function HomeScreen({navigation}) {
   const [loading, setLoading] = useState(false);
   const layout = useSelector(state => state.homeLayout);
   const dispatch = useDispatch();
@@ -62,7 +62,7 @@ function Home({navigation}) {
           title="Categories"
           titleEnd="View All"
           onPress={goTo}
-          onPressArgs={['Category']}
+          onPressArgs={['CategoryScreen']}
         />
 
         <FlatList
@@ -128,8 +128,8 @@ function Home({navigation}) {
   }
 }
 
-Home.navigationOptions = {
-  header: <Toolbar menuButton cartButton wishListButton />,
+HomeScreen.navigationOptions = {
+  header: <Toolbar menuButton cartButton wishListButton title="HOME" />,
 };
 
 const styles = StyleSheet.create({
@@ -140,4 +140,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default HomeScreen;

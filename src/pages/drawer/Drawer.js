@@ -34,21 +34,23 @@ class Drawer extends React.PureComponent {
           <Text style={{fontSize: 16}}>Login | Register</Text>
         </View>
         <ScrollView>
-          <Button style={styles.button} onPress={this.navigateToScreen('Home')}>
+          <Button
+            style={styles.button}
+            onPress={this.navigateToScreen('HomeStack')}>
             <Icon name="home" type="FontAwesome" style={styles.icon} />
             <Text style={styles.text}>Home</Text>
           </Button>
 
           <Button
             style={styles.button}
-            onPress={this.navigateToScreen('Products')}>
+            onPress={this.navigateToScreen('ProductStack')}>
             <Icon name="shopping-bag" type="FontAwesome" style={styles.icon} />
             <Text style={styles.text}>Shop</Text>
           </Button>
 
           <Button
             style={styles.button}
-            onPress={this.navigateToScreen('Category')}>
+            onPress={this.navigateToScreen('CategoryScreen')}>
             <Icon name="archive" type="Entypo" style={styles.icon} />
             <Text style={styles.text}>Categories</Text>
           </Button>

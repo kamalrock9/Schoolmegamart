@@ -18,7 +18,7 @@ import SpecificationRow from "./SpecificationRow";
 import MiniCart from "./MiniCart";
 import {getProductById, addCart} from "../../../rest";
 
-class ProductDetails extends Component {
+class ProductDetailScreen extends Component {
     static navigationOptions = ({navigation}) => ({
         header: (
             <Toolbar
@@ -410,7 +410,7 @@ class ProductDetails extends Component {
 const mapStateToProps = state => ({
     appSettings: state.appSettings
 });
-export default connect(mapStateToProps)(ProductDetails);
+export default connect(mapStateToProps)(ProductDetailScreen);
 
 const styles = StyleSheet.create({
     container: {

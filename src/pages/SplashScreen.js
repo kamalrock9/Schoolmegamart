@@ -6,7 +6,7 @@ import {isEmpty} from 'lodash';
 import Toast from 'react-native-simple-toast';
 import {ApiClient} from '../service';
 
-function Splash({navigation}) {
+function SplashScreen({navigation}) {
   const appSettings = useSelector(state => state.appSettings);
   const dispatch = useDispatch();
 
@@ -47,4 +47,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Splash;
+export default SplashScreen;
