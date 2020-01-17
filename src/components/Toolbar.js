@@ -5,10 +5,12 @@ import Button from './Button';
 import Icon from './IconNB';
 import {useSelector} from 'react-redux';
 import {useNavigation, useNavigationState} from 'react-navigation-hooks';
+import {useTranslation} from 'react-i18next';
 
 function Toolbar({title, menuButton, backButton, wishListButton, cartButton}) {
   const navigation = useNavigation();
   const {routeName} = useNavigationState();
+  const {t} = useTranslation();
   const appSettings = useSelector(state => state.appSettings);
   const count = useSelector(state => state.cartCount);
 
@@ -36,7 +38,7 @@ function Toolbar({title, menuButton, backButton, wishListButton, cartButton}) {
         )}
 
         <Text style={[styles.title, {color: appSettings.primary_color_text}]}>
-          {title || routeName}
+          {t(title) || t(routeName)}
         </Text>
 
         <View style={styles.right}>

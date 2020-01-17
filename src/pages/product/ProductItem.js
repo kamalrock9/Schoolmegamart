@@ -16,21 +16,11 @@ class ProductItem extends React.PureComponent {
     const {containerStyle, width, item, appSettings} = this.props;
     return (
       <TouchableWithoutFeedback onPress={this.goToProductDetails}>
-        <View
-          style={[
-            StyleSheet.flatten(containerStyle),
-            styles.container,
-            {width},
-          ]}>
+        <View style={[StyleSheet.flatten(containerStyle), styles.container, {width}]}>
           {item.images.length > 0 && (
-            <FastImage
-              style={styles.thumb}
-              source={{uri: item.images[0].src}}
-            />
+            <FastImage style={styles.thumb} source={{uri: item.images[0].src}} />
           )}
-          <Text style={[styles.itemMargin, {fontWeight: '600'}]}>
-            {item.name}
-          </Text>
+          <Text style={[styles.itemMargin, {fontWeight: '600'}]}>{item.name}</Text>
 
           {item.price_html != '' && (
             <Html html={item.price_html} containerStyle={styles.itemMargin} />
@@ -66,11 +56,10 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     borderWidth: 0.5,
     borderColor: '#bdbdbd',
-    flex: 1,
+    //flex: 1,
     paddingBottom: 8,
   },
   thumb: {
-    flex: 1,
     resizeMode: 'contain',
     height: 180,
   },

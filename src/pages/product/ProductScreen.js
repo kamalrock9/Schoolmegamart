@@ -24,7 +24,7 @@ class ProductScreen extends React.PureComponent {
   }
 
   static navigationOptions = ({navigation}) => ({
-    header: <Toolbar backButton />,
+    header: <Toolbar backButton title="PRODUCTS" />,
   });
 
   componentDidMount() {
@@ -74,10 +74,7 @@ class ProductScreen extends React.PureComponent {
         onEndReachedThreshold={0.1}
         showsVerticalScrollIndicator={!refreshing}
         ListFooterComponent={
-          <FlatListLoading
-            bottomIndicator={!flatListEndReached}
-            centerIndicator={refreshing}
-          />
+          <FlatListLoading bottomIndicator={!flatListEndReached} centerIndicator={refreshing} />
         }
       />
       // </View>

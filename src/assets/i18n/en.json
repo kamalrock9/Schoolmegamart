@@ -53,7 +53,7 @@
     "GO_BACK": "Go Back",
     "HAVE_AN_ACCOUNT": "Already have an account?",
     "SIGN_UP": "Sign up",
-    "LOGIN/REGISTER": "Login / Register",
+    "LOGIN/REGISTER": "Login | Register",
     "LOGIN_DESC2": "Login to manage your account",
     "REGISTER_SUCCESS": "Hi, your registration was successfull \n Try Login Now",
     "LOGIN_SUCCESS": "Welcome {{value}}, happy shopping",

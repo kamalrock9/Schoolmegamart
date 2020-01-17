@@ -1,6 +1,7 @@
 'use strict';
 
 const Constants = {
+  storeName: 'WooApp',
   baseURL: 'https://app.tutiixx.com',
   path: '/wp-json/wc/v2',
   keys: {

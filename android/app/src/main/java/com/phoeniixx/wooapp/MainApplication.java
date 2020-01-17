@@ -1,4 +1,4 @@
-package com.wooapp;
+package com.phoeniixx.wooapp;
 
 import android.app.Application;
 import android.content.Context;
