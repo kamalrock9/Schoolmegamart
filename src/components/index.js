@@ -10,6 +10,7 @@ import QuantitySelector from './QuantitySelector';
 import Button from './Button';
 import Icon from './IconNB';
 import WishlistIcon from './WishlistIcon';
+import FloatingTextinput from './FloatingTextinput';
 
 export {
   ProductsRow,
@@ -24,4 +25,5 @@ export {
   Button,
   Icon,
   WishlistIcon,
+  FloatingTextinput,
 };

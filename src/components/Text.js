@@ -21,6 +21,25 @@ const fonts = {
       italic: 'Italic',
     },
   },
+  Muli: {
+    fontWeights: {
+      100: 'Thin',
+      200: 'ExtraLight',
+      300: 'Light',
+      400: 'Regular',
+      500: 'Medium',
+      600: 'SemiBold',
+      700: 'Bold',
+      800: 'ExtraBold',
+      900: 'Black',
+      normal: 'Regular',
+      bold: 'Bold',
+    },
+    fontStyles: {
+      normal: '',
+      italic: 'Italic',
+    },
+  },
 };
 
 const getFontFamily = (baseFontFamily, styles = {}) => {
@@ -31,9 +50,7 @@ const getFontFamily = (baseFontFamily, styles = {}) => {
     throw new Error(`Font '${baseFontFamily}' is not supported.`);
   }
 
-  const weight = fontWeight
-    ? font.fontWeights[fontWeight]
-    : font.fontWeights.normal;
+  const weight = fontWeight ? font.fontWeights[fontWeight] : font.fontWeights.normal;
 
   if (typeof weight === 'undefined') {
     throw new Error(
@@ -61,7 +78,7 @@ class Text extends React.PureComponent {
     const resolvedStyle = {...StyleSheet.flatten(this.props.style)};
     resolvedStyle.fontFamily = resolvedStyle.fontFamily
       ? getFontFamily(resolvedStyle.fontFamily, resolvedStyle)
-      : getFontFamily('Montserrat', resolvedStyle);
+      : getFontFamily('Muli', resolvedStyle);
     delete resolvedStyle.fontStyle;
     delete resolvedStyle.fontWeight;
 
