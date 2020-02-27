@@ -33,11 +33,11 @@ function MiniCart({appSettings, close, message, navigation}) {
       </View>
       <View style={{borderTopWidth: 0.8, borderTopColor: '#dedede'}}>
         <View style={{flexDirection: 'row', width: '100%'}}>
-          <Button onPress={close} style={styles.btn}>
+          <Button onPress={close} style={[styles.btn, {flex: 1}]}>
             <Text style={{fontWeight: '500'}}>CONTINUE BROWSING</Text>
           </Button>
           <View style={{width: 1, backgroundColor: '#dedede'}} />
-          <Button onPress={goToHome} style={styles.btn}>
+          <Button onPress={goToHome} style={[styles.btn, {flex: 1}]}>
             <Text style={{fontWeight: '500'}}>GO TO HOME</Text>
           </Button>
         </View>
@@ -67,7 +67,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
   },
   btn: {
-    flex: 1,
+    //flex: 1,
+    height: 40,
+    alignItems: 'center',
     justifyContent: 'center',
   },
 });

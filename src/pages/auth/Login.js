@@ -3,7 +3,7 @@ import {View, StyleSheet, ImageBackground, Dimensions} from 'react-native';
 import {Icon, Text, Button, FloatingTextinput} from '../../components';
 import SwiperFlatList from 'react-native-swiper-flatlist';
 import {withTranslation} from 'react-i18next';
-import {connect} from '  -redux';
+import {connect} from 'react-redux';
 import Constants from '../../service/Config';
 
 const {width} = Dimensions.get('window');
