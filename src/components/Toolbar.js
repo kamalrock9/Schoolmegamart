@@ -7,7 +7,15 @@ import {useSelector} from 'react-redux';
 import {useNavigation, useNavigationState} from 'react-navigation-hooks';
 import {useTranslation} from 'react-i18next';
 
-function Toolbar({title, menuButton, backButton, wishListButton, cartButton}) {
+function Toolbar({
+  title,
+  menuButton,
+  backButton,
+  wishListButton,
+  cartButton,
+  cancelButton,
+  submit,
+}) {
   const navigation = useNavigation();
   const {routeName} = useNavigationState();
   const {t} = useTranslation();
@@ -22,6 +30,11 @@ function Toolbar({title, menuButton, backButton, wishListButton, cartButton}) {
     navigation.goBack(null);
   };
 
+  const submitt = () => {
+    console.log('kamal');
+    submit && submit();
+  };
+
   return (
     <>
       <StatusBar backgroundColor={appSettings.primary_color_dark} barStyle="light-content" />
@@ -34,6 +47,12 @@ function Toolbar({title, menuButton, backButton, wishListButton, cartButton}) {
         {backButton && (
           <Button onPress={goBack} style={styles.menuButton}>
             <Icon color={appSettings.primary_color_text} name="md-arrow-back" size={24} />
+          </Button>
+        )}
+
+        {cancelButton && (
+          <Button onPress={submitt} style={styles.menuButton}>
+            <Icon color={appSettings.primary_color_text} name="cross" type="Entypo" size={24} />
           </Button>
         )}
 

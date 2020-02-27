@@ -1,31 +1,34 @@
-import React, {Component, Fragment} from 'react';
-import {View, StyleSheet, FlatList, Image, ScrollView} from 'react-native';
+import React, {Fragment} from 'react';
+import {View, StyleSheet, FlatList, Image, ScrollView, Modal} from 'react-native';
 import {Toolbar, Button, Text, Icon} from '../../components';
-import {getCart} from '../../../rest';
 import {connect} from 'react-redux';
+import {ApiClient} from '../../service';
+import {TextInput} from 'react-native-gesture-handler';
 
-class Cart extends Component {
+class Cart extends React.PureComponent {
   static navigationOptions = {
     header: <Toolbar backButton title="Cart" />,
   };
   constructor(props) {
     super(props);
     this.state = {
-      data: [{name: 'cap'}, {name: 'Bat'}, {name: 'Apple'}],
+      cart_data: [{name: 'cap'}, {name: 'Bat'}, {name: 'Apple'}],
       isChecked: true,
+      isCoupon: false,
     };
   }
 
   componentDidMount() {
-    getCart()
-      .then(response => {
-        console.log(response);
-        // this.setState({data: response.cart_data});
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    console.log('hello');
+    ApiClient.get('/cart').then(res => {
+      console.log(res);
+    });
   }
+
+  _applyCoupon = key => () => {
+    console.log(key);
+    this.setState({isCoupon: key});
+  };
 
   _renderItem = ({item, index}) => {
     return (
@@ -89,18 +92,18 @@ class Cart extends Component {
   _keyExtractor = (item, index) => item + 'sap' + index;
 
   render() {
-    const {data} = this.state;
+    const {cart_data} = this.state;
     const {appSettings} = this.props;
     return (
       <>
         <ScrollView style={styles.container}>
           <FlatList
-            data={data}
+            data={cart_data}
             renderItem={this._renderItem}
             keyExtractor={this._keyExtractor}
             ItemSeparatorComponent={this._itemSeparatorComponent}
           />
-          <View
+          <Button
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
@@ -111,10 +114,11 @@ class Cart extends Component {
               marginTop: 16,
               borderRadius: 5,
               paddingVertical: 20,
-            }}>
+            }}
+            onPress={this._applyCoupon(true)}>
             <Text>Apply Promo Code/Vouncher</Text>
             <Icon name="ios-arrow-forward" size={24} />
-          </View>
+          </Button>
           <View
             style={{
               backgroundColor: '#fff',
@@ -127,12 +131,21 @@ class Cart extends Component {
             <Text style={styles.heading}>Shipping Method(S)</Text>
             <View style={{justifyContent: 'space-between', flexDirection: 'row', marginTop: 5}}>
               <Text>Flat Rate</Text>
-              <Text>#20.00</Text>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Text>#20.00</Text>
+                <Icon name="md-radio-button-on" size={18} style={{marginStart: 5}} />
+              </View>
             </View>
             <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
               <Text>Free Shipping</Text>
-              <Text>#0.00</Text>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Text>#0.00</Text>
+                <Icon name="md-radio-button-off" size={18} style={{marginStart: 5}} />
+              </View>
             </View>
+            <Text style={{alignSelf: 'flex-end', textDecorationLine: 'underline'}}>
+              Calculate Shipping
+            </Text>
           </View>
           <View
             style={{
@@ -196,6 +209,20 @@ class Cart extends Component {
             </Button>
           </Fragment>
         </View>
+
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.isCoupon}
+          onRequestClose={this._applyCoupon(false)}>
+          <Coupon
+            submit={this._applyCoupon(false)}
+            adultCount={this.state.adult}
+            childrenCount={this.state.children}
+            infantsCount={this.state.infants}
+            onModalBackPress={this._applyCoupon(false)}
+          />
+        </Modal>
       </>
     );
   }
@@ -206,6 +233,18 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps)(Cart);
+
+function Coupon({submit}) {
+  return (
+    <View>
+      <Toolbar submit={submit} cancelButton title="Apply Coupon" />
+      <TextInput
+        style={{borderColor: 'red', borderWidth: 1}}
+        placeholder="Applt Promo Code/Voucher"
+      />
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -225,7 +264,7 @@ const styles = StyleSheet.create({
   },
   footerButton: {
     flex: 1,
-    height: 45,
+    height: 40,
     margin: 5,
     alignItems: 'center',
     justifyContent: 'center',

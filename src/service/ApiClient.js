@@ -9,7 +9,7 @@ class Service {
     let service = axios.create({
       baseURL: Constants.baseURL + Constants.path,
     });
-    axiosRetry(service, {retries: 3, retryDelay: axiosRetry.exponentialDelay});
+    // axiosRetry(service, {retries: 3, retryDelay: axiosRetry.exponentialDelay});
     service.interceptors.response.use(this.handleSuccess, this.handleError);
     this.service = service;
   }
