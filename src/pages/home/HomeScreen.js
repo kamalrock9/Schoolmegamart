@@ -1,10 +1,11 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {View, ScrollView, StyleSheet, ActivityIndicator, FlatList} from 'react-native';
-import {ProductsRow, Slider, Toolbar, Text} from '../../components';
+import {Slider, Toolbar, Text} from '../../components';
 import {useSelector, useDispatch} from 'react-redux';
 import {isEmpty} from 'lodash';
 import CategoryItem from './CategoryItem';
 import SectonHeader from './SectonHeader';
+import ProductsRow from '../product/ProductsRow';
 import {saveHomeLayout} from '../../store/actions';
 import {ApiClient} from '../../service';
 import RBSheet from 'react-native-raw-bottom-sheet';

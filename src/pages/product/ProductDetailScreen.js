@@ -6,11 +6,11 @@ import StarRating from 'react-native-star-rating';
 import RNFetchBlob from 'rn-fetch-blob';
 import Share from 'react-native-share';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import {Slider, Toolbar, Html, QuantitySelector, Text, ProductsRow} from '../../components';
+import {Slider, Toolbar, Html, QuantitySelector, Text} from '../../components';
 import SpecificationRow from './SpecificationRow';
 import MiniCart from './MiniCart';
-import {getProductById, addCart} from '../../../rest';
-import {getCartCount} from '../../store/actions';
+import ProductsRow from './ProductsRow';
+import {ApiClient} from '../../service';
 
 class ProductDetailScreen extends Component {
   static navigationOptions = ({navigation}) => ({
@@ -29,19 +29,19 @@ class ProductDetailScreen extends Component {
 
   setup = () => {
     if (this.state.product.upsell_ids.length > 0) {
-      getProductById(this.state.product.upsell_ids.join())
-        .then(response => {
+      ApiClient.get('/get-products-by-id', {include: this.state.product.upsell_ids.join()})
+        .then(({data}) => {
           this.setState(prevState => ({
-            product: {...prevState.product, upsell: response},
+            product: {...prevState.product, upsell: data},
           }));
         })
         .catch(error => {});
     }
     if (this.state.product.related_ids.length > 0) {
-      getProductById(this.state.product.related_ids.join())
-        .then(response => {
+      ApiClient.get('/get-products-by-id', {include: this.state.product.related_ids.join()})
+        .then(({data}) => {
           this.setState(prevState => ({
-            product: {...prevState.product, related: response},
+            product: {...prevState.product, related: data},
           }));
         })
         .catch(error => {});
@@ -92,26 +92,20 @@ class ProductDetailScreen extends Component {
       id: this.state.product.id,
       quantity: this.state.quantity,
     };
-    addCart(data)
-      .then(response => {
-        console.log(response);
-        this.setState({
-          cartMsg: Array.isArray(response)
-            ? response.map(e => e.message).join(', ')
-            : response.message,
-        });
 
-        if (this.isError(response)) {
+    ApiClient.post('/cart/add', data)
+      .then(({data}) => {
+        this.setState({
+          cartMsg: Array.isArray(data) ? data.map(e => e.message).join(', ') : data.message,
+        });
+        if (this.isError(data)) {
           console.log('error');
-          //this.toast.showWithClose(msg);
         } else {
           if (isBuyNow) {
             this.props.navigation.navigate('Cart', this.state);
           } else {
-            // this.props.getCartCount();
             this._openRBSheet();
           }
-          //this.events.publish("cartchanged");
         }
       })
       .catch(error => {

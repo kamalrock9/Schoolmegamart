@@ -74,7 +74,7 @@ function Toolbar({
                   styles.badge,
                   {backgroundColor: appSettings.toolbarbadgecolor || appSettings.accent_color},
                 ]}>
-                {count}0
+                {count}
               </Text>
             </Button>
           )}

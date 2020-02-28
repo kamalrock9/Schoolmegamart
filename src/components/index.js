@@ -1,4 +1,3 @@
-import ProductsRow from './ProductsRow';
 import Text from './Text';
 import ScaledImage from './ScaledImage';
 import TreeView from './TreeView';
@@ -13,7 +12,6 @@ import WishlistIcon from './WishlistIcon';
 import FloatingTextinput from './FloatingTextinput';
 
 export {
-  ProductsRow,
   Text,
   ScaledImage,
   TreeView,

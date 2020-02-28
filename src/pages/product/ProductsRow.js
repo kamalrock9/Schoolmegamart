@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {FlatList} from 'react-native';
-import ProductItem from '../pages/product/ProductItem';
+import ProductItem from './ProductItem';
 
 const _renderFlatItem = ({item, index}) => {
   return (
