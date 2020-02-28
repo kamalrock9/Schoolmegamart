@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {View, ScrollView, StyleSheet, ActivityIndicator, FlatList} from 'react-native';
 import {ProductsRow, Slider, Toolbar, Text} from '../../components';
 import {useSelector, useDispatch} from 'react-redux';
@@ -9,20 +9,17 @@ import {saveHomeLayout} from '../../store/actions';
 import {ApiClient} from '../../service';
 import RBSheet from 'react-native-raw-bottom-sheet';
 
-function HomeScreen({navigation, props}) {
+function HomeScreen({navigation}) {
   const [loading, setLoading] = useState(false);
   const layout = useSelector(state => state.homeLayout);
+  const RBSheetRef = useRef(null);
   const dispatch = useDispatch();
 
   const _categoryKeyExtractor = item => 'category_' + item.id;
 
   useEffect(() => {
     setLoading(true);
-    console.log('kamal');
     console.log(navigation.state.routeName);
-    if (navigation.state.routeName == 'HomeScreen') {
-      RBSheet.open();
-    }
     ApiClient.get('/layout')
       .then(({data}) => {
         dispatch(saveHomeLayout(data));
@@ -103,17 +100,9 @@ function HomeScreen({navigation, props}) {
             </>
           )}
         </ScrollView>
-        <RBSheet
-          ref={ref => {
-            RBSheet = ref;
-          }}
-          customStyles={{
-            container: {
-              justifyContent: 'space-between',
-            },
-          }}>
+        <RBSheet ref={RBSheetRef} customStyles={{container: {justifyContent: 'space-between'}}}>
           <View>
-            <Text>kamal gangwar</Text>
+            <Text>Kamal Gangwar</Text>
           </View>
         </RBSheet>
       </>
