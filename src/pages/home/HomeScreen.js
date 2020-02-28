@@ -20,6 +20,7 @@ function HomeScreen({navigation}) {
   useEffect(() => {
     setLoading(true);
     console.log(navigation.state.routeName);
+    RBSheetRef.current.open();
     ApiClient.get('/layout')
       .then(({data}) => {
         dispatch(saveHomeLayout(data));
