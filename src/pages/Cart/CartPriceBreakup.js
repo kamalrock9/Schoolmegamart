@@ -121,9 +121,12 @@ function CartPriceBreakup({couponCode}) {
       </View>
 
       <Modal
-        style={{backgroundColor: '#fff', flex: 1}}
+        style={{margin: 0}}
         isVisible={isCoupon}
-        onBackButtonPress={toggleCouponModal}>
+        onBackButtonPress={toggleCouponModal}
+        useNativeDriver
+        hideModalContentWhileAnimating
+        coverScreen>
         <Coupon
           submit={toggleCouponModal}
           // couponName={this.couponName}

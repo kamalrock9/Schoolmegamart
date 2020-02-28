@@ -31,7 +31,6 @@ function Toolbar({
   };
 
   const submitt = () => {
-    console.log('kamal');
     submit && submit();
   };
 

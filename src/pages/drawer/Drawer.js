@@ -13,6 +13,7 @@ class Drawer extends React.PureComponent {
     super(props);
     this.state = {
       isOpenModal: false,
+      isContactModalOpen: false,
     };
   }
 
@@ -22,6 +23,10 @@ class Drawer extends React.PureComponent {
 
   closeModal = () => {
     this.setState({isOpenModal: false});
+  };
+
+  toggleContactModal = () => {
+    this.setState({isContactModalOpen: !this.state.isContactModalOpen});
   };
 
   navigateToScreen = (route, param = {}) => () => {
@@ -75,9 +80,14 @@ class Drawer extends React.PureComponent {
     }
   };
 
+  contactUs = async () => {
+    await this.props.navigation.closeDrawer();
+    this.toggleContactModal();
+  };
+
   render() {
     const {appSettings, t} = this.props;
-    const {isOpenModal} = this.state;
+    const {isOpenModal, isContactModalOpen} = this.state;
 
     return (
       <>
@@ -115,7 +125,7 @@ class Drawer extends React.PureComponent {
                 <Text style={styles.text}>{t('CHAT_SUPPORT')}</Text>
               </Button>
             )}
-            <Button style={styles.button} onPress={this.navigateToScreen('HomeScreen', 'contact')}>
+            <Button style={styles.button} onPress={this.contactUs}>
               <Icon name="md-call" style={styles.icon} />
               <Text style={styles.text}>{t('CONTACT')}</Text>
             </Button>
@@ -131,9 +141,23 @@ class Drawer extends React.PureComponent {
         <Modal
           isVisible={isOpenModal}
           style={{margin: 0}}
-          useNativeDriver={true}
-          onBackButtonPress={this.closeModal}>
+          onBackButtonPress={this.closeModal}
+          useNativeDriver
+          hideModalContentWhileAnimating>
           <Login onClose={this.closeModal} navigation={this.props.navigation} />
+        </Modal>
+
+        <Modal
+          isVisible={isContactModalOpen}
+          style={{justifyContent: 'flex-end', margin: 0, marginTop: 'auto'}}
+          onBackButtonPress={this.toggleContactModal}
+          onBackdropPress={this.toggleContactModal}
+          hasBackdrop
+          useNativeDriver
+          hideModalContentWhileAnimating>
+          <View style={{backgroundColor: '#FFF', padding: 16}}>
+            <Text>Hello</Text>
+          </View>
         </Modal>
       </>
     );

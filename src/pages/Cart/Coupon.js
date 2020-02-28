@@ -18,9 +18,9 @@ function Coupon({submit, couponName}) {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{flex: 1, backgroundColor: '#FFF'}}>
       <Toolbar submit={submit} cancelButton title="Apply Coupon" />
-      <View style={{elevation: 5, backgroundColor: '#ffff'}}>
+      <View style={{elevation: 2, backgroundColor: '#ffff', marginBottom: 10}}>
         <View
           style={{
             flexDirection: 'row',
@@ -31,20 +31,18 @@ function Coupon({submit, couponName}) {
             margin: 10,
             justifyContent: 'space-between',
           }}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Icon
-              name="brightness-percent"
-              type="MaterialCommunityIcons"
-              size={24}
-              style={{paddingHorizontal: 5}}
-            />
-            <TextInput
-              underlineColorAndroid="transparent"
-              style={{}}
-              onChangeText={text => setText(text)}
-              placeholder="Apply Promo Code/Voucher"
-            />
-          </View>
+          <Icon
+            name="brightness-percent"
+            type="MaterialCommunityIcons"
+            size={24}
+            style={{paddingHorizontal: 5}}
+          />
+          <TextInput
+            underlineColorAndroid="transparent"
+            style={{flex: 1}}
+            onChangeText={text => setText(text)}
+            placeholder="Apply Promo Code/Voucher"
+          />
           <Button
             style={{
               backgroundColor: appSettings.accent_color,
