@@ -20,9 +20,9 @@ function HomeScreen({navigation, props}) {
     setLoading(true);
     console.log('kamal');
     console.log(navigation.state.routeName);
-    if (navigation.state.routeName == 'HomeScreen') {
-      RBSheet.open();
-    }
+    // if (navigation.state.routeName == 'HomeScreen') {
+    //   RBSheet.open();
+    // }
     ApiClient.get('/layout')
       .then(({data}) => {
         dispatch(saveHomeLayout(data));
@@ -104,9 +104,9 @@ function HomeScreen({navigation, props}) {
           )}
         </ScrollView>
         <RBSheet
-          ref={ref => {
-            RBSheet = ref;
-          }}
+          // ref={ref => {
+          //   RBSheet = ref;
+          // }}
           customStyles={{
             container: {
               justifyContent: 'space-between',

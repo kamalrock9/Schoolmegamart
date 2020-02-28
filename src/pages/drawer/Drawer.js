@@ -1,6 +1,6 @@
 import React from 'react';
 import {NavigationActions} from 'react-navigation';
-import {ScrollView, View, StyleSheet, Linking, Platform} from 'react-native';
+import {ScrollView, View, StyleSheet, Linking, Platform, Alert} from 'react-native';
 import {Button, Text, Icon} from '../../components';
 import {connect} from 'react-redux';
 import {withTranslation} from 'react-i18next';
@@ -26,15 +26,37 @@ class Drawer extends React.PureComponent {
 
   navigateToScreen = (route, param = {}) => () => {
     if (route == 'giveFeedback') {
-      if (Platform.OS != 'ios') {
-        Linking.openURL(`market://details?id=${'com.phoeniixx.wooapp'}`).catch(err =>
-          alert('Please check for the Google Play Store'),
-        );
-      } else {
-        Linking.openURL(`itms://itunes.apple.com/in/app/apple-store/${APPLE_STORE_ID}`).catch(err =>
-          alert('Please check for the App Store'),
-        );
-      }
+      Alert.alert(
+        'Do You like using WooApp',
+        null,
+        [
+          {text: 'NOT REALLY', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+          {
+            text: 'YES!',
+            onPress: () => {
+              if (Platform.OS != 'ios') {
+                Linking.openURL(`market://details?id=${'com.phoeniixx.wooapp'}`).catch(err =>
+                  alert('Please check for the Google Play Store'),
+                );
+              } else {
+                Linking.openURL(
+                  `itms://itunes.apple.com/in/app/apple-store/${APPLE_STORE_ID}`,
+                ).catch(err => alert('Please check for the App Store'));
+              }
+            },
+          },
+        ],
+        {cancelable: false},
+      );
+      // if (Platform.OS != 'ios') {
+      //   Linking.openURL(`market://details?id=${'com.phoeniixx.wooapp'}`).catch(err =>
+      //     alert('Please check for the Google Play Store'),
+      //   );
+      // } else {
+      //   Linking.openURL(`itms://itunes.apple.com/in/app/apple-store/${APPLE_STORE_ID}`).catch(err =>
+      //     alert('Please check for the App Store'),
+      //   );
+      // }
     } else if (route == 'HomeScreen') {
       this.props.navigation.closeDrawer();
       const navigateAction = NavigationActions.navigate({
