@@ -1,6 +1,6 @@
 import React from 'react';
 import {NavigationActions} from 'react-navigation';
-import {ScrollView, View, StyleSheet} from 'react-native';
+import {ScrollView, View, StyleSheet, Linking, Platform} from 'react-native';
 import {Button, Text, Icon} from '../../components';
 import {connect} from 'react-redux';
 import {withTranslation} from 'react-i18next';
@@ -25,11 +25,32 @@ class Drawer extends React.PureComponent {
   };
 
   navigateToScreen = (route, param = {}) => () => {
-    const navigateAction = NavigationActions.navigate({
-      routeName: route,
-      params: param,
-    });
-    this.props.navigation.dispatch(navigateAction);
+    if (route == 'giveFeedback') {
+      if (Platform.OS != 'ios') {
+        Linking.openURL(`market://details?id=${'com.phoeniixx.wooapp'}`).catch(err =>
+          alert('Please check for the Google Play Store'),
+        );
+      } else {
+        Linking.openURL(`itms://itunes.apple.com/in/app/apple-store/${APPLE_STORE_ID}`).catch(err =>
+          alert('Please check for the App Store'),
+        );
+      }
+    } else if (route == 'HomeScreen') {
+      this.props.navigation.closeDrawer();
+      const navigateAction = NavigationActions.navigate({
+        routeName: 'HomeStack',
+        params: param,
+      });
+      this.props.navigation.dispatch(navigateAction);
+    } else if (route == 'HomeStack') {
+      this.props.navigation.closeDrawer();
+    } else {
+      const navigateAction = NavigationActions.navigate({
+        routeName: route,
+        params: param,
+      });
+      this.props.navigation.dispatch(navigateAction);
+    }
   };
 
   render() {
@@ -72,6 +93,14 @@ class Drawer extends React.PureComponent {
                 <Text style={styles.text}>{t('CHAT_SUPPORT')}</Text>
               </Button>
             )}
+            <Button style={styles.button} onPress={this.navigateToScreen('HomeScreen', 'contact')}>
+              <Icon name="md-call" style={styles.icon} />
+              <Text style={styles.text}>{t('CONTACT')}</Text>
+            </Button>
+            <Button style={styles.button} onPress={this.navigateToScreen('giveFeedback')}>
+              <Icon name="feedback" type="MaterialIcons" style={styles.icon} />
+              <Text style={styles.text}>{t('GIVE_FEEDBACK')}</Text>
+            </Button>
           </ScrollView>
           <View style={styles.footer}>
             <Text>{t('VERSION') + ' : ' + getReadableVersion()}</Text>
