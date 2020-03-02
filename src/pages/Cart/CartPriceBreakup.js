@@ -1,16 +1,13 @@
-import React, {useCallback, useState} from 'react';
+import React, {useState} from 'react';
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
-import {Toolbar, Button, Text, Icon} from '../../components';
-import {connect} from 'react-redux';
-import {ApiClient} from '../../service';
+import {Button, Text, Icon, Html} from '../../components';
 import Modal from 'react-native-modal';
-import Toast from 'react-native-simple-toast';
 import Coupon from './Coupon';
 
-function CartPriceBreakup({couponCode}) {
-  // const {couponCode} = this.state
+function CartPriceBreakup({couponCode, data}) {
+  console.log(data);
   const [isCoupon, setIsCoupon] = useState(false);
-  //Alert.alert(couponCode);
+  const [isSelectShipping, setShippingMethod] = useState(0);
 
   const toggleCouponModal = () => {
     setIsCoupon(!isCoupon);
@@ -69,18 +66,21 @@ function CartPriceBreakup({couponCode}) {
         }}>
         <Text style={styles.heading}>Shipping Method(S)</Text>
         <View style={{justifyContent: 'space-between', flexDirection: 'row', marginTop: 5}}>
-          <Text>Flat Rate</Text>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text>#20.00</Text>
-            <Icon name="md-radio-button-on" size={18} style={{marginStart: 5}} />
-          </View>
-        </View>
-        <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
-          <Text>Free Shipping</Text>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text>#0.00</Text>
-            <Icon name="md-radio-button-off" size={18} style={{marginStart: 5}} />
-          </View>
+          {data &&
+            data != '' &&
+            data.shipping_method.map((item, index) => {
+              return (
+                <View
+                  key={item.method_id}
+                  style={{flexDirection: 'row', justifyContent: 'space-between', flex: 1}}>
+                  <Text>{item.shipping_method_name}</Text>
+                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Html html={item.shipping_method_price} />
+                    <Icon name="md-radio-button-on" size={18} style={{marginStart: 5}} />
+                  </View>
+                </View>
+              );
+            })}
         </View>
         <Text style={{alignSelf: 'flex-end', textDecorationLine: 'underline'}}>
           Calculate Shipping
@@ -98,24 +98,24 @@ function CartPriceBreakup({couponCode}) {
         <Text style={styles.heading}>Order Summary</Text>
         <View style={[styles.view, {marginTop: 5}]}>
           <Text>Subtotal</Text>
-          <Text>#53.00</Text>
+          <Html html={data.cart_subtotal} />
         </View>
         <View style={styles.view}>
           <Text>Shipping Charge</Text>
-          <Text>#53.00</Text>
+          {/* <Html html={data.shipping_method[isSelectShipping].shipping_method_price} /> */}
         </View>
         <View style={styles.view}>
           <Text>Tax</Text>
-          <Text>#53.00</Text>
+          <Html html={data.taxes} />
         </View>
         <View style={styles.view}>
           <Text>Total Discount</Text>
-          <Text>#53.00</Text>
+          <Html html={data.discount_total} />
         </View>
         <View style={[styles.line, {marginVertical: 3}]} />
         <View style={[styles.view, {marginVertical: 5}]}>
           <Text style={styles.heading}>Total</Text>
-          <Text style={styles.heading}>$55.55</Text>
+          <Html html={data.total} />
         </View>
         <View style={[styles.line, {marginVertical: 3}]} />
       </View>

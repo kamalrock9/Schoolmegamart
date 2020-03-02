@@ -15,17 +15,37 @@ class Cart extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      cart_data: [{name: 'cap'}, {name: 'Bat'}, {name: 'Apple'}],
+      cart_data: [],
     };
   }
 
   componentDidMount() {
     ApiClient.get('/cart')
-      .then(res => {})
+      .then(({data}) => {
+        console.log(data);
+        this.setState({cart_data: data});
+      })
       .catch(() => {});
   }
 
-  renderFooter = () => <CartPriceBreakup />;
+  quantityIncrementDecremnt = () => {
+    ApiClient.get('/cart')
+      .then(({data}) => {
+        console.log(data);
+        this.setState({cart_data: data});
+      })
+      .catch(() => {});
+  };
+
+  renderItem = ({item, index}) => (
+    <CartItem
+      item={item}
+      index={index}
+      quantityIncrementDecremnt={this.quantityIncrementDecremnt}
+    />
+  );
+
+  renderFooter = () => <CartPriceBreakup data={this.state.cart_data} />;
 
   render() {
     const {cart_data, couponCode} = this.state;
@@ -34,13 +54,12 @@ class Cart extends React.PureComponent {
       <>
         <View style={styles.container}>
           <FlatList
-            data={cart_data}
-            renderItem={CartItem}
+            data={cart_data.cart_data}
+            renderItem={this.renderItem}
             keyExtractor={keyExtractor}
             ItemSeparatorComponent={ItemSeparatorComponent}
-            ListFooterComponent={CartPriceBreakup}
+            ListFooterComponent={this.renderFooter}
           />
-
           <View style={styles.footer}>
             <Button style={[styles.footerButton, {backgroundColor: appSettings.accent_color}]}>
               <Text style={{color: 'white'}}>CHECKOUT {' | '} #55.00</Text>
