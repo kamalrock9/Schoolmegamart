@@ -7,6 +7,7 @@ import {connect} from 'react-redux';
 import Constants from '../../service/Config';
 import {ApiClient} from '../../service';
 import {user} from '../../store/actions';
+import {withNavigation} from 'react-navigation';
 
 const {width} = Dimensions.get('window');
 
@@ -39,6 +40,7 @@ class Auth extends Component {
         this.setState({loading: false});
         if (data.code == 1) {
           this.props.user(data.details);
+          this.props.navigation.navigate('DrawerNavigator');
         }
       })
       .catch(error => {
@@ -120,7 +122,7 @@ class Auth extends Component {
             </View>
           </SwiperFlatList>
         ) : (
-          <ActivityIndicator style={{alignSelf: 'center'}} />
+          <ActivityIndicator style={{alignItems: 'center', justifyContent: 'center', flex: 1}} />
         )}
       </ImageBackground>
     );
@@ -131,7 +133,7 @@ const mapDispatchToProps = {
   user,
 };
 
-export default connect(null, mapDispatchToProps)(withTranslation()(Auth));
+export default withNavigation(connect(null, mapDispatchToProps)(withTranslation()(Auth)));
 
 const styles = StyleSheet.create({
   container: {

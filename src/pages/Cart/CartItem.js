@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {View, StyleSheet, Image, ActivityIndicator, Dimensions} from 'react-native';
-import {Button, Text, Icon} from '../../components';
+import {Button, Text, Icon, HTMLRender} from '../../components';
 import HTML from 'react-native-render-html';
 import {ApiClient} from '../../service';
 import Modal from 'react-native-modal';
@@ -128,7 +128,7 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
                 <Icon type="MaterialIcons" name="delete" size={22} />
               </Button>
             </View>
-            <Text>{item.product_desc}</Text>
+            <HTMLRender html={item.product_desc} />
             <View
               style={{
                 flexDirection: 'row',
@@ -137,7 +137,7 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
                 marginTop: 10,
               }}>
               <Text>Price:</Text>
-              <HTML html={item.subtotal} />
+              <HTMLRender html={item.subtotal} />
               <View style={{flexDirection: 'row'}}>
                 <Button style={styles.btn} onPress={decrement(item, index)}>
                   <Text style={styles.btnTxt}>–</Text>
