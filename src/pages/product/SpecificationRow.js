@@ -1,6 +1,6 @@
-import React from 'react';
-import {View, StyleSheet} from 'react-native';
-import {Text} from '../../components';
+import React from "react";
+import {View, StyleSheet} from "react-native";
+import {Text} from "components";
 
 function SpecificationRow({leftContent, rightContent}) {
   return (
@@ -13,8 +13,8 @@ function SpecificationRow({leftContent, rightContent}) {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    width: '100%',
+    flexDirection: "row",
+    width: "100%",
     minHeight: 28,
   },
 });

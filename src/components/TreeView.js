@@ -1,14 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Text from './Text';
-import {Icon, Button} from '../components';
+import React from "react";
+import PropTypes from "prop-types";
+import Text from "./Text";
+import Icon from "./IconNB";
+import Button from "./Button";
 
-import {View} from 'react-native';
+import {View} from "react-native";
 
 const makeCollapsed = (data, childrenKey) => {
   return data.map(children => {
     if (children[childrenKey] && children[childrenKey].length > 0) {
-      if (typeof children.collapsed === 'undefined') {
+      if (typeof children.collapsed === "undefined") {
         children.collapsed = true;
       }
 
@@ -35,8 +36,8 @@ class TreeView extends React.PureComponent {
   static defaultProps = {
     collapsedItemHeight: 20,
     deleteOnLongPress: false,
-    idKey: 'id',
-    childrenKey: 'children',
+    idKey: "id",
+    childrenKey: "children",
   };
 
   constructor(props) {
@@ -66,7 +67,7 @@ class TreeView extends React.PureComponent {
     return data.map(children => {
       if (
         children[this.props.idKey] === id &&
-        typeof children.collapsed !== 'undefined' &&
+        typeof children.collapsed !== "undefined" &&
         children.collapsed !== null
       ) {
         children.collapsed = !children.collapsed;
@@ -153,15 +154,15 @@ class TreeView extends React.PureComponent {
         <View
           key={children[this.props.idKey]}
           style={{
-            height: children.collapsed ? this.props.collapsedItemHeight : 'auto',
+            height: children.collapsed ? this.props.collapsedItemHeight : "auto",
             zIndex: 1,
-            overflow: 'hidden',
+            overflow: "hidden",
           }}>
           <View
             style={{
-              flexDirection: 'row',
+              flexDirection: "row",
               //justifyContent: "space-between",
-              alignItems: 'center',
+              alignItems: "center",
               marginStart: 25 * level,
               //height: 40
             }}>
@@ -169,11 +170,11 @@ class TreeView extends React.PureComponent {
             children[this.props.childrenKey] &&
             children[this.props.childrenKey].length > 0 ? (
               <Button transparent onPress={() => this.handleNodePressed(children, level)}>
-                <Icon name={children.collapsed ? 'ios-add' : 'ios-remove'} />
+                <Icon name={children.collapsed ? "ios-add" : "ios-remove"} />
               </Button>
             ) : (
               <Button transparent>
-                <Icon name="ios-add" style={{color: 'transparent'}} />
+                <Icon name="ios-add" style={{color: "transparent"}} />
               </Button>
             )}
             <Text style={{fontSize: 16}}>{children.name}</Text>

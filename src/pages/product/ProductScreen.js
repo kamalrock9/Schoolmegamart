@@ -1,10 +1,10 @@
-import React from 'react';
-import {StyleSheet, Dimensions} from 'react-native';
-import {FlatListLoading, Toolbar} from '../../components';
-import Toast from 'react-native-simple-toast';
-import ProductItem from './ProductItem';
-import {ApiClient} from '../../service';
-import {FlatGrid} from 'react-native-super-grid';
+import React from "react";
+import {StyleSheet, Dimensions} from "react-native";
+import {FlatListLoading, Toolbar} from "components";
+import Toast from "react-native-simple-toast";
+import ProductItem from "./ProductItem";
+import {ApiClient} from "service";
+import {FlatGrid} from "react-native-super-grid";
 
 class ProductScreen extends React.PureComponent {
   constructor(props) {
@@ -17,7 +17,7 @@ class ProductScreen extends React.PureComponent {
     this.params = {
       page: 0,
       per_page: 10,
-      sort: 'default',
+      sort: "default",
     };
   }
 
@@ -34,7 +34,7 @@ class ProductScreen extends React.PureComponent {
       return;
     }
     this.params.page++;
-    ApiClient.get('custom-products', this.params)
+    ApiClient.get("custom-products", this.params)
       .then(({data}) => {
         this.setState({
           products: [...this.state.products, ...data],
@@ -54,7 +54,7 @@ class ProductScreen extends React.PureComponent {
       <ProductItem item={item} />
     );
   };
-  _keyExtractor = item => 'products_' + item.id;
+  _keyExtractor = item => "products_" + item.id;
 
   render() {
     const {products, flatListEndReached, refreshing} = this.state;
@@ -70,7 +70,7 @@ class ProductScreen extends React.PureComponent {
         onEndReached={this.loadProducts}
         onEndReachedThreshold={0.1}
         showsVerticalScrollIndicator={!refreshing}
-        itemContainerStyle={{justifyContent: 'flex-start'}}
+        itemContainerStyle={{justifyContent: "flex-start"}}
         ListFooterComponent={
           <FlatListLoading bottomIndicator={!flatListEndReached} centerIndicator={refreshing} />
         }
@@ -82,8 +82,8 @@ class ProductScreen extends React.PureComponent {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

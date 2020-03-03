@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect} from "react";
 import {
   View,
   ScrollView,
@@ -6,26 +6,26 @@ import {
   ActivityIndicator,
   FlatList,
   unstable_batchedUpdates,
-} from 'react-native';
-import {Slider, Toolbar} from '../../components';
-import {useSelector, useDispatch} from 'react-redux';
-import {isEmpty} from 'lodash';
-import CategoryItem from './CategoryItem';
-import SectonHeader from './SectonHeader';
-import ProductsRow from '../product/ProductsRow';
-import {saveHomeLayout} from '../../store/actions';
-import {ApiClient} from '../../service';
+} from "react-native";
+import {Slider, Toolbar} from "components";
+import {useSelector, useDispatch} from "react-redux";
+import {isEmpty} from "lodash";
+import CategoryItem from "./CategoryItem";
+import SectonHeader from "./SectonHeader";
+import ProductsRow from "../product/ProductsRow";
+import {saveHomeLayout} from "store/actions";
+import {ApiClient} from "service";
 
 function HomeScreen({navigation}) {
   const [loading, setLoading] = useState(false);
   const layout = useSelector(state => state.homeLayout);
   const dispatch = useDispatch();
 
-  const _categoryKeyExtractor = item => 'category_' + item.id;
+  const _categoryKeyExtractor = item => "category_" + item.id;
 
   useEffect(() => {
     setLoading(layout ? false : true);
-    ApiClient.get('/layout')
+    ApiClient.get("/layout")
       .then(({data}) => {
         unstable_batchedUpdates(() => {
           dispatch(saveHomeLayout(data));
@@ -44,7 +44,7 @@ function HomeScreen({navigation}) {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size={'large'} />
+        <ActivityIndicator size={"large"} />
       </View>
     );
   } else if (isEmpty(layout)) {
@@ -66,7 +66,7 @@ function HomeScreen({navigation}) {
           title="Categories"
           titleEnd="View All"
           onPress={goTo}
-          onPressArgs={['CategoryScreen']}
+          onPressArgs={["CategoryScreen"]}
         />
 
         <FlatList
@@ -117,8 +117,8 @@ HomeScreen.navigationOptions = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

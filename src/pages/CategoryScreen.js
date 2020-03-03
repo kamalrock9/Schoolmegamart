@@ -1,9 +1,8 @@
-import React, {Component} from 'react';
-import {ScrollView, StyleSheet} from 'react-native';
-import {connect} from 'react-redux';
-import {Text, Toolbar, Icon} from '../components';
-import {getAllCategories} from '../store/actions';
-import {TreeView} from '../components';
+import React, {Component} from "react";
+import {ScrollView, StyleSheet} from "react-native";
+import {connect} from "react-redux";
+import {Text, Toolbar, Icon, TreeView} from "components";
+import {getAllCategories} from "store/actions";
 
 class CategoryScreen extends React.PureComponent {
   static navigationOptions = ({navigation}) => ({
@@ -20,14 +19,14 @@ class CategoryScreen extends React.PureComponent {
       <View>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
+            flexDirection: "row",
+            justifyContent: "space-between",
             marginStart: 16 * level,
             height: 40,
           }}>
           <Text style={{fontSize: 16}}>{item.name}</Text>
           {item.collapsed !== null && (
-            <Icon name={item.collapsed ? 'ios-add' : 'ios-remove'} size={24} />
+            <Icon name={item.collapsed ? "ios-add" : "ios-remove"} size={24} />
           )}
         </View>
       </View>

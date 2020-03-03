@@ -1,11 +1,11 @@
-import React from 'react';
-import {View, StyleSheet, FlatList, ActivityIndicator} from 'react-native';
-import {Toolbar, Button, Text, HTMLRender} from '../../components';
-import {connect} from 'react-redux';
-import {ApiClient} from '../../service';
-import CartPriceBreakup from './CartPriceBreakup';
-import CartItem from './CartItem';
-import {isArray, isEmpty} from 'lodash';
+import React from "react";
+import {View, StyleSheet, FlatList, ActivityIndicator} from "react-native";
+import {Toolbar, Button, Text, HTMLRender} from "components";
+import {connect} from "react-redux";
+import {ApiClient} from "service";
+import CartPriceBreakup from "./CartPriceBreakup";
+import CartItem from "./CartItem";
+import {isArray, isEmpty} from "lodash";
 
 class Cart extends React.PureComponent {
   static navigationOptions = {
@@ -16,7 +16,7 @@ class Cart extends React.PureComponent {
     this.state = {
       cart_data: [],
       loading: false,
-      shipping_method: '',
+      shipping_method: "",
     };
   }
 
@@ -31,12 +31,12 @@ class Cart extends React.PureComponent {
 
   ApiCall = params => {
     let param = {
-      shipping_method: params ? params : '',
+      shipping_method: params ? params : "",
       user_id: 17,
     };
 
     this.setState({loading: true});
-    ApiClient.get('/cart', param)
+    ApiClient.get("/cart", param)
       .then(({data}) => {
         console.log(data);
         this.setState({loading: false, cart_data: data});
@@ -71,8 +71,8 @@ class Cart extends React.PureComponent {
     const {appSettings} = this.props;
     if (loading) {
       return (
-        <View style={[styles.container, {alignItems: 'center', justifyContent: 'center'}]}>
-          <ActivityIndicator size={'large'} />
+        <View style={[styles.container, {alignItems: "center", justifyContent: "center"}]}>
+          <ActivityIndicator size={"large"} />
         </View>
       );
     } else if (isArray(cart_data.cart_data) && !isEmpty(cart_data.cart_data)) {
@@ -87,15 +87,15 @@ class Cart extends React.PureComponent {
           />
           <View style={styles.footer}>
             <Button style={[styles.footerButton, {backgroundColor: appSettings.accent_color}]}>
-              <Text style={{color: 'white', marginEnd: 5}}>CHECKOUT {' | '}</Text>
-              <HTMLRender html={cart_data.total} baseFontStyle={{color: '#fff'}} />
+              <Text style={{color: "white", marginEnd: 5}}>CHECKOUT {" | "}</Text>
+              <HTMLRender html={cart_data.total} baseFontStyle={{color: "#fff"}} />
             </Button>
           </View>
         </View>
       );
     } else {
       return (
-        <View style={[styles.container, {alignItems: 'center', justifyContent: 'center'}]}>
+        <View style={[styles.container, {alignItems: "center", justifyContent: "center"}]}>
           <Text>Cart is empty</Text>
         </View>
       );
@@ -103,7 +103,7 @@ class Cart extends React.PureComponent {
   }
 }
 
-const keyExtractor = (item, index) => item + 'sap' + index;
+const keyExtractor = (item, index) => item + "sap" + index;
 
 function ItemSeparatorComponent() {
   return <View style={[styles.line, {margin: 16}]} />;
@@ -115,37 +115,37 @@ const styles = StyleSheet.create({
   },
   btn: {
     borderWidth: 1,
-    borderColor: '#D2d2d9',
-    backgroundColor: '#D2d2d2',
+    borderColor: "#D2d2d9",
+    backgroundColor: "#D2d2d2",
     width: 22,
     height: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
-  heading: {fontWeight: '700'},
+  heading: {fontWeight: "700"},
   footer: {
-    width: '100%',
-    flexDirection: 'row',
+    width: "100%",
+    flexDirection: "row",
   },
   footerButton: {
     flex: 1,
     height: 40,
     margin: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   view: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   line: {
     height: 1,
-    width: '100%',
-    backgroundColor: '#F1F1F1',
+    width: "100%",
+    backgroundColor: "#F1F1F1",
   },
   btnTxt: {
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: 24,
     marginBottom: 5,
   },

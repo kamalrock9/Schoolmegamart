@@ -1,13 +1,12 @@
-import React, {useState} from 'react';
-import {View, StyleSheet, Image, ActivityIndicator, Dimensions} from 'react-native';
-import {Button, Text, Icon, HTMLRender} from '../../components';
-import HTML from 'react-native-render-html';
-import {ApiClient} from '../../service';
-import Modal from 'react-native-modal';
-import Toast from 'react-native-simple-toast';
-import {useSelector} from 'react-redux';
+import React, {useState} from "react";
+import {View, StyleSheet, Image, ActivityIndicator, Dimensions} from "react-native";
+import {Button, Text, Icon, HTMLRender} from "components";
+import {ApiClient} from "service";
+import Modal from "react-native-modal";
+import Toast from "react-native-simple-toast";
+import {useSelector} from "react-redux";
 
-const {height} = Dimensions.get('window');
+const {height} = Dimensions.get("window");
 
 function CartItem({item, index, quantityIncrementDecremnt}) {
   //console.log(item);
@@ -18,10 +17,10 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
   const [loading, setLoading] = useState(false);
 
   const closeModal = (item, itemEach) => () => {
-    if (item == 'false') {
+    if (item == "false") {
       setModal(false);
     } else {
-      console.log('delete');
+      console.log("delete");
       setModal(false);
       deleteItem(itemEach);
     }
@@ -38,7 +37,7 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
     };
     if (itemEach.quantity > 1) {
       setLoading(true);
-      ApiClient.get('/cart/update', data)
+      ApiClient.get("/cart/update", data)
         .then(response => {
           setLoading(false);
 
@@ -51,7 +50,7 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
           console.log(error);
         });
     } else {
-      Toast.show('Minimum item quantity reached');
+      Toast.show("Minimum item quantity reached");
     }
   };
 
@@ -63,7 +62,7 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
     if (itemEach.quantity > 0) {
       setLoading(true);
 
-      ApiClient.get('/cart/update', data)
+      ApiClient.get("/cart/update", data)
         .then(response => {
           setLoading(false);
           console.log(response);
@@ -78,13 +77,13 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
   };
 
   const deleteItem = itemEach => {
-    console.log('kamal');
+    console.log("kamal");
     let data = {
       cart_item_key: itemEach.cart_item_key,
     };
     setLoading(true);
 
-    ApiClient.get('/cart/remove', data)
+    ApiClient.get("/cart/remove", data)
       .then(response => {
         setLoading(false);
 
@@ -101,7 +100,7 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
   if (loading) {
     return (
       <View style={[styles.container]}>
-        <ActivityIndicator size={'large'} />
+        <ActivityIndicator size={"large"} />
       </View>
     );
   } else {
@@ -109,9 +108,9 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
       <View>
         <View
           style={{
-            flexDirection: 'row',
-            alignItems: 'flex-start',
-            width: '100%',
+            flexDirection: "row",
+            alignItems: "flex-start",
+            width: "100%",
             paddingTop: index == 0 ? 16 : 0,
             paddingHorizontal: 16,
           }}>
@@ -122,8 +121,8 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
             }}
           />
           <View style={{marginStart: 16, flex: 1}}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={{fontWeight: '700'}}>{item.name}</Text>
+            <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+              <Text style={{fontWeight: "700"}}>{item.name}</Text>
               <Button onPress={openModal}>
                 <Icon type="MaterialIcons" name="delete" size={22} />
               </Button>
@@ -131,14 +130,14 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
             <HTMLRender html={item.product_desc} />
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
+                flexDirection: "row",
+                justifyContent: "space-between",
                 flex: 1,
                 marginTop: 10,
               }}>
               <Text>Price:</Text>
               <HTMLRender html={item.subtotal} />
-              <View style={{flexDirection: 'row'}}>
+              <View style={{flexDirection: "row"}}>
                 <Button style={styles.btn} onPress={decrement(item, index)}>
                   <Text style={styles.btnTxt}>–</Text>
                 </Button>
@@ -153,20 +152,20 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
         <Modal
           isVisible={isOpenModal}
           style={{margin: 0}}
-          onBackButtonPress={closeModal('false', null)}
-          onBackdropPress={closeModal('false', null)}
+          onBackButtonPress={closeModal("false", null)}
+          onBackdropPress={closeModal("false", null)}
           useNativeDriver
           hideModalContentWhileAnimating>
-          <View style={{backgroundColor: '#fff', marginHorizontal: 64, padding: 20}}>
-            <Text style={{fontWeight: '500', fontSize: 20, marginBottom: 15}}>
+          <View style={{backgroundColor: "#fff", marginHorizontal: 64, padding: 20}}>
+            <Text style={{fontWeight: "500", fontSize: 20, marginBottom: 15}}>
               Remove From Cart
             </Text>
             <Text>Are you sure to remove this?</Text>
-            <View style={{flexDirection: 'row', justifyContent: 'flex-end', marginTop: 30}}>
-              <Button onPress={closeModal('false', null)}>
+            <View style={{flexDirection: "row", justifyContent: "flex-end", marginTop: 30}}>
+              <Button onPress={closeModal("false", null)}>
                 <Text style={{color: appSetting.accent_color}}>NO</Text>
               </Button>
-              <Button onPress={closeModal('item', item)} style={{marginStart: 20}}>
+              <Button onPress={closeModal("item", item)} style={{marginStart: 20}}>
                 <Text style={{color: appSetting.accent_color}}>YES</Text>
               </Button>
             </View>
@@ -183,36 +182,36 @@ const styles = StyleSheet.create({
   },
   btn: {
     borderWidth: 1,
-    borderColor: '#D2d2d9',
-    backgroundColor: '#D2d2d2',
+    borderColor: "#D2d2d9",
+    backgroundColor: "#D2d2d2",
     width: 22,
     height: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
-  heading: {fontWeight: '700'},
+  heading: {fontWeight: "700"},
   footer: {
-    width: '100%',
-    flexDirection: 'row',
+    width: "100%",
+    flexDirection: "row",
   },
   footerButton: {
     flex: 1,
     height: 40,
     margin: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   view: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   line: {
     height: 1,
-    width: '100%',
-    backgroundColor: '#F1F1F1',
+    width: "100%",
+    backgroundColor: "#F1F1F1",
   },
   btnTxt: {
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: 24,
     marginBottom: 5,
   },

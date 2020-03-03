@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
-import {View, StyleSheet, TouchableWithoutFeedback} from 'react-native';
-import {useSelector} from 'react-redux';
-import {useNavigation} from 'react-navigation-hooks';
-import {HTMLRender, Text, WishlistIcon, ScaledImage} from '../../components';
-import StarRating from 'react-native-star-rating';
+import React, {useState} from "react";
+import {View, StyleSheet, TouchableWithoutFeedback} from "react-native";
+import {useSelector} from "react-redux";
+import {useNavigation} from "react-navigation-hooks";
+import {HTMLRender, Text, WishlistIcon, ScaledImage} from "components";
+import StarRating from "react-native-star-rating";
 
 function ProductItem({containerStyle, width: propWidth, item}) {
   const navigation = useNavigation();
@@ -12,7 +12,7 @@ function ProductItem({containerStyle, width: propWidth, item}) {
   const [width, setWidth] = useState(propWidth);
 
   const goToProductDetails = () => {
-    navigation.push('ProductDetailScreen', item);
+    navigation.push("ProductDetailScreen", item);
   };
 
   const onLayout = e => {
@@ -32,10 +32,10 @@ function ProductItem({containerStyle, width: propWidth, item}) {
           />
         )}
         <View>
-          <Text style={[styles.itemMargin, {fontWeight: '600'}]} numberOfLines={1}>
+          <Text style={[styles.itemMargin, {fontWeight: "600"}]} numberOfLines={1}>
             {item.name}
           </Text>
-          {item.price_html != '' && (
+          {item.price_html != "" && (
             <HTMLRender
               html={item.price_html}
               containerStyle={styles.itemMargin}
@@ -66,23 +66,23 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 3,
     borderWidth: 0.5,
-    borderColor: '#bdbdbd',
+    borderColor: "#bdbdbd",
     paddingBottom: 8,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   thumb: {
-    resizeMode: 'contain',
+    resizeMode: "contain",
     height: 180,
   },
   star: {
-    justifyContent: 'flex-start',
+    justifyContent: "flex-start",
   },
   itemMargin: {
     marginStart: 8,
     marginTop: 4,
   },
   right: {
-    position: 'absolute',
+    position: "absolute",
     end: 0,
     top: 0,
   },

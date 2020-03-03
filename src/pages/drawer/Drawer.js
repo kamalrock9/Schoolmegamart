@@ -1,12 +1,13 @@
-import React from 'react';
-import {NavigationActions} from 'react-navigation';
-import {ScrollView, View, StyleSheet, Linking, Platform, Alert} from 'react-native';
-import {Button, Text, Icon} from '../../components';
-import {connect} from 'react-redux';
-import {withTranslation} from 'react-i18next';
-import Modal from 'react-native-modal';
-import Login from '../auth/Login';
-import {getReadableVersion} from 'react-native-device-info';
+import React from "react";
+import {NavigationActions} from "react-navigation";
+import {ScrollView, View, StyleSheet, Linking, Platform, Alert} from "react-native";
+import {Button, Text, Icon} from "components";
+import {connect} from "react-redux";
+import {withTranslation} from "react-i18next";
+import {withNavigation} from "react-navigation-hooks";
+import Modal from "react-native-modal";
+import Login from "../auth/Login";
+import {getReadableVersion} from "react-native-device-info";
 
 class Drawer extends React.PureComponent {
   constructor(props) {
@@ -19,7 +20,7 @@ class Drawer extends React.PureComponent {
 
   _Call = () => {
     let phoneNumber = 8860617526;
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === "ios") {
       phoneNumber = `telprompt:${phoneNumber}`;
     } else {
       phoneNumber = `tel:${phoneNumber}`;
@@ -27,7 +28,7 @@ class Drawer extends React.PureComponent {
     Linking.canOpenURL(phoneNumber)
       .then(supported => {
         if (!supported) {
-          Alert.alert('Phone number is not available');
+          Alert.alert("Phone number is not available");
         } else {
           Linking.openURL(phoneNumber);
         }
@@ -36,11 +37,11 @@ class Drawer extends React.PureComponent {
   };
 
   _OpenEmail = () => {
-    let email = 'mailto:www.phoeniixx.com';
+    let email = "mailto:www.phoeniixx.com";
     Linking.canOpenURL(email)
       .then(supported => {
         if (!supported) {
-          Alert.alert('Email is not available');
+          Alert.alert("Email is not available");
         } else {
           Linking.openURL(email);
         }
@@ -61,51 +62,36 @@ class Drawer extends React.PureComponent {
   };
 
   navigateToScreen = (route, param = {}) => () => {
-    if (route == 'giveFeedback') {
-      Alert.alert(
-        'Do You like using WooApp',
-        null,
-        [
-          {text: 'NOT REALLY', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-          {
-            text: 'YES!',
-            onPress: () => {
-              if (Platform.OS != 'ios') {
-                Linking.openURL(`market://details?id=${'com.phoeniixx.wooapp'}`).catch(err =>
-                  alert('Please check for the Google Play Store'),
-                );
-              } else {
-                Linking.openURL(
-                  `itms://itunes.apple.com/in/app/apple-store/${APPLE_STORE_ID}`,
-                ).catch(err => alert('Please check for the App Store'));
-              }
+    const {navigation} = this.props;
+    switch (route) {
+      case "giveFeedback":
+        Alert.alert(
+          "Do You like using WooApp",
+          null,
+          [
+            {text: "NOT REALLY", onPress: () => console.log("Cancel Pressed"), style: "cancel"},
+            {
+              text: "YES!",
+              onPress: () => {
+                if (Platform.OS != "ios") {
+                  Linking.openURL(`market://details?id=${"com.phoeniixx.wooapp"}`).catch(err =>
+                    alert("Please check for the Google Play Store"),
+                  );
+                } else {
+                  Linking.openURL(
+                    `itms://itunes.apple.com/in/app/apple-store/${APPLE_STORE_ID}`,
+                  ).catch(err => alert("Please check for the App Store"));
+                }
+              },
             },
-          },
-        ],
-        {cancelable: false},
-      );
-    } else if (route == 'HomeScreen') {
-      this.props.navigation.closeDrawer();
-      const navigateAction = NavigationActions.navigate({
-        routeName: 'HomeStack',
-        params: param,
-      });
-      this.props.navigation.dispatch(navigateAction);
-    } else if (route == 'HomeStack') {
-      this.props.navigation.closeDrawer();
-    } else if (route == 'termAndConditions') {
-      this.props.navigation.closeDrawer();
-      const navigateAction = NavigationActions.navigate({
-        routeName: 'TermAndCondition',
-        params: param,
-      });
-      this.props.navigation.dispatch(navigateAction);
-    } else {
-      const navigateAction = NavigationActions.navigate({
-        routeName: route,
-        params: param,
-      });
-      this.props.navigation.dispatch(navigateAction);
+          ],
+          {cancelable: false},
+        );
+        break;
+      default:
+        navigation.closeDrawer();
+        navigation.navigate(route, param);
+        break;
     }
   };
 
@@ -124,51 +110,51 @@ class Drawer extends React.PureComponent {
           <View style={styles.header}>
             <Icon name="account-circle" type="MaterialCommunityIcons" style={{fontSize: 54}} />
             <Text style={{fontSize: 16}} onPress={this.openModal}>
-              {t('LOGIN/REGISTER')}
+              {t("LOGIN/REGISTER")}
             </Text>
           </View>
           <ScrollView>
-            <Button style={styles.button} onPress={this.navigateToScreen('HomeStack')}>
+            <Button style={styles.button} onPress={this.navigateToScreen("HomeStack")}>
               <Icon name="home" type="FontAwesome" style={styles.icon} />
-              <Text style={styles.text}>{t('HOME')}</Text>
+              <Text style={styles.text}>{t("HOME")}</Text>
             </Button>
 
-            <Button style={styles.button} onPress={this.navigateToScreen('ProductStack')}>
+            <Button style={styles.button} onPress={this.navigateToScreen("ProductStack")}>
               <Icon name="shopping-bag" type="FontAwesome" style={styles.icon} />
-              <Text style={styles.text}>{t('SHOP')}</Text>
+              <Text style={styles.text}>{t("SHOP")}</Text>
             </Button>
 
-            <Button style={styles.button} onPress={this.navigateToScreen('CategoryScreen')}>
+            <Button style={styles.button} onPress={this.navigateToScreen("CategoryScreen")}>
               <Icon name="archive" type="Entypo" style={styles.icon} />
-              <Text style={styles.text}>{t('CATEGORIES')}</Text>
+              <Text style={styles.text}>{t("CATEGORIES")}</Text>
             </Button>
 
             <View style={styles.divider} />
-            {appSettings.hasOwnProperty('direct_tawk_id') && appSettings.direct_tawk_id != '' && (
+            {appSettings.hasOwnProperty("direct_tawk_id") && appSettings.direct_tawk_id != "" && (
               <Button
                 style={styles.button}
-                onPress={this.navigateToScreen('TawkToChat', {
+                onPress={this.navigateToScreen("TawkToChat", {
                   uri: appSettings.direct_tawk_id,
                 })}>
                 <Icon name="chat" type="Entypo" style={styles.icon} />
-                <Text style={styles.text}>{t('CHAT_SUPPORT')}</Text>
+                <Text style={styles.text}>{t("CHAT_SUPPORT")}</Text>
               </Button>
             )}
             <Button style={styles.button} onPress={this.contactUs}>
               <Icon name="md-call" style={styles.icon} />
-              <Text style={styles.text}>{t('CONTACT')}</Text>
+              <Text style={styles.text}>{t("CONTACT")}</Text>
             </Button>
-            <Button style={styles.button} onPress={this.navigateToScreen('termAndConditions')}>
+            <Button style={styles.button} onPress={this.navigateToScreen("TermAndCondition")}>
               <Icon name="tools" type="Entypo" style={styles.icon} />
-              <Text style={styles.text}>{t('TOS')}</Text>
+              <Text style={styles.text}>{t("TOS")}</Text>
             </Button>
-            <Button style={styles.button} onPress={this.navigateToScreen('giveFeedback')}>
+            <Button style={styles.button} onPress={this.navigateToScreen("giveFeedback")}>
               <Icon name="feedback" type="MaterialIcons" style={styles.icon} />
-              <Text style={styles.text}>{t('GIVE_FEEDBACK')}</Text>
+              <Text style={styles.text}>{t("GIVE_FEEDBACK")}</Text>
             </Button>
           </ScrollView>
           <View style={styles.footer}>
-            <Text>{t('VERSION') + ' : ' + getReadableVersion()}</Text>
+            <Text>{t("VERSION") + " : " + getReadableVersion()}</Text>
           </View>
         </View>
         <Modal
@@ -182,22 +168,22 @@ class Drawer extends React.PureComponent {
 
         <Modal
           isVisible={isContactModalOpen}
-          style={{justifyContent: 'flex-end', margin: 0, marginTop: 'auto'}}
+          style={{justifyContent: "flex-end", margin: 0, marginTop: "auto"}}
           onBackButtonPress={this.toggleContactModal}
           onBackdropPress={this.toggleContactModal}
           hasBackdrop
           useNativeDriver
           hideModalContentWhileAnimating>
-          <View style={{backgroundColor: '#FFF', padding: 10}}>
+          <View style={{backgroundColor: "#FFF", padding: 10}}>
             <Text style={{fontSize: 20}}>Contact Us</Text>
             <View
               style={{
                 height: 1.35,
-                backgroundColor: '#d2d2d2',
-                width: '100%',
+                backgroundColor: "#d2d2d2",
+                width: "100%",
                 marginVertical: 10,
               }}></View>
-            <View style={{flexDirection: 'row'}}>
+            <View style={{flexDirection: "row"}}>
               <Button
                 style={[
                   styles.contact_btn,
@@ -206,7 +192,7 @@ class Drawer extends React.PureComponent {
                   },
                 ]}
                 onPress={this._OpenEmail}>
-                <Text style={{color: '#fff'}}>EMAIL</Text>
+                <Text style={{color: "#fff"}}>EMAIL</Text>
               </Button>
               <Button
                 style={[
@@ -216,7 +202,7 @@ class Drawer extends React.PureComponent {
                   },
                 ]}
                 onPress={this._Call}>
-                <Text style={{color: '#fff'}}>CALL</Text>
+                <Text style={{color: "#fff"}}>CALL</Text>
               </Button>
             </View>
           </View>
@@ -231,44 +217,44 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   divider: {
-    backgroundColor: '#dedede',
+    backgroundColor: "#dedede",
     height: 1,
   },
   button: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     minHeight: 48,
   },
   icon: {
-    color: '#777777',
+    color: "#777777",
     marginEnd: 16,
     marginStart: 12,
     fontSize: 24,
   },
   text: {
-    color: '#000000',
-    fontWeight: '500',
+    color: "#000000",
+    fontWeight: "500",
   },
   footer: {
-    width: '100%',
-    alignItems: 'flex-end',
-    justifyContent: 'center',
+    width: "100%",
+    alignItems: "flex-end",
+    justifyContent: "center",
     paddingEnd: 16,
     paddingVertical: 8,
     borderTopWidth: 0.5,
-    borderTopColor: '#dedede',
+    borderTopColor: "#dedede",
   },
   header: {
-    width: '100%',
-    alignItems: 'center',
-    backgroundColor: '#dedede',
-    justifyContent: 'center',
+    width: "100%",
+    alignItems: "center",
+    backgroundColor: "#dedede",
+    justifyContent: "center",
     height: 150,
   },
   contact_btn: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 14,
     borderRadius: 2,
   },

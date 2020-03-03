@@ -1,139 +1,120 @@
-import React, {Component} from 'react';
+import React, {Component, useState, useCallback} from 'react';
 import {View, StyleSheet, ImageBackground, Dimensions, ActivityIndicator} from 'react-native';
-import {Icon, Text, Button, FloatingTextinput} from '../../components';
+import {Icon, Text, Button, FloatingTextinput} from 'components';
 import SwiperFlatList from 'react-native-swiper-flatlist';
-import {withTranslation} from 'react-i18next';
-import {connect} from 'react-redux';
-import Constants from '../../service/Config';
-import {ApiClient} from '../../service';
-import {user} from '../../store/actions';
-import {withNavigation} from 'react-navigation';
+import {useTranslation} from 'react-i18next';
+import {useDispatch} from 'react-redux';
+import Constants from 'service/Config';
+import {ApiClient} from 'service';
+import {user} from 'store/actions';
 
 const {width} = Dimensions.get('window');
 
-class Auth extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loginEmail: '',
-      loginPassword: '',
-      loading: false,
-    };
-  }
+function Auth({onClose}) {
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loading, setLoading] = useState('');
 
-  update = key => value => [
-    this.setState({
-      [key]: value,
-    }),
-  ];
+  const {t} = useTranslation();
+  const dispatch = useDispatch();
 
-  _login = () => {
-    const {loginEmail, loginPassword} = this.state;
+  const onChangeEmail = useCallback(text => {
+    setLoginEmail(text);
+  });
+  const onChangePassword = useCallback(text => {
+    setLoginPassword(text);
+  });
+
+  const _login = () => {
     let param = {
       email: loginEmail,
       password: loginPassword,
     };
-    this.setState({loading: true});
+    setLoading(true);
     ApiClient.post('/login', param)
       .then(({data}) => {
         console.log(data);
-        this.setState({loading: false});
+        setLoading(false);
         if (data.code == 1) {
-          this.props.user(data.details);
-          this.props.navigation.navigate('DrawerNavigator');
+          dispatch(user(data.details));
+          onClose && onClose();
         }
       })
       .catch(error => {
-        this.setState({loading: false});
+        setLoading(false);
       });
   };
 
-  navigateToScreen = () => {
-    console.log('kamal');
-    this.props.navigation.navigate('Signup');
-  };
+  return (
+    <ImageBackground
+      source={require('../../assets/imgs/login-background.jpg')}
+      style={styles.container}>
+      <Button style={{padding: 8, alignSelf: 'flex-start'}} onPress={onClose}>
+        <Icon name="close" size={24} color="#FFF" type="MaterialCommunityIcons" />
+      </Button>
+      {!loading ? (
+        <SwiperFlatList>
+          <View style={styles.slide1}>
+            <Text style={styles.title}>{t('WELCOME_TO_WOOAPP', {value: Constants.storeName})}</Text>
+            <Text style={styles.subtitle}>{t('FASHION_INFO')}</Text>
+            <View style={{width: '100%', flexDirection: 'row', marginTop: 20}}>
+              <Button style={[styles.socialBtn, {flex: 1, marginEnd: 8}]}>
+                <Icon name="logo-facebook" size={20} color="#FFF" />
+                <Text style={[styles.socialBtnText, {marginStart: 8}]}>Facebook</Text>
+              </Button>
+              <Button style={[styles.socialBtn, {flex: 1, marginStart: 8}]}>
+                <Icon name="logo-google" size={20} color="#FFF" />
+                <Text style={[styles.socialBtnText, {marginStart: 8}]}>Google</Text>
+              </Button>
+            </View>
+            <View style={{width: '100%', flexDirection: 'row', marginVertical: 30}}>
+              <View style={styles.line} />
+              <Text style={styles.or}>Or login via e-mail</Text>
+              <View style={styles.line} />
+            </View>
 
-  render() {
-    const {onClose, t} = this.props;
-    const {loginEmail, loginPassword, loading} = this.state;
-    return (
-      <ImageBackground
-        source={require('../../assets/imgs/login-background.jpg')}
-        style={styles.container}>
-        <Button style={{padding: 8, alignSelf: 'flex-start'}} onPress={onClose}>
-          <Icon name="close" size={24} color="#FFF" type="MaterialCommunityIcons" />
-        </Button>
-        {!loading ? (
-          <SwiperFlatList>
-            <View style={styles.slide1}>
-              <Text style={styles.title}>
-                {t('WELCOME_TO_WOOAPP', {value: Constants.storeName})}
-              </Text>
-              <Text style={styles.subtitle}>{t('FASHION_INFO')}</Text>
-              <View style={{width: '100%', flexDirection: 'row', marginTop: 20}}>
-                <Button style={[styles.socialBtn, {flex: 1, marginEnd: 8}]}>
-                  <Icon name="logo-facebook" size={20} color="#FFF" />
-                  <Text style={[styles.socialBtnText, {marginStart: 8}]}>Facebook</Text>
-                </Button>
-                <Button style={[styles.socialBtn, {flex: 1, marginStart: 8}]}>
-                  <Icon name="logo-google" size={20} color="#FFF" />
-                  <Text style={[styles.socialBtnText, {marginStart: 8}]}>Google</Text>
-                </Button>
-              </View>
-              <View style={{width: '100%', flexDirection: 'row', marginVertical: 30}}>
-                <View style={styles.line} />
-                <Text style={styles.or}>Or login via e-mail</Text>
-                <View style={styles.line} />
-              </View>
-
+            <FloatingTextinput
+              label={t('EMAIL')}
+              labelColor="#FFFFFF"
+              style={{color: '#FFFFFF'}}
+              value={loginEmail}
+              onChangeText={onChangeEmail}
+            />
+            <View style={{marginTop: 10}}>
               <FloatingTextinput
-                label={t('EMAIL')}
+                secureTextEntry={true}
+                label={t('PASSWORD')}
                 labelColor="#FFFFFF"
                 style={{color: '#FFFFFF'}}
-                value={loginEmail}
-                onChangeText={this.update('loginEmail')}
+                value={loginPassword}
+                onChangeText={onChangePassword}
               />
-              <View style={{marginTop: 10}}>
-                <FloatingTextinput
-                  secureTextEntry={true}
-                  label={t('PASSWORD')}
-                  labelColor="#FFFFFF"
-                  style={{color: '#FFFFFF'}}
-                  value={loginPassword}
-                  onChangeText={this.update('loginPassword')}
-                />
-              </View>
-              <Button style={{alignSelf: 'flex-end', marginTop: 16, paddingVertical: 8}}>
-                <Text style={styles.socialBtnText}>Forget Password</Text>
-              </Button>
-
-              <Button style={styles.btn} onPress={this._login}>
-                <Text style={styles.btnText}>Sign In</Text>
-              </Button>
-              <View
-                style={{width: '100%', flexDirection: 'row', marginTop: 20, alignItems: 'center'}}>
-                <Text style={styles.socialBtnText}>Don't have an account? </Text>
-                <Button
-                  style={[styles.socialBtn, {paddingHorizontal: 8, marginStart: 8}]}
-                  onPress={this.navigateToScreen}>
-                  <Text style={styles.socialBtnText}>Sign Up</Text>
-                </Button>
-              </View>
             </View>
-          </SwiperFlatList>
-        ) : (
-          <ActivityIndicator style={{alignItems: 'center', justifyContent: 'center', flex: 1}} />
-        )}
-      </ImageBackground>
-    );
-  }
+            <Button style={{alignSelf: 'flex-end', marginTop: 16, paddingVertical: 8}}>
+              <Text style={styles.socialBtnText}>Forget Password</Text>
+            </Button>
+
+            <Button style={styles.btn} onPress={_login}>
+              <Text style={styles.btnText}>Sign In</Text>
+            </Button>
+            <View
+              style={{width: '100%', flexDirection: 'row', marginTop: 20, alignItems: 'center'}}>
+              <Text style={styles.socialBtnText}>Don't have an account? </Text>
+              <Button
+                style={[styles.socialBtn, {paddingHorizontal: 8, marginStart: 8}]}
+                //onPress={this.navigateToScreen}
+              >
+                <Text style={styles.socialBtnText}>Sign Up</Text>
+              </Button>
+            </View>
+          </View>
+        </SwiperFlatList>
+      ) : (
+        <ActivityIndicator style={{alignItems: 'center', justifyContent: 'center', flex: 1}} />
+      )}
+    </ImageBackground>
+  );
 }
-
-const mapDispatchToProps = {
-  user,
-};
-
-export default withNavigation(connect(null, mapDispatchToProps)(withTranslation()(Auth)));
 
 const styles = StyleSheet.create({
   container: {
@@ -191,3 +172,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
+export default Auth;

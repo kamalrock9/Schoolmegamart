@@ -1,7 +1,7 @@
-import React from 'react';
-import {View, StyleSheet} from 'react-native';
-import {Text, Toolbar} from '../components';
-import {connect} from 'react-redux';
+import React from "react";
+import {View, StyleSheet} from "react-native";
+import {Text, Toolbar} from "components";
+import {connect} from "react-redux";
 
 class WishlistScreen extends React.PureComponent {
   static navigationOptions = {
@@ -25,7 +25,7 @@ export default connect()(WishlistScreen);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

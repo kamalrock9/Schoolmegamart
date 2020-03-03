@@ -1,7 +1,7 @@
-import React from 'react';
-import {View, ImageBackground} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import Text from '../../components/Text';
+import React from "react";
+import {View, ImageBackground} from "react-native";
+import LinearGradient from "react-native-linear-gradient";
+import {Text} from "components";
 
 function CategoryItem({item, index}) {
   return (
@@ -12,15 +12,13 @@ function CategoryItem({item, index}) {
       ]}>
       <ImageBackground
         source={{
-          uri: item.image
-            ? item.image
-            : 'https://source.unsplash.com/1600x900/?' + item.name,
+          uri: item.image ? item.image : "https://source.unsplash.com/1600x900/?" + item.name,
         }}
         style={{width: null, height: null, flex: 1}}>
         <LinearGradient
-          colors={['#afafaf5e', '#000000ff']}
-          style={{position: 'absolute', width: '100%', bottom: 0}}>
-          <Text style={{color: 'white', textAlign: 'center'}}>{item.name}</Text>
+          colors={["#afafaf5e", "#000000ff"]}
+          style={{position: "absolute", width: "100%", bottom: 0}}>
+          <Text style={{color: "white", textAlign: "center"}}>{item.name}</Text>
         </LinearGradient>
       </ImageBackground>
     </View>

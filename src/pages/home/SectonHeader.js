@@ -1,6 +1,6 @@
-import React from 'react';
-import {View, StyleSheet} from 'react-native';
-import {Text, Button, Icon} from '../../components';
+import React from "react";
+import {View, StyleSheet} from "react-native";
+import {Text, Button, Icon} from "components";
 
 class SectonHeader extends React.PureComponent {
   constructor(props) {
@@ -18,10 +18,7 @@ class SectonHeader extends React.PureComponent {
         <Text style={styles.title}>{title}</Text>
         <Button onPress={this._handleOnPress} style={styles.rightButton}>
           <Text>{titleEnd}</Text>
-          <Icon
-            name={icon}
-            style={{fontSize: 18, marginStart: 8, marginEnd: 8}}
-          />
+          <Icon name={icon} style={{fontSize: 18, marginStart: 8, marginEnd: 8}} />
         </Button>
       </View>
     );
@@ -30,20 +27,20 @@ class SectonHeader extends React.PureComponent {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    width: '100%',
-    alignItems: 'center',
+    flexDirection: "row",
+    width: "100%",
+    alignItems: "center",
     paddingHorizontal: 12,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     marginTop: 16,
   },
   title: {
-    fontWeight: '600',
+    fontWeight: "600",
   },
   rightButton: {
     paddingVertical: 16,
-    marginStart: 'auto',
-    flexDirection: 'row',
+    marginStart: "auto",
+    flexDirection: "row",
   },
 });
 
@@ -56,7 +53,7 @@ const styles = StyleSheet.create({
 
 SectonHeader.defaultProps = {
   onPressArgs: [],
-  icon: 'md-arrow-forward',
+  icon: "md-arrow-forward",
 };
 
 export default SectonHeader;

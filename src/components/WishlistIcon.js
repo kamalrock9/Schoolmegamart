@@ -1,9 +1,9 @@
-import React from 'react';
-import {View, StyleSheet} from 'react-native';
-import {connect} from 'react-redux';
-import {addWishlist, deleteWishlist} from '../store/actions';
-import Button from './Button';
-import Icon from './IconNB';
+import React from "react";
+import {View, StyleSheet} from "react-native";
+import {connect} from "react-redux";
+import {addWishlist, deleteWishlist} from "store/actions";
+import Button from "./Button";
+import Icon from "./IconNB";
 
 class WishlistIcon extends React.PureComponent {
   _handleWishlist = () => {
@@ -23,7 +23,7 @@ class WishlistIcon extends React.PureComponent {
     return (
       <Button style={StyleSheet.flatten(style)} onPress={this._handleWishlist}>
         <Icon
-          name={this.isWishlist() ? 'heart' : 'heart-outline'}
+          name={this.isWishlist() ? "heart" : "heart-outline"}
           type="MaterialCommunityIcons"
           style={{
             color: appSettings.accent_color,
