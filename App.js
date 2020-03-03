@@ -45,7 +45,6 @@ const HomeStack = createStackNavigator({
 
 const CategoryStack = createStackNavigator({
   CategoryScreen,
-  ProductDetailScreen,
   Cart,
   WishlistScreen,
 });
