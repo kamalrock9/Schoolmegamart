@@ -8,6 +8,8 @@ import {withNavigation} from "react-navigation-hooks";
 import Modal from "react-native-modal";
 import Login from "../auth/Login";
 import {getReadableVersion} from "react-native-device-info";
+import {isEmpty} from "lodash";
+import {logout} from "store/actions";
 
 class Drawer extends React.PureComponent {
   constructor(props) {
@@ -88,6 +90,10 @@ class Drawer extends React.PureComponent {
           {cancelable: false},
         );
         break;
+      case "Logout":
+        this.props.logout();
+        navigation.closeDrawer();
+        break;
       default:
         navigation.closeDrawer();
         navigation.navigate(route, param);
@@ -101,7 +107,7 @@ class Drawer extends React.PureComponent {
   };
 
   render() {
-    const {appSettings, t} = this.props;
+    const {appSettings, t, user} = this.props;
     const {isOpenModal, isContactModalOpen} = this.state;
 
     return (
@@ -109,9 +115,24 @@ class Drawer extends React.PureComponent {
         <View style={styles.container}>
           <View style={styles.header}>
             <Icon name="account-circle" type="MaterialCommunityIcons" style={{fontSize: 54}} />
-            <Text style={{fontSize: 16}} onPress={this.openModal}>
-              {t("LOGIN/REGISTER")}
-            </Text>
+            {isEmpty(user) ? (
+              <Text style={{fontSize: 16}} onPress={this.openModal}>
+                {t("LOGIN/REGISTER")}
+              </Text>
+            ) : (
+              <View style={{alignItems: "center"}}>
+                <Text style={{fontSize: 16}}>
+                  {user.first_name && user.last_name
+                    ? user.first_name + " " + user.last_name
+                    : user.first_name
+                    ? user.first_name
+                    : user.username
+                    ? user.username
+                    : ""}
+                </Text>
+                <Text>{user.email}</Text>
+              </View>
+            )}
           </View>
           <ScrollView>
             <Button style={styles.button} onPress={this.navigateToScreen("HomeStack")}>
@@ -128,7 +149,6 @@ class Drawer extends React.PureComponent {
               <Icon name="archive" type="Entypo" style={styles.icon} />
               <Text style={styles.text}>{t("CATEGORIES")}</Text>
             </Button>
-
             <View style={styles.divider} />
             {appSettings.hasOwnProperty("direct_tawk_id") && appSettings.direct_tawk_id != "" && (
               <Button
@@ -152,6 +172,12 @@ class Drawer extends React.PureComponent {
               <Icon name="feedback" type="MaterialIcons" style={styles.icon} />
               <Text style={styles.text}>{t("GIVE_FEEDBACK")}</Text>
             </Button>
+            {!isEmpty(user) && (
+              <Button style={styles.button} onPress={this.navigateToScreen("Logout")}>
+                <Icon name="logout" type="MaterialCommunityIcons" style={styles.icon} />
+                <Text style={styles.text}>{t("SIGN_OUT")}</Text>
+              </Button>
+            )}
           </ScrollView>
           <View style={styles.footer}>
             <Text>{t("VERSION") + " : " + getReadableVersion()}</Text>
@@ -262,5 +288,11 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
   appSettings: state.appSettings,
+  user: state.user,
 });
-export default connect(mapStateToProps)(withTranslation()(Drawer));
+
+const mapDispatchToProps = {
+  logout,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(Drawer));

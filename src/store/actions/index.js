@@ -1,4 +1,4 @@
-import * as types from './actionTypes';
+import * as types from "./actionTypes";
 
 export const saveHomeLayout = data => ({
   type: types.HOME_LAYOUT,
@@ -9,8 +9,8 @@ export const getAllCategories = () => ({
   type: types.FETCH_CATEGORIES,
   payload: {
     request: {
-      url: '/products/all-categories',
-      method: 'GET',
+      url: "/products/all-categories",
+      method: "GET",
     },
   },
 });
@@ -18,8 +18,8 @@ export const getCartCount = () => ({
   type: types.FETCH_CART_COUNT,
   payload: {
     request: {
-      url: '/cart/item-count',
-      method: 'GET',
+      url: "/cart/item-count",
+      method: "GET",
     },
   },
 });
@@ -40,5 +40,10 @@ export const deleteWishlist = id => ({
 
 export const user = data => ({
   type: types.USER,
+  payload: data,
+});
+
+export const logout = data => ({
+  type: types.LOGOUT,
   payload: data,
 });
