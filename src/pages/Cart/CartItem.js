@@ -40,8 +40,6 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
       ApiClient.get("/cart/update", data)
         .then(response => {
           setLoading(false);
-
-          console.log(response);
           quantityIncrementDecremnt && quantityIncrementDecremnt();
         })
         .catch(error => {
@@ -65,7 +63,6 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
       ApiClient.get("/cart/update", data)
         .then(response => {
           setLoading(false);
-          console.log(response);
           quantityIncrementDecremnt && quantityIncrementDecremnt();
         })
         .catch(error => {
