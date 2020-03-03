@@ -1,21 +1,95 @@
-import React, {useCallback, useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, StyleSheet, FlatList, Image, TextInput} from 'react-native';
 import {Toolbar, Button, Text, Icon} from '../../components';
 import {useSelector} from 'react-redux';
-import {ApiClient} from '../../service';
 import Toast from 'react-native-simple-toast';
+import {WooCommerce, ApiClient} from '../../service';
+import moment from 'moment';
 
-function Coupon({submit, couponName}) {
+function Coupon({submit, couponSubmit}) {
   const appSettings = useSelector(state => state.appSettings);
   const [text, setText] = useState('');
+  const [coupons, setCoupons] = useState([]);
+
+  useEffect(() => {
+    WooCommerce.get('coupons')
+      .then(({data}) => {
+        console.log(data);
+        setCoupons(data);
+      })
+      .catch(error => {});
+  }, []);
 
   const setData = () => {
     if (text != '') {
-      couponName && couponName(text);
+      let param = {
+        coupon_code: text,
+        user_id: 17,
+      };
+      ApiCall(param);
     } else {
       Toast.show('Please enter the Promo Code/Voucher');
     }
   };
+
+  const ApiCall = param => {
+    ApiClient.get('/cart/coupon', param)
+      .then(({data}) => {
+        console.log(data);
+        if (data.code == 201) {
+          Toast.show(data.message[0].notice);
+        } else {
+          couponSubmit && couponSubmit(text);
+        }
+      })
+      .catch(error => {});
+  };
+
+  const setCoupon = code => () => {
+    let param = {
+      coupon_code: code,
+      user_id: 17,
+    };
+    ApiCall(param);
+  };
+
+  const _renderItem = ({item, index}) => {
+    return (
+      <View
+        style={{
+          marginHorizontal: 8,
+          elevation: 2,
+          backgroundColor: '#fff',
+          marginTop: 10,
+          marginBottom: 5,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: 10,
+        }}>
+        <View>
+          <Text style={{fontWeight: '700', fontSize: 18}}>{item.code.toUpperCase()}</Text>
+          <Text>{item.description}</Text>
+          <Text>Valid Till {moment(item.date_expires).format('MMM DD,YYYY')}</Text>
+        </View>
+        <Button
+          style={{
+            backgroundColor: appSettings.accent_color,
+            elevation: 2,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 2,
+            paddingHorizontal: 5,
+            paddingBottom: 3,
+          }}
+          onPress={setCoupon(item.code)}>
+          <Text style={{color: '#fff'}}>Apply</Text>
+        </Button>
+      </View>
+    );
+  };
+
+  const _keyExtractor = (item, index) => item.id;
 
   return (
     <View style={{flex: 1, backgroundColor: '#FFF'}}>
@@ -57,6 +131,7 @@ function Coupon({submit, couponName}) {
           </Button>
         </View>
       </View>
+      <FlatList data={coupons} renderItem={_renderItem} keyExtractor={_keyExtractor} />
     </View>
   );
 }
