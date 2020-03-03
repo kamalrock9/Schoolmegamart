@@ -4,7 +4,7 @@ import {useNavigation} from 'react-navigation-hooks';
 import {useSelector} from 'react-redux';
 import {Text, Button, Icon} from '../../components';
 
-function MiniCart({close, message, navigation}) {
+function MiniCart({close, message}) {
   const cartCount = useSelector(state => state.cartCount);
   const appSettings = useSelector(state => state.appSettings);
   const navigation = useNavigation();
