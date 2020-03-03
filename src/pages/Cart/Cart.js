@@ -1,12 +1,12 @@
 import React, {useCallback, useState} from 'react';
-import {View, StyleSheet, FlatList, Image, TextInput, Alert} from 'react-native';
-import {Toolbar, Button, Text, Icon} from '../../components';
+import {View, StyleSheet, FlatList, ActivityIndicator} from 'react-native';
+import {Toolbar, Button, Text, Html} from '../../components';
 import {connect} from 'react-redux';
 import {ApiClient} from '../../service';
-import Modal from 'react-native-modal';
 import Toast from 'react-native-simple-toast';
 import CartPriceBreakup from './CartPriceBreakup';
 import CartItem from './CartItem';
+import {isArray, isEmpty} from 'lodash';
 
 class Cart extends React.PureComponent {
   static navigationOptions = {
@@ -16,16 +16,21 @@ class Cart extends React.PureComponent {
     super(props);
     this.state = {
       cart_data: [],
+      loading: false,
     };
   }
 
   componentDidMount() {
+    this.setState({loading: true});
     ApiClient.get('/cart')
       .then(({data}) => {
         console.log(data);
+        this.setState({loading: false});
         this.setState({cart_data: data});
       })
-      .catch(() => {});
+      .catch(() => {
+        this.setState({loading: false});
+      });
   }
 
   quantityIncrementDecremnt = () => {
@@ -34,7 +39,9 @@ class Cart extends React.PureComponent {
         console.log(data);
         this.setState({cart_data: data});
       })
-      .catch(() => {});
+      .catch(() => {
+        this.setState({loading: false});
+      });
   };
 
   renderItem = ({item, index}) => (
@@ -45,13 +52,24 @@ class Cart extends React.PureComponent {
     />
   );
 
-  renderFooter = () => <CartPriceBreakup data={this.state.cart_data} />;
+  renderFooter = () => (
+    <CartPriceBreakup
+      data={this.state.cart_data}
+      quantityIncrementDecremnt={this.quantityIncrementDecremnt}
+    />
+  );
 
   render() {
-    const {cart_data, couponCode} = this.state;
+    const {cart_data, couponCode, loading} = this.state;
     const {appSettings} = this.props;
-    return (
-      <>
+    if (loading) {
+      return (
+        <View style={styles.container}>
+          <ActivityIndicator size={'large'} />
+        </View>
+      );
+    } else if (isArray(cart_data.cart_data) && !isEmpty(cart_data.cart_data)) {
+      return (
         <View style={styles.container}>
           <FlatList
             data={cart_data.cart_data}
@@ -62,12 +80,19 @@ class Cart extends React.PureComponent {
           />
           <View style={styles.footer}>
             <Button style={[styles.footerButton, {backgroundColor: appSettings.accent_color}]}>
-              <Text style={{color: 'white'}}>CHECKOUT {' | '} #55.00</Text>
+              <Text style={{color: 'white', marginEnd: 5}}>CHECKOUT {' | '}</Text>
+              <Html color="#fff" html={cart_data.total} />
             </Button>
           </View>
         </View>
-      </>
-    );
+      );
+    } else {
+      return (
+        <View>
+          <Text>Cart is empty</Text>
+        </View>
+      );
+    }
   }
 }
 
@@ -109,6 +134,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     margin: 5,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
