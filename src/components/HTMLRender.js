@@ -1,21 +1,29 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
-import Text from './Text';
+import Text, {fonts, getFontFamily} from './Text';
 import HTML from 'react-native-render-html';
 
 const delRenderer = (htmlAttribs, children, convertedCSSStyles, passProps) => (
-  <Text key={passProps.key}>{children} &nbsp;</Text>
+  <Text key={passProps.key} style={convertedCSSStyles}>
+    {children} &nbsp;
+  </Text>
 );
 
-function HTMLRender({fontSize, fontWeight, color, ...props}) {
+function HTMLRender({fontSize, fontWeight, color, baseFontStyle, ...props}) {
+  const resolvedStyle = {...StyleSheet.flatten(baseFontStyle)};
+  resolvedStyle.fontFamily = resolvedStyle.fontFamily
+    ? getFontFamily(resolvedStyle.fontFamily, resolvedStyle)
+    : getFontFamily('Inter', resolvedStyle);
+  delete resolvedStyle.fontStyle;
+  delete resolvedStyle.fontWeight;
   return (
     <HTML
       {...props}
+      baseFontStyle={resolvedStyle}
       tagsStyles={{
         del: styles.del,
         ins: styles.ins,
-        p: {paddingVertical: 0, fontSize, fontWeight},
-        span: {fontSize, fontWeight, color},
+        p: {paddingVertical: 0},
       }}
       renderers={{del: delRenderer}}
     />

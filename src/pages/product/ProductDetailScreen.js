@@ -155,8 +155,7 @@ class ProductDetailScreen extends Component {
             <View style={[styles.rowCenterSpaced, styles.cardItem]}>
               <HTMLRender
                 html={product.price_html}
-                fontSize={16}
-                fontWeight="500"
+                baseFontStyle={{fontSize: 16, fontWeight: '500'}}
                 containerStyle={{paddingTop: 8}}
               />
               <Text style={product.in_stock ? {color: 'green'} : {color: 'gray'}}>
