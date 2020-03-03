@@ -17,31 +17,39 @@ class Cart extends React.PureComponent {
     this.state = {
       cart_data: [],
       loading: false,
+      shipping_method: '',
     };
   }
 
+  selectShipping = text => {
+    this.setState({shipping_method: text});
+    this.ApiCall(text);
+  };
+
   componentDidMount() {
-    this.setState({loading: true});
-    ApiClient.get('/cart')
-      .then(({data}) => {
-        console.log(data);
-        this.setState({loading: false});
-        this.setState({cart_data: data});
-      })
-      .catch(() => {
-        this.setState({loading: false});
-      });
+    this.ApiCall(null);
   }
 
-  quantityIncrementDecremnt = () => {
-    ApiClient.get('/cart')
+  ApiCall = params => {
+    let param = {
+      shipping_method: params ? params : '',
+      user_id: 17,
+    };
+
+    this.setState({loading: true});
+    ApiClient.get('/cart', param)
       .then(({data}) => {
         console.log(data);
+        this.setState({loading: false});
         this.setState({cart_data: data});
       })
       .catch(() => {
         this.setState({loading: false});
       });
+  };
+
+  quantityIncrementDecremnt = () => {
+    this.ApiCall(null);
   };
 
   renderItem = ({item, index}) => (
@@ -56,6 +64,7 @@ class Cart extends React.PureComponent {
     <CartPriceBreakup
       data={this.state.cart_data}
       quantityIncrementDecremnt={this.quantityIncrementDecremnt}
+      shippingMethod={this.selectShipping}
     />
   );
 
