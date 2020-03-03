@@ -6,13 +6,19 @@ import Coupon from './Coupon';
 import {isEmpty} from 'lodash';
 import {ApiClient} from '../../service';
 
-function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt}) {
+function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt, shippingMethod}) {
   // console.log(data);
   const [isCoupon, setIsCoupon] = useState(false);
-  const [isSelectShipping, setShippingMethod] = useState(0);
+  const [isSelectShipping, setShippingMethod] = useState(data.chosen_shipping_method);
 
   const toggleCouponModal = () => {
     setIsCoupon(!isCoupon);
+  };
+
+  const selectShippingMethod = item => () => {
+    setShippingMethod(item.id);
+    console.log(item);
+    shippingMethod && shippingMethod(item.id);
   };
 
   const couponSubmit = text => {
@@ -103,9 +109,8 @@ function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt}) {
           borderRadius: 5,
         }}>
         <Text style={styles.heading}>Shipping Method(S)</Text>
-        <View style={{justifyContent: 'space-between', flexDirection: 'row', marginTop: 5}}>
-          {data &&
-            data != '' &&
+        <View style={{marginTop: 5}}>
+          {!isEmpty(data.shipping_method) &&
             data.shipping_method.map((item, index) => {
               return (
                 <View
@@ -113,8 +118,20 @@ function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt}) {
                   style={{flexDirection: 'row', justifyContent: 'space-between', flex: 1}}>
                   <Text>{item.shipping_method_name}</Text>
                   <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <HTMLRender html={item.shipping_method_price} />
-                    <Icon name="md-radio-button-on" size={18} style={{marginStart: 5}} />
+                    <HTMLRender
+                      html={item.shipping_method_price ? item.shipping_method_price : <b></b>}
+                    />
+                    <Button onPress={selectShippingMethod(item)}>
+                      <Icon
+                        name={
+                          data.chosen_shipping_method == item.id
+                            ? 'md-radio-button-on'
+                            : 'md-radio-button-off'
+                        }
+                        size={18}
+                        style={{marginStart: 5}}
+                      />
+                    </Button>
                   </View>
                 </View>
               );
@@ -140,15 +157,20 @@ function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt}) {
         </View>
         <View style={styles.view}>
           <Text>Shipping Charge</Text>
-          <HTMLRender html={data.shipping_method[isSelectShipping].shipping_method_price} />
+          <HTMLRender
+            html={
+              data.shipping_method.find(item => item.id == data.chosen_shipping_method)
+                .shipping_method_price
+            }
+          />
         </View>
         <View style={styles.view}>
           <Text>Tax</Text>
           <HTMLRender html={data.taxes} />
         </View>
         <View style={styles.view}>
-          <Text>Total Discount</Text>
-          <HTMLRender html={data.discount_total} />
+          <Text style={{color: 'green'}}>Total Discount</Text>
+          <HTMLRender color={'green'} html={data.discount_total} />
         </View>
         <View style={[styles.line, {marginVertical: 3}]} />
         <View style={[styles.view, {marginVertical: 5}]}>
