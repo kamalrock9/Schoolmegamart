@@ -61,7 +61,7 @@ const fonts = {
   },
 };
 
-const getFontFamily = (baseFontFamily, styles = {}) => {
+export const getFontFamily = (baseFontFamily, styles = {}) => {
   const {fontWeight, fontStyle} = styles;
   const font = fonts[baseFontFamily];
 

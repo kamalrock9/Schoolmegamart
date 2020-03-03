@@ -36,7 +36,11 @@ function ProductItem({containerStyle, width: propWidth, item}) {
             {item.name}
           </Text>
           {item.price_html != '' && (
-            <HTMLRender html={item.price_html} containerStyle={styles.itemMargin} />
+            <HTMLRender
+              html={item.price_html}
+              containerStyle={styles.itemMargin}
+              baseFontStyle={{fontSize: 13}}
+            />
           )}
           <StarRating
             disabled

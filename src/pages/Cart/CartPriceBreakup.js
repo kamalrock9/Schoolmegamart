@@ -1,10 +1,12 @@
 import React, {useState} from 'react';
-import {View, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, Dimensions} from 'react-native';
 import {Button, Text, Icon, HTMLRender} from '../../components';
 import Modal from 'react-native-modal';
 import Coupon from './Coupon';
 import {isEmpty} from 'lodash';
 import {ApiClient} from '../../service';
+
+const {width} = Dimensions.get('window');
 
 function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt, shippingMethod}) {
   // console.log(data);
@@ -41,115 +43,74 @@ function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt, shipping
 
   return (
     <>
-      <View
-        style={{
-          paddingHorizontal: 10,
-          elevation: 2,
-          backgroundColor: '#fff',
-          marginHorizontal: 16,
-          marginTop: 16,
-          borderRadius: 5,
-          justifyContent: 'center',
-          paddingVertical: 20,
-        }}>
-        <TouchableOpacity
+      <View style={styles.card}>
+        <Button
           style={{
             flexDirection: 'row',
-            paddingVertical: 10,
-            justifyContent: 'space-between',
-          }}>
-          <Button style={{flexDirection: 'row'}} onPress={toggleCouponModal}>
-            <Icon
-              name="brightness-percent"
-              type="MaterialCommunityIcons"
-              size={24}
-              style={{paddingHorizontal: 5}}
-            />
-            <Text>Apply Promo Code/Vouncher</Text>
-          </Button>
-          <Icon name="ios-arrow-forward" size={24} />
-        </TouchableOpacity>
+            paddingVertical: 8,
+            alignItems: 'center',
+            width: '100%',
+          }}
+          onPress={toggleCouponModal}>
+          <Icon name="brightness-percent" type="MaterialCommunityIcons" size={24} />
+          <Text>Apply Promo Code/Vouncher</Text>
+          <Icon name="ios-arrow-forward" size={24} style={{marginStart: 'auto'}} />
+        </Button>
 
         {!isEmpty(data.coupon) && (
-          <View style={{flexDirection: 'row', marginTop: 10, alignItems: 'center'}}>
-            <View style={{flexDirection: 'row'}}>
-              <Text style={{paddingHorizontal: 5, color: 'green'}}>{couponCode || ''}</Text>
-              {data.coupon.map((item, index) => {
-                return (
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      backgroundColor: '#d2d2d2',
-                      padding: 10,
-                      marginEnd: 10,
-                    }}
-                    key={item.code}>
-                    <Text style={{color: 'green'}}>{item.code}</Text>
-                    <Text style={{marginHorizontal: 5}}>applied</Text>
-                    <Button onPress={removeCoupon(item.code)}>
-                      <Icon type="MaterialIcons" name="cancel" size={22} />
-                    </Button>
-                  </View>
-                );
-              })}
-            </View>
-            {/* <Button style={{padding: 16}} onPress={() => this.setState({couponCode: ''})}>
-              <Icon name="cross" type="Entypo" size={22} />
-            </Button> */}
-          </View>
-        )}
-      </View>
-      <View
-        style={{
-          backgroundColor: '#fff',
-          elevation: 2,
-          marginHorizontal: 16,
-          marginTop: 16,
-          padding: 16,
-          borderRadius: 5,
-        }}>
-        <Text style={styles.heading}>Shipping Method(S)</Text>
-        <View style={{marginTop: 5}}>
-          {!isEmpty(data.shipping_method) &&
-            data.shipping_method.map((item, index) => {
+          <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+            {data.coupon.map((item, index) => {
               return (
-                <View
-                  key={item.method_id}
-                  style={{flexDirection: 'row', justifyContent: 'space-between', flex: 1}}>
-                  <Text>{item.shipping_method_name}</Text>
-                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <HTMLRender
-                      html={item.shipping_method_price ? item.shipping_method_price : <b></b>}
-                    />
-                    <Button onPress={selectShippingMethod(item)}>
-                      <Icon
-                        name={
-                          data.chosen_shipping_method == item.id
-                            ? 'md-radio-button-on'
-                            : 'md-radio-button-off'
-                        }
-                        size={18}
-                        style={{marginStart: 5}}
-                      />
-                    </Button>
-                  </View>
+                <View style={styles.couponContainer} key={item.code}>
+                  <Text>
+                    <Text style={{color: 'green'}}>{item.code}</Text> applied{' '}
+                  </Text>
+                  <Button onPress={removeCoupon(item.code)}>
+                    <Icon type="MaterialIcons" name="cancel" size={22} />
+                  </Button>
                 </View>
               );
             })}
-        </View>
-        <Text style={{alignSelf: 'flex-end', textDecorationLine: 'underline'}}>
+          </View>
+        )}
+      </View>
+      <View style={styles.card}>
+        <Text style={styles.heading}>Shipping Method(S)</Text>
+        {!isEmpty(data.shipping_method) &&
+          data.shipping_method.map((item, index) => {
+            return (
+              <View
+                key={item.method_id}
+                style={{flexDirection: 'row', width: '100%', alignItems: 'center'}}>
+                <Text style={{flex: 1}}>{item.shipping_method_name}</Text>
+                <HTMLRender
+                  html={item.shipping_method_price ? item.shipping_method_price : <b></b>}
+                />
+                <Button onPress={selectShippingMethod(item)} style={{paddingVertical: 4}}>
+                  <Icon
+                    name={
+                      data.chosen_shipping_method == item.id
+                        ? 'md-radio-button-on'
+                        : 'md-radio-button-off'
+                    }
+                    size={18}
+                    style={{marginStart: 5}}
+                  />
+                </Button>
+              </View>
+            );
+          })}
+
+        <Text
+          style={{
+            alignSelf: 'flex-end',
+            textDecorationLine: 'underline',
+          }}>
           Calculate Shipping
         </Text>
       </View>
-      <View
-        style={{
-          marginHorizontal: 16,
-          marginVertical: 16,
-          padding: 16,
-          elevation: 2,
-          borderRadius: 5,
-          backgroundColor: '#fff',
-        }}>
+
+      <View style={[styles.card, {marginBottom: 8}]}>
         <Text style={styles.heading}>Order Summary</Text>
         <View style={[styles.view, {marginTop: 5}]}>
           <Text>Subtotal</Text>
@@ -170,14 +131,13 @@ function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt, shipping
         </View>
         <View style={styles.view}>
           <Text style={{color: 'green'}}>Total Discount</Text>
-          <HTMLRender color={'green'} html={data.discount_total} />
+          <HTMLRender html={data.discount_total} baseFontStyle={{color: 'green'}} />
         </View>
         <View style={[styles.line, {marginVertical: 3}]} />
-        <View style={[styles.view, {marginVertical: 5}]}>
-          <Text style={styles.heading}>Total</Text>
+        <View style={styles.view}>
+          <Text style={[styles.heading, {marginBottom: 0}]}>Total</Text>
           <HTMLRender html={data.total} />
         </View>
-        <View style={[styles.line, {marginVertical: 3}]} />
       </View>
 
       <Modal
@@ -198,7 +158,10 @@ function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt, shipping
 }
 
 const styles = StyleSheet.create({
-  heading: {fontWeight: '700'},
+  heading: {
+    fontWeight: '700',
+    marginBottom: 8,
+  },
 
   view: {
     flexDirection: 'row',
@@ -208,6 +171,28 @@ const styles = StyleSheet.create({
     height: 1,
     width: '100%',
     backgroundColor: '#F1F1F1',
+  },
+
+  card: {
+    elevation: 2,
+    shadowRadius: 2,
+    shadowOpacity: 0.5,
+    shadowOffset: {width: 0, height: 2},
+    backgroundColor: '#fff',
+    marginHorizontal: 16,
+    marginTop: 16,
+    borderRadius: 5,
+    width: width - 32,
+    paddingHorizontal: 8,
+    paddingVertical: 16,
+  },
+  couponContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#efefef',
+    padding: 8,
+    marginEnd: 8,
+    marginTop: 8,
+    borderRadius: 2,
   },
 });
 
