@@ -1,5 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import {View, ScrollView, StyleSheet, ActivityIndicator, FlatList} from 'react-native';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  ActivityIndicator,
+  FlatList,
+  unstable_batchedUpdates,
+} from 'react-native';
 import {Slider, Toolbar} from '../../components';
 import {useSelector, useDispatch} from 'react-redux';
 import {isEmpty} from 'lodash';
@@ -17,11 +24,13 @@ function HomeScreen({navigation}) {
   const _categoryKeyExtractor = item => 'category_' + item.id;
 
   useEffect(() => {
-    setLoading(true);
+    setLoading(layout ? false : true);
     ApiClient.get('/layout')
       .then(({data}) => {
-        dispatch(saveHomeLayout(data));
-        setLoading(false);
+        unstable_batchedUpdates(() => {
+          dispatch(saveHomeLayout(data));
+          setLoading(false);
+        });
       })
       .catch(e => {
         setLoading(false);
@@ -42,63 +51,61 @@ function HomeScreen({navigation}) {
     return <View />;
   } else {
     return (
-      <>
-        <ScrollView nestedScrollEnabled={true}>
-          <View>
-            <Slider
-              //autoplay
-              //autoplayLoop
-              //autoplayDelay={5}
-              data={layout.banner}
-              approxHeight={180}
-            />
-          </View>
-
-          <SectonHeader
-            title="Categories"
-            titleEnd="View All"
-            onPress={goTo}
-            onPressArgs={['CategoryScreen']}
+      <ScrollView nestedScrollEnabled={true}>
+        <View>
+          <Slider
+            //autoplay
+            //autoplayLoop
+            //autoplayDelay={5}
+            data={layout.banner}
+            approxHeight={180}
           />
+        </View>
 
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={layout.categories}
-            keyExtractor={_categoryKeyExtractor}
-            renderItem={CategoryItem}
-            removeClippedSubviews={true}
-          />
+        <SectonHeader
+          title="Categories"
+          titleEnd="View All"
+          onPress={goTo}
+          onPressArgs={['CategoryScreen']}
+        />
 
-          {layout.featured_products && layout.featured_products.length > 0 && (
-            <>
-              <SectonHeader title="Featured" titleEnd="See More" style={{marginTop: 8}} />
-              <ProductsRow keyPrefix="featured" products={layout.featured_products} />
-            </>
-          )}
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={layout.categories}
+          keyExtractor={_categoryKeyExtractor}
+          renderItem={CategoryItem}
+          removeClippedSubviews={true}
+        />
 
-          {layout.top_rated_products && layout.top_rated_products.length > 0 && (
-            <>
-              <SectonHeader title="Top Rated" titleEnd="See More" style={{marginTop: 8}} />
-              <ProductsRow keyPrefix="toprated" products={layout.top_rated_products} />
-            </>
-          )}
+        {layout.featured_products && layout.featured_products.length > 0 && (
+          <>
+            <SectonHeader title="Featured" titleEnd="See More" style={{marginTop: 8}} />
+            <ProductsRow keyPrefix="featured" products={layout.featured_products} />
+          </>
+        )}
 
-          {layout.sale_products && layout.sale_products.length > 0 && (
-            <>
-              <SectonHeader title="Tranding Offers" titleEnd="See More" style={{marginTop: 8}} />
-              <ProductsRow keyPrefix="sale" products={layout.sale_products} />
-            </>
-          )}
+        {layout.top_rated_products && layout.top_rated_products.length > 0 && (
+          <>
+            <SectonHeader title="Top Rated" titleEnd="See More" style={{marginTop: 8}} />
+            <ProductsRow keyPrefix="toprated" products={layout.top_rated_products} />
+          </>
+        )}
 
-          {layout.top_seller && layout.top_seller.length > 0 && (
-            <>
-              <SectonHeader title="Top Sellers" titleEnd="See More" style={{marginTop: 8}} />
-              <ProductsRow keyPrefix="topseller" products={layout.top_seller} />
-            </>
-          )}
-        </ScrollView>
-      </>
+        {layout.sale_products && layout.sale_products.length > 0 && (
+          <>
+            <SectonHeader title="Tranding Offers" titleEnd="See More" style={{marginTop: 8}} />
+            <ProductsRow keyPrefix="sale" products={layout.sale_products} />
+          </>
+        )}
+
+        {layout.top_seller && layout.top_seller.length > 0 && (
+          <>
+            <SectonHeader title="Top Sellers" titleEnd="See More" style={{marginTop: 8}} />
+            <ProductsRow keyPrefix="topseller" products={layout.top_seller} />
+          </>
+        )}
+      </ScrollView>
     );
   }
 }

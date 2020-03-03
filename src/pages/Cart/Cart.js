@@ -1,6 +1,6 @@
 import React, {useCallback, useState} from 'react';
 import {View, StyleSheet, FlatList, ActivityIndicator} from 'react-native';
-import {Toolbar, Button, Text, Html} from '../../components';
+import {Toolbar, Button, Text, HTMLRender} from '../../components';
 import {connect} from 'react-redux';
 import {ApiClient} from '../../service';
 import Toast from 'react-native-simple-toast';
@@ -81,7 +81,7 @@ class Cart extends React.PureComponent {
           <View style={styles.footer}>
             <Button style={[styles.footerButton, {backgroundColor: appSettings.accent_color}]}>
               <Text style={{color: 'white', marginEnd: 5}}>CHECKOUT {' | '}</Text>
-              <Html color="#fff" html={cart_data.total} />
+              <HTMLRender color="#fff" html={cart_data.total} />
             </Button>
           </View>
         </View>

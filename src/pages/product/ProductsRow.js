@@ -23,9 +23,7 @@ function ProductsRow({products, keyPrefix}) {
       keyExtractor={_keyExtractor}
       renderItem={_renderFlatItem}
       initialNumToRender={5}
-      windowSize={11}
       nestedScrollEnabled={true}
-      removeClippedSubviews={true}
     />
   );
 }

@@ -1,31 +1,43 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, StyleSheet, TouchableWithoutFeedback} from 'react-native';
-import {connect} from 'react-redux';
-import {withNavigation} from 'react-navigation';
-///import Image from '../../components/ScaledImage';
-import FastImage from 'react-native-fast-image';
-import {Html, Text, WishlistIcon} from '../../components';
+import {useSelector} from 'react-redux';
+import {useNavigation} from 'react-navigation-hooks';
+import {HTMLRender, Text, WishlistIcon, ScaledImage} from '../../components';
 import StarRating from 'react-native-star-rating';
 
-class ProductItem extends React.PureComponent {
-  goToProductDetails = () => {
-    this.props.navigation.push('ProductDetailScreen', this.props.item);
+function ProductItem({containerStyle, width: propWidth, item}) {
+  const navigation = useNavigation();
+  const {accent_color} = useSelector(state => state.appSettings);
+
+  const [width, setWidth] = useState(propWidth);
+
+  const goToProductDetails = () => {
+    navigation.push('ProductDetailScreen', item);
   };
 
-  render() {
-    const {containerStyle, width, item, appSettings} = this.props;
-    return (
-      <TouchableWithoutFeedback onPress={this.goToProductDetails}>
-        <View style={[StyleSheet.flatten(containerStyle), styles.container, {width}]}>
-          {item.images.length > 0 && (
-            <FastImage style={styles.thumb} source={{uri: item.images[0].src}} />
-          )}
-          <Text style={[styles.itemMargin, {fontWeight: '600'}]}>{item.name}</Text>
+  const onLayout = e => {
+    if (!(width || width == e.nativeEvent.layout.width)) {
+      setWidth(Math.floor(e.nativeEvent.layout.width));
+    }
+  };
 
+  return (
+    <TouchableWithoutFeedback onPress={goToProductDetails}>
+      <View style={[containerStyle, styles.container, {width}]} onLayout={onLayout}>
+        {item.images.length > 0 && (
+          <ScaledImage
+            source={{uri: item.images[0].src}}
+            width={width - 1}
+            approxHeight={width ? width : 180}
+          />
+        )}
+        <View>
+          <Text style={[styles.itemMargin, {fontWeight: '600'}]} numberOfLines={1}>
+            {item.name}
+          </Text>
           {item.price_html != '' && (
-            <Html html={item.price_html} containerStyle={styles.itemMargin} />
+            <HTMLRender html={item.price_html} containerStyle={styles.itemMargin} />
           )}
-
           <StarRating
             disabled
             maxStars={5}
@@ -34,30 +46,25 @@ class ProductItem extends React.PureComponent {
             starStyle={{marginEnd: 5}}
             starSize={14}
             halfStarEnabled
-            emptyStarColor={appSettings.accent_color}
-            fullStarColor={appSettings.accent_color}
-            halfStarColor={appSettings.accent_color}
+            emptyStarColor={accent_color}
+            fullStarColor={accent_color}
+            halfStarColor={accent_color}
           />
-          <WishlistIcon style={styles.right} item={item} />
         </View>
-      </TouchableWithoutFeedback>
-    );
-  }
+        <WishlistIcon style={styles.right} item={item} />
+      </View>
+    </TouchableWithoutFeedback>
+  );
 }
-
-mapStateToProps = state => ({
-  appSettings: state.appSettings,
-});
-
-export default connect(mapStateToProps)(withNavigation(ProductItem));
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     borderRadius: 3,
     borderWidth: 0.5,
     borderColor: '#bdbdbd',
-    //flex: 1,
     paddingBottom: 8,
+    justifyContent: 'flex-end',
   },
   thumb: {
     resizeMode: 'contain',
@@ -76,3 +83,5 @@ const styles = StyleSheet.create({
     top: 0,
   },
 });
+
+export default React.memo(ProductItem);

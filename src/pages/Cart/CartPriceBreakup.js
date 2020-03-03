@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
-import {Button, Text, Icon, Html} from '../../components';
+import {Button, Text, Icon, HTMLRender} from '../../components';
 import Modal from 'react-native-modal';
 import Coupon from './Coupon';
 import {isEmpty} from 'lodash';
@@ -113,7 +113,7 @@ function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt}) {
                   style={{flexDirection: 'row', justifyContent: 'space-between', flex: 1}}>
                   <Text>{item.shipping_method_name}</Text>
                   <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <Html html={item.shipping_method_price} />
+                    <HTMLRender html={item.shipping_method_price} />
                     <Icon name="md-radio-button-on" size={18} style={{marginStart: 5}} />
                   </View>
                 </View>
@@ -136,24 +136,24 @@ function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt}) {
         <Text style={styles.heading}>Order Summary</Text>
         <View style={[styles.view, {marginTop: 5}]}>
           <Text>Subtotal</Text>
-          <Html html={data.cart_subtotal} />
+          <HTMLRender html={data.cart_subtotal} />
         </View>
         <View style={styles.view}>
           <Text>Shipping Charge</Text>
-          <Html html={data.shipping_method[isSelectShipping].shipping_method_price} />
+          <HTMLRender html={data.shipping_method[isSelectShipping].shipping_method_price} />
         </View>
         <View style={styles.view}>
           <Text>Tax</Text>
-          <Html html={data.taxes} />
+          <HTMLRender html={data.taxes} />
         </View>
         <View style={styles.view}>
           <Text>Total Discount</Text>
-          <Html html={data.discount_total} />
+          <HTMLRender html={data.discount_total} />
         </View>
         <View style={[styles.line, {marginVertical: 3}]} />
         <View style={[styles.view, {marginVertical: 5}]}>
           <Text style={styles.heading}>Total</Text>
-          <Html html={data.total} />
+          <HTMLRender html={data.total} />
         </View>
         <View style={[styles.line, {marginVertical: 3}]} />
       </View>

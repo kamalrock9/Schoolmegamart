@@ -33,6 +33,8 @@ function SplashScreen({navigation}) {
 
   useEffect(() => {
     if (isEmpty(appSettings)) {
+      console.log('wait');
+
       ApiClient.get('/app-settings')
         .then(({data}) => {
           dispatch(saveAppSettings(data));
@@ -42,6 +44,7 @@ function SplashScreen({navigation}) {
           Toast.show('Something went wrong! Try again');
         });
     } else {
+      console.log('dispatch');
       navigation.navigate('Drawer');
       ApiClient.get('/app-settings').then(({data}) => {
         dispatch(saveAppSettings(data));
@@ -65,4 +68,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SplashScreen;
+export default React.memo(SplashScreen);

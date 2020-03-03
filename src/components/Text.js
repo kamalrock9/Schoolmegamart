@@ -40,6 +40,25 @@ const fonts = {
       italic: 'Italic',
     },
   },
+  Inter: {
+    fontWeights: {
+      100: 'Thin',
+      200: 'ExtraLight',
+      300: 'Light',
+      400: 'Regular',
+      500: 'Medium',
+      600: 'SemiBold',
+      700: 'Bold',
+      800: 'ExtraBold',
+      900: 'Black',
+      normal: 'Regular',
+      bold: 'Bold',
+    },
+    fontStyles: {
+      normal: '',
+      italic: 'Italic',
+    },
+  },
 };
 
 const getFontFamily = (baseFontFamily, styles = {}) => {
@@ -78,7 +97,7 @@ class Text extends React.PureComponent {
     const resolvedStyle = {...StyleSheet.flatten(this.props.style)};
     resolvedStyle.fontFamily = resolvedStyle.fontFamily
       ? getFontFamily(resolvedStyle.fontFamily, resolvedStyle)
-      : getFontFamily('Muli', resolvedStyle);
+      : getFontFamily('Inter', resolvedStyle);
     delete resolvedStyle.fontStyle;
     delete resolvedStyle.fontWeight;
 

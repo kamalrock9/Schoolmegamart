@@ -2,7 +2,7 @@ import Text from './Text';
 import ScaledImage from './ScaledImage';
 import TreeView from './TreeView';
 import FlatListLoading from './FlatListLoading';
-import Html from './Html';
+import HTMLRender from './HTMLRender';
 import Slider from './Slider';
 import Toolbar from './Toolbar';
 import QuantitySelector from './QuantitySelector';
@@ -16,7 +16,7 @@ export {
   ScaledImage,
   TreeView,
   FlatListLoading,
-  Html,
+  HTMLRender,
   Slider,
   Toolbar,
   QuantitySelector,

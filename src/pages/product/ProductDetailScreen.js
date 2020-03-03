@@ -1,12 +1,11 @@
 import React, {Component, Fragment} from 'react';
 import {View, StyleSheet, ScrollView} from 'react-native';
-import {Card, CardItem, Body} from 'native-base';
 import {connect} from 'react-redux';
 import StarRating from 'react-native-star-rating';
 import RNFetchBlob from 'rn-fetch-blob';
 import Share from 'react-native-share';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import {Slider, Toolbar, Html, QuantitySelector, Text, Button, Icon} from '../../components';
+import {Slider, Toolbar, HTMLRender, QuantitySelector, Text, Button, Icon} from '../../components';
 import SpecificationRow from './SpecificationRow';
 import MiniCart from './MiniCart';
 import ProductsRow from './ProductsRow';
@@ -139,158 +138,125 @@ class ProductDetailScreen extends Component {
           <View>
             <Slider data={product.images} />
           </View>
-          <Card style={[styles.card, {marginTop: 0}]}>
-            <CardItem style={[styles.cardItem, {paddingTop: 4}]}>
-              <Body>
-                <View style={styles.rowCenterSpaced}>
-                  <Text
-                    style={{
-                      fontSize: 20,
-                      color: '#000000',
-                      fontWeight: '700',
-                    }}>
-                    {product.name}
-                  </Text>
-                  <Button transparent onPress={this.shareProduct}>
-                    <Icon name="md-share" />
-                  </Button>
-                </View>
+          <View style={[styles.card, {marginTop: 0}]}>
+            <View style={[styles.rowCenterSpaced, styles.cardItem]}>
+              <Text style={{fontSize: 16, color: '#000000', fontWeight: '700'}}>
+                {product.name}
+              </Text>
+              <Button transparent onPress={this.shareProduct}>
+                <Icon name="md-share" size={24} />
+              </Button>
+            </View>
 
-                {product.short_description != '' && <Html html={product.short_description} />}
+            {product.short_description != '' && (
+              <HTMLRender html={product.short_description} containerStyle={styles.cardItem} />
+            )}
 
-                <View style={styles.rowCenterSpaced}>
-                  <Html
-                    html={product.price_html}
-                    fontSize={16}
-                    fontWeight="500"
-                    containerStyle={{paddingTop: 8}}
-                  />
-                  <Text style={product.in_stock ? {color: 'green'} : {color: 'gray'}}>
-                    {product.in_stock ? 'In stock' : 'Out of stock'}
-                  </Text>
-                </View>
+            <View style={[styles.rowCenterSpaced, styles.cardItem]}>
+              <HTMLRender
+                html={product.price_html}
+                fontSize={16}
+                fontWeight="500"
+                containerStyle={{paddingTop: 8}}
+              />
+              <Text style={product.in_stock ? {color: 'green'} : {color: 'gray'}}>
+                {product.in_stock ? 'In stock' : 'Out of stock'}
+              </Text>
+            </View>
 
-                <View style={styles.rowCenterSpaced}>
-                  <Text>Quantity</Text>
-                  <QuantitySelector
-                    minusClick={this._decreaseCounter}
-                    plusClick={this._increaseCounter}
-                    quantity={this.state.quantity}
-                  />
-                </View>
-              </Body>
-            </CardItem>
-          </Card>
-          <Card style={[styles.card, {marginTop: 10}]}>
-            <CardItem style={[styles.cardItem]}>
-              <Body>
-                <View style={{flexDirection: 'row'}}>
-                  <StarRating
-                    disabled
-                    maxStars={5}
-                    rating={parseInt(product.average_rating)}
-                    containerStyle={{
-                      justifyContent: 'flex-start',
-                    }}
-                    starStyle={{marginEnd: 5}}
-                    starSize={14}
-                    halfStarEnabled
-                    emptyStarColor={accent_color}
-                    fullStarColor={accent_color}
-                    halfStarColor={accent_color}
-                  />
-                  <Text>({product.rating_count || 0})</Text>
-                  <Text> See all reviews</Text>
-                </View>
-              </Body>
-            </CardItem>
-          </Card>
+            <View style={[styles.rowCenterSpaced, styles.cardItem]}>
+              <Text>Quantity</Text>
+              <QuantitySelector
+                minusClick={this._decreaseCounter}
+                plusClick={this._increaseCounter}
+                quantity={this.state.quantity}
+              />
+            </View>
+          </View>
+          <View
+            style={[
+              styles.card,
+              styles.cardItem,
+              {marginTop: 10, flexDirection: 'row', alignItems: 'center'},
+            ]}>
+            <StarRating
+              disabled
+              maxStars={5}
+              rating={parseInt(product.average_rating)}
+              containerStyle={{justifyContent: 'flex-start'}}
+              starStyle={{marginEnd: 5}}
+              starSize={14}
+              halfStarEnabled
+              emptyStarColor={accent_color}
+              fullStarColor={accent_color}
+              halfStarColor={accent_color}
+            />
+            <Text>({product.rating_count || 0})</Text>
+            <Text> See all reviews</Text>
+          </View>
           {product.variations.length > 0 && product.attributes.length > 0 && (
-            <Card style={[styles.card, {marginTop: 10}]}>
-              <CardItem header style={styles.cardItem}>
-                <Text style={styles.cardItemHeader}>Variations</Text>
-              </CardItem>
-              <CardItem style={[styles.cardItemWithHeader]} />
-            </Card>
+            <View style={[styles.card, {marginTop: 10}]}>
+              <Text style={styles.cardItemHeader}>Variations</Text>
+            </View>
           )}
-          <Card style={[styles.card, {marginTop: 10}]}>
-            <CardItem header style={styles.cardItem}>
-              <Text style={styles.cardItemHeader}>Specification</Text>
-            </CardItem>
-            <CardItem style={[styles.cardItemWithHeader]}>
-              <Body>
+          <View style={[styles.card, {marginTop: 10}]}>
+            <Text style={styles.cardItemHeader}>Specification</Text>
+            <View style={styles.cardItem}>
+              <SpecificationRow
+                leftContent="Categories"
+                rightContent={product.categories.map(item => item.name).join()}
+              />
+
+              {product.hasOwnProperty('total_sales') && (
+                <SpecificationRow leftContent="Total Sales" rightContent={product.total_sales} />
+              )}
+
+              {product.stock_quantity && (
                 <SpecificationRow
-                  leftContent="Categories"
-                  rightContent={product.categories.map(item => item.name).join()}
+                  leftContent="Stock Quantity"
+                  rightContent={product.stock_quantity}
                 />
+              )}
 
-                {product.hasOwnProperty('total_sales') && (
-                  <SpecificationRow leftContent="Total Sales" rightContent={product.total_sales} />
-                )}
+              {product.hasOwnProperty('sku') && product.sku != '' && (
+                <SpecificationRow leftContent="SKU" rightContent={product.sku} />
+              )}
+              {product.hasOwnProperty('weight') && product.weight != '' && (
+                <SpecificationRow leftContent="Weight" rightContent={product.stock_quantity} />
+              )}
 
-                {product.stock_quantity && (
-                  <SpecificationRow
-                    leftContent="Stock Quantity"
-                    rightContent={product.stock_quantity}
-                  />
-                )}
-
-                {product.hasOwnProperty('sku') && product.sku != '' && (
-                  <SpecificationRow leftContent="SKU" rightContent={product.sku} />
-                )}
-                {product.hasOwnProperty('weight') && product.weight != '' && (
-                  <SpecificationRow leftContent="Weight" rightContent={product.stock_quantity} />
-                )}
-
-                {product.attributes.map((item, index) => (
-                  <SpecificationRow
-                    leftContent={item.name}
-                    rightContent={item.options.map(opt => (opt.slug ? opt.name : opt)).join()}
-                    key={item.name + index}
-                  />
-                ))}
-              </Body>
-            </CardItem>
-          </Card>
+              {product.attributes.map((item, index) => (
+                <SpecificationRow
+                  leftContent={item.name}
+                  rightContent={item.options.map(opt => (opt.slug ? opt.name : opt)).join()}
+                  key={item.name + index}
+                />
+              ))}
+            </View>
+          </View>
           {product.description != '' && (
-            <Card style={[styles.card, {marginTop: 10}]}>
-              <CardItem header style={styles.cardItem}>
-                <Text style={styles.cardItemHeader}>Description</Text>
-              </CardItem>
-              <CardItem style={[styles.cardItemWithHeader]}>
-                <Html html={product.short_description} />
-              </CardItem>
-            </Card>
+            <View style={[styles.card, {marginTop: 10}]}>
+              <Text style={styles.cardItemHeader}>Description</Text>
+              <HTMLRender html={product.short_description} containerStyle={styles.cardItem} />
+            </View>
           )}
           {product.upsell && product.upsell.length > 0 && (
-            <Card style={[styles.card, {marginTop: 10}]}>
-              <CardItem header style={styles.cardItem}>
-                <Text style={styles.cardItemHeader}>Products you may like</Text>
-              </CardItem>
-
+            <View style={[styles.card, {marginTop: 10}]}>
+              <Text style={styles.cardItemHeader}>Products you may like</Text>
               <ProductsRow keyPrefix="product" products={product.upsell} />
-            </Card>
+            </View>
           )}
           {product.related && product.related.length > 0 && (
-            <Card style={[styles.card, {marginTop: 10}]}>
-              <CardItem header style={styles.cardItem}>
-                <Text style={styles.cardItemHeader}>Related Products</Text>
-              </CardItem>
-
+            <View style={[styles.card, {marginTop: 10}]}>
+              <Text style={styles.cardItemHeader}>Related Products</Text>
               <ProductsRow keyPrefix="product" products={product.related} />
-            </Card>
+            </View>
           )}
         </ScrollView>
 
         <RBSheet
-          ref={ref => {
-            this.RBSheet = ref;
-          }}
-          customStyles={{
-            container: {
-              justifyContent: 'space-between',
-            },
-          }}>
+          ref={ref => (this.RBSheet = ref)}
+          customStyles={{container: {justifyContent: 'space-between'}}}>
           <MiniCart data={this.state} close={this._closeRBSheet} message={this.state.cartMsg} />
         </RBSheet>
 
@@ -338,6 +304,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    minHeight: 48,
   },
   rowCenterSpaced: {
     flexDirection: 'row',
@@ -346,23 +313,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    marginStart: 0,
-    marginEnd: 0,
-    elevation: 0,
-  },
-  cardItem: {
-    paddingStart: 12,
-    paddingEnd: 12,
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 16,
   },
   cardItemHeader: {
     fontSize: 16,
     color: '#000000',
     fontWeight: '700',
-  },
-  cardItemWithHeader: {
-    paddingStart: 12,
-    paddingEnd: 12,
+    padding: 16,
     paddingTop: 0,
+  },
+  cardItem: {
+    paddingHorizontal: 16,
   },
 });
 

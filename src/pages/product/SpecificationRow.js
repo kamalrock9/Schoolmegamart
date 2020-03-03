@@ -1,28 +1,22 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import { Text } from "../../components";
+import React from 'react';
+import {View, StyleSheet} from 'react-native';
+import {Text} from '../../components';
 
-class SpecificationRow extends React.PureComponent {
-
-    render() {
-        return (
-            <View style={styles.container}>
-                <View style={{ flex: 1 }}>
-                    <Text>{this.props.leftContent}</Text>
-                </View>
-                <View style={{ flex: 2 }}>
-                    <Text>{this.props.rightContent}</Text>
-                </View>
-            </View>
-        );
-    }
+function SpecificationRow({leftContent, rightContent}) {
+  return (
+    <View style={styles.container}>
+      <Text style={{flex: 1}}>{leftContent}</Text>
+      <Text style={{flex: 2}}>{rightContent}</Text>
+    </View>
+  );
 }
-export default SpecificationRow;
 
 const styles = StyleSheet.create({
-    container: {
-        flexDirection: "row",
-        width: "100%",
-        minHeight: 28
-    }
+  container: {
+    flexDirection: 'row',
+    width: '100%',
+    minHeight: 28,
+  },
 });
+
+export default SpecificationRow;
