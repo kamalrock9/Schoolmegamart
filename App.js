@@ -16,6 +16,7 @@ import ProductScreen from './src/pages/product/ProductScreen';
 import ProductDetailScreen from './src/pages/product/ProductDetailScreen';
 import Cart from './src/pages/Cart/Cart';
 import WishlistScreen from './src/pages/WishlistScreen';
+import TermAndCondition from './src/pages/TermAndCondition';
 
 //Redux
 import {persistor, store} from './src/store';
@@ -63,6 +64,7 @@ const DrawerNavigator = createDrawerNavigator(
     ProductStack,
     CategoryStack,
     TawkToChat,
+    TermAndCondition,
   },
   {
     contentComponent: Drawer,

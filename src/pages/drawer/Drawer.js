@@ -17,6 +17,37 @@ class Drawer extends React.PureComponent {
     };
   }
 
+  _Call = () => {
+    let phoneNumber = 8860617526;
+    if (Platform.OS === 'ios') {
+      phoneNumber = `telprompt:${phoneNumber}`;
+    } else {
+      phoneNumber = `tel:${phoneNumber}`;
+    }
+    Linking.canOpenURL(phoneNumber)
+      .then(supported => {
+        if (!supported) {
+          Alert.alert('Phone number is not available');
+        } else {
+          Linking.openURL(phoneNumber);
+        }
+      })
+      .catch(err => console.log(err));
+  };
+
+  _OpenEmail = () => {
+    let email = 'mailto:www.phoeniixx.com';
+    Linking.canOpenURL(email)
+      .then(supported => {
+        if (!supported) {
+          Alert.alert('Email is not available');
+        } else {
+          Linking.openURL(email);
+        }
+      })
+      .catch(err => console.log(err));
+  };
+
   openModal = () => {
     this.setState({isOpenModal: true});
   };
@@ -53,15 +84,6 @@ class Drawer extends React.PureComponent {
         ],
         {cancelable: false},
       );
-      // if (Platform.OS != 'ios') {
-      //   Linking.openURL(`market://details?id=${'com.phoeniixx.wooapp'}`).catch(err =>
-      //     alert('Please check for the Google Play Store'),
-      //   );
-      // } else {
-      //   Linking.openURL(`itms://itunes.apple.com/in/app/apple-store/${APPLE_STORE_ID}`).catch(err =>
-      //     alert('Please check for the App Store'),
-      //   );
-      // }
     } else if (route == 'HomeScreen') {
       this.props.navigation.closeDrawer();
       const navigateAction = NavigationActions.navigate({
@@ -71,6 +93,13 @@ class Drawer extends React.PureComponent {
       this.props.navigation.dispatch(navigateAction);
     } else if (route == 'HomeStack') {
       this.props.navigation.closeDrawer();
+    } else if (route == 'termAndConditions') {
+      this.props.navigation.closeDrawer();
+      const navigateAction = NavigationActions.navigate({
+        routeName: 'TermAndCondition',
+        params: param,
+      });
+      this.props.navigation.dispatch(navigateAction);
     } else {
       const navigateAction = NavigationActions.navigate({
         routeName: route,
@@ -129,6 +158,10 @@ class Drawer extends React.PureComponent {
               <Icon name="md-call" style={styles.icon} />
               <Text style={styles.text}>{t('CONTACT')}</Text>
             </Button>
+            <Button style={styles.button} onPress={this.navigateToScreen('termAndConditions')}>
+              <Icon name="tools" type="Entypo" style={styles.icon} />
+              <Text style={styles.text}>{t('TOS')}</Text>
+            </Button>
             <Button style={styles.button} onPress={this.navigateToScreen('giveFeedback')}>
               <Icon name="feedback" type="MaterialIcons" style={styles.icon} />
               <Text style={styles.text}>{t('GIVE_FEEDBACK')}</Text>
@@ -155,8 +188,37 @@ class Drawer extends React.PureComponent {
           hasBackdrop
           useNativeDriver
           hideModalContentWhileAnimating>
-          <View style={{backgroundColor: '#FFF', padding: 16}}>
-            <Text>Hello</Text>
+          <View style={{backgroundColor: '#FFF', padding: 10}}>
+            <Text style={{fontSize: 20}}>Contact Us</Text>
+            <View
+              style={{
+                height: 1.35,
+                backgroundColor: '#d2d2d2',
+                width: '100%',
+                marginVertical: 10,
+              }}></View>
+            <View style={{flexDirection: 'row'}}>
+              <Button
+                style={[
+                  styles.contact_btn,
+                  {
+                    backgroundColor: appSettings.primary_color,
+                  },
+                ]}
+                onPress={this._OpenEmail}>
+                <Text style={{color: '#fff'}}>EMAIL</Text>
+              </Button>
+              <Button
+                style={[
+                  styles.contact_btn,
+                  {
+                    backgroundColor: appSettings.accent_color,
+                  },
+                ]}
+                onPress={this._Call}>
+                <Text style={{color: '#fff'}}>CALL</Text>
+              </Button>
+            </View>
           </View>
         </Modal>
       </>
@@ -202,6 +264,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#dedede',
     justifyContent: 'center',
     height: 150,
+  },
+  contact_btn: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderRadius: 2,
   },
 });
 

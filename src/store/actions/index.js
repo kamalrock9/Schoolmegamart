@@ -37,3 +37,8 @@ export const deleteWishlist = id => ({
   type: types.DELETE_WISHLIST,
   payload: id,
 });
+
+export const user = data => ({
+  type: types.USER,
+  payload: data,
+});

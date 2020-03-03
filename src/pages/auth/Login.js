@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, ImageBackground, Dimensions} from 'react-native';
+import {View, StyleSheet, ImageBackground, Dimensions, ActivityIndicator} from 'react-native';
 import {Icon, Text, Button, FloatingTextinput} from '../../components';
 import SwiperFlatList from 'react-native-swiper-flatlist';
 import {withTranslation} from 'react-i18next';
 import {connect} from 'react-redux';
 import Constants from '../../service/Config';
+import {ApiClient} from '../../service';
+import {user} from '../../store/actions';
 
 const {width} = Dimensions.get('window');
 
@@ -14,6 +16,7 @@ class Auth extends Component {
     this.state = {
       loginEmail: '',
       loginPassword: '',
+      loading: false,
     };
   }
 
@@ -23,9 +26,34 @@ class Auth extends Component {
     }),
   ];
 
+  _login = () => {
+    const {loginEmail, loginPassword} = this.state;
+    let param = {
+      email: loginEmail,
+      password: loginPassword,
+    };
+    this.setState({loading: true});
+    ApiClient.post('/login', param)
+      .then(({data}) => {
+        console.log(data);
+        this.setState({loading: false});
+        if (data.code == 1) {
+          this.props.user(data.details);
+        }
+      })
+      .catch(error => {
+        this.setState({loading: false});
+      });
+  };
+
+  navigateToScreen = () => {
+    console.log('kamal');
+    this.props.navigation.navigate('Signup');
+  };
+
   render() {
     const {onClose, t} = this.props;
-    const {loginEmail, loginPassword} = this.state;
+    const {loginEmail, loginPassword, loading} = this.state;
     return (
       <ImageBackground
         source={require('../../assets/imgs/login-background.jpg')}
@@ -33,67 +61,77 @@ class Auth extends Component {
         <Button style={{padding: 8, alignSelf: 'flex-start'}} onPress={onClose}>
           <Icon name="close" size={24} color="#FFF" type="MaterialCommunityIcons" />
         </Button>
-        <SwiperFlatList>
-          <View style={styles.slide1}>
-            <Text style={styles.title}>{t('WELCOME_TO_WOOAPP', {value: Constants.storeName})}</Text>
-            <Text style={styles.subtitle}>{t('FASHION_INFO')}</Text>
-            <View style={{width: '100%', flexDirection: 'row', marginTop: 20}}>
-              <Button style={[styles.socialBtn, {flex: 1, marginEnd: 8}]}>
-                <Icon name="logo-facebook" size={20} color="#FFF" />
-                <Text style={[styles.socialBtnText, {marginStart: 8}]}>Facebook</Text>
-              </Button>
-              <Button style={[styles.socialBtn, {flex: 1, marginStart: 8}]}>
-                <Icon name="logo-google" size={20} color="#FFF" />
-                <Text style={[styles.socialBtnText, {marginStart: 8}]}>Google</Text>
-              </Button>
-            </View>
-            <View style={{width: '100%', flexDirection: 'row', marginVertical: 30}}>
-              <View style={styles.line} />
-              <Text style={styles.or}>Or login via e-mail</Text>
-              <View style={styles.line} />
-            </View>
+        {!loading ? (
+          <SwiperFlatList>
+            <View style={styles.slide1}>
+              <Text style={styles.title}>
+                {t('WELCOME_TO_WOOAPP', {value: Constants.storeName})}
+              </Text>
+              <Text style={styles.subtitle}>{t('FASHION_INFO')}</Text>
+              <View style={{width: '100%', flexDirection: 'row', marginTop: 20}}>
+                <Button style={[styles.socialBtn, {flex: 1, marginEnd: 8}]}>
+                  <Icon name="logo-facebook" size={20} color="#FFF" />
+                  <Text style={[styles.socialBtnText, {marginStart: 8}]}>Facebook</Text>
+                </Button>
+                <Button style={[styles.socialBtn, {flex: 1, marginStart: 8}]}>
+                  <Icon name="logo-google" size={20} color="#FFF" />
+                  <Text style={[styles.socialBtnText, {marginStart: 8}]}>Google</Text>
+                </Button>
+              </View>
+              <View style={{width: '100%', flexDirection: 'row', marginVertical: 30}}>
+                <View style={styles.line} />
+                <Text style={styles.or}>Or login via e-mail</Text>
+                <View style={styles.line} />
+              </View>
 
-            <FloatingTextinput
-              label={t('EMAIL')}
-              labelColor="#FFFFFF"
-              style={{color: '#FFFFFF'}}
-              value={loginEmail}
-              onChangeText={this.update('loginEmail')}
-            />
-            <View style={{marginTop: 10}}>
               <FloatingTextinput
-                label={t('PASSWORD')}
+                label={t('EMAIL')}
                 labelColor="#FFFFFF"
                 style={{color: '#FFFFFF'}}
-                value={loginPassword}
-                onChangeText={this.update('loginPassword')}
+                value={loginEmail}
+                onChangeText={this.update('loginEmail')}
               />
-            </View>
-            <Button style={{alignSelf: 'flex-end', marginTop: 16, paddingVertical: 8}}>
-              <Text style={styles.socialBtnText}>Forget Password</Text>
-            </Button>
-
-            <Button style={styles.btn}>
-              <Text style={styles.btnText}>Sign In</Text>
-            </Button>
-            <View
-              style={{width: '100%', flexDirection: 'row', marginTop: 20, alignItems: 'center'}}>
-              <Text style={styles.socialBtnText}>Don't have an account? </Text>
-              <Button style={[styles.socialBtn, {paddingHorizontal: 8, marginStart: 8}]}>
-                <Text style={styles.socialBtnText}>Sign Up</Text>
+              <View style={{marginTop: 10}}>
+                <FloatingTextinput
+                  secureTextEntry={true}
+                  label={t('PASSWORD')}
+                  labelColor="#FFFFFF"
+                  style={{color: '#FFFFFF'}}
+                  value={loginPassword}
+                  onChangeText={this.update('loginPassword')}
+                />
+              </View>
+              <Button style={{alignSelf: 'flex-end', marginTop: 16, paddingVertical: 8}}>
+                <Text style={styles.socialBtnText}>Forget Password</Text>
               </Button>
+
+              <Button style={styles.btn} onPress={this._login}>
+                <Text style={styles.btnText}>Sign In</Text>
+              </Button>
+              <View
+                style={{width: '100%', flexDirection: 'row', marginTop: 20, alignItems: 'center'}}>
+                <Text style={styles.socialBtnText}>Don't have an account? </Text>
+                <Button
+                  style={[styles.socialBtn, {paddingHorizontal: 8, marginStart: 8}]}
+                  onPress={this.navigateToScreen}>
+                  <Text style={styles.socialBtnText}>Sign Up</Text>
+                </Button>
+              </View>
             </View>
-          </View>
-        </SwiperFlatList>
+          </SwiperFlatList>
+        ) : (
+          <ActivityIndicator style={{alignSelf: 'center'}} />
+        )}
       </ImageBackground>
     );
   }
 }
 
-const mapStateToProps = state => ({
-  appSettings: state.appSettings,
-});
-export default withTranslation()(Auth);
+const mapDispatchToProps = {
+  user,
+};
+
+export default connect(null, mapDispatchToProps)(withTranslation()(Auth));
 
 const styles = StyleSheet.create({
   container: {
