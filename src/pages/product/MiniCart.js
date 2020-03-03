@@ -1,11 +1,13 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
-import {withNavigation} from 'react-navigation';
+import {useNavigation} from 'react-navigation-hooks';
 import {useSelector} from 'react-redux';
 import {Text, Button, Icon} from '../../components';
 
-function MiniCart({appSettings, close, message, navigation}) {
+function MiniCart({close, message, navigation}) {
   const cartCount = useSelector(state => state.cartCount);
+  const appSettings = useSelector(state => state.appSettings);
+  const navigation = useNavigation();
 
   goToHome = () => {
     close && close();
@@ -74,4 +76,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNavigation(MiniCart);
+export default MiniCart;

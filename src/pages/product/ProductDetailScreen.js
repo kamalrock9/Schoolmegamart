@@ -1,12 +1,12 @@
 import React, {Component, Fragment} from 'react';
 import {View, StyleSheet, ScrollView} from 'react-native';
-import {Button, Icon, Card, CardItem, Body} from 'native-base';
+import {Card, CardItem, Body} from 'native-base';
 import {connect} from 'react-redux';
 import StarRating from 'react-native-star-rating';
 import RNFetchBlob from 'rn-fetch-blob';
 import Share from 'react-native-share';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import {Slider, Toolbar, Html, QuantitySelector, Text} from '../../components';
+import {Slider, Toolbar, Html, QuantitySelector, Text, Button, Icon} from '../../components';
 import SpecificationRow from './SpecificationRow';
 import MiniCart from './MiniCart';
 import ProductsRow from './ProductsRow';
@@ -129,7 +129,9 @@ class ProductDetailScreen extends Component {
   };
 
   render() {
-    const {appSettings} = this.props;
+    const {
+      appSettings: {accent_color},
+    } = this.props;
     const {product} = this.state;
     return (
       <View style={styles.container}>
@@ -193,9 +195,9 @@ class ProductDetailScreen extends Component {
                     starStyle={{marginEnd: 5}}
                     starSize={14}
                     halfStarEnabled
-                    emptyStarColor={this.props.appSettings.accent_color}
-                    fullStarColor={this.props.appSettings.accent_color}
-                    halfStarColor={this.props.appSettings.accent_color}
+                    emptyStarColor={accent_color}
+                    fullStarColor={accent_color}
+                    halfStarColor={accent_color}
                   />
                   <Text>({product.rating_count || 0})</Text>
                   <Text> See all reviews</Text>
@@ -289,12 +291,7 @@ class ProductDetailScreen extends Component {
               justifyContent: 'space-between',
             },
           }}>
-          <MiniCart
-            data={this.state}
-            appSettings={appSettings}
-            close={this._closeRBSheet}
-            message={this.state.cartMsg}
-          />
+          <MiniCart data={this.state} close={this._closeRBSheet} message={this.state.cartMsg} />
         </RBSheet>
 
         {/* Footer Content */}
@@ -310,12 +307,7 @@ class ProductDetailScreen extends Component {
                   <Text>Buy Now</Text>
                 </Button>
                 <Button
-                  style={[
-                    styles.footerButton,
-                    {
-                      backgroundColor: appSettings.accent_color,
-                    },
-                  ]}
+                  style={[styles.footerButton, {backgroundColor: accent_color}]}
                   onPress={() => this._handleAddToCart(false)}>
                   <Text style={{color: 'white'}}>Add to Cart</Text>
                 </Button>
@@ -331,11 +323,6 @@ class ProductDetailScreen extends Component {
 // const mapDispatchToProps = {
 //   getCartCount,
 // };
-
-const mapStateToProps = state => ({
-  appSettings: state.appSettings,
-});
-export default connect(mapStateToProps)(ProductDetailScreen);
 
 const styles = StyleSheet.create({
   container: {
@@ -378,3 +365,8 @@ const styles = StyleSheet.create({
     paddingTop: 0,
   },
 });
+
+const mapStateToProps = state => ({
+  appSettings: state.appSettings,
+});
+export default connect(mapStateToProps)(ProductDetailScreen);
