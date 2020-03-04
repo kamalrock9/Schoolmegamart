@@ -150,6 +150,24 @@ class Drawer extends React.PureComponent {
               <Text style={styles.text}>{t("CATEGORIES")}</Text>
             </Button>
             <View style={styles.divider} />
+            {!isEmpty(user) && (
+              <>
+                <Button style={styles.button} onPress={this.navigateToScreen("Orders")}>
+                  <Icon name="list-unordered" type="Octicons" style={styles.icon} />
+                  <Text style={styles.text}>{t("ORDERS")}</Text>
+                </Button>
+                <Button style={styles.button} onPress={this.navigateToScreen("AccountSetting")}>
+                  <Icon name="md-settings" style={styles.icon} />
+                  <Text style={styles.text}>{t("ACCOUNT")}</Text>
+                </Button>
+                <Button style={styles.button} onPress={this.navigateToScreen("ManageAddress")}>
+                  <Icon name="note" type="SimpleLineIcons" style={styles.icon} />
+                  <Text style={styles.text}>{t("MANAGE_ADDRESS")}</Text>
+                </Button>
+                <View style={styles.divider} />
+              </>
+            )}
+
             {appSettings.hasOwnProperty("direct_tawk_id") && appSettings.direct_tawk_id != "" && (
               <Button
                 style={styles.button}

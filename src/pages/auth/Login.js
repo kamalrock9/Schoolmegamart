@@ -7,13 +7,14 @@ import {useDispatch} from "react-redux";
 import Constants from "service/Config";
 import {ApiClient} from "service";
 import {user} from "store/actions";
+import Toast from "react-native-simple-toast";
 
 const {width} = Dimensions.get("window");
 
 function Auth({onClose}) {
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-  const [fistname, setFirstName] = useState("");
+  const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
   const [signUpEmail, setsignUpEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +24,7 @@ function Auth({onClose}) {
   const {t} = useTranslation();
   const dispatch = useDispatch();
 
-  const scrollRef = React.useRef(null);
+  const scrollRef = useRef(null);
 
   const goToFirstIndex = () => {
     scrollRef.current.goToFirstIndex();
@@ -79,6 +80,51 @@ function Auth({onClose}) {
       .catch(error => {
         setLoading(false);
       });
+  };
+
+  const _register = () => {
+    const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    var bodyFormData = new FormData();
+    bodyFormData.append("fname", firstname);
+    bodyFormData.append("lname", lastname);
+    bodyFormData.append("email", signUpEmail);
+    bodyFormData.append("password", password);
+
+    if (
+      firstname != "" &&
+      lastname != "" &&
+      signUpEmail != "" &&
+      password != "" &&
+      confirmPassword != ""
+    ) {
+      if (reg.test(signUpEmail) === true) {
+        if (password != confirmPassword) {
+          Toast.show("Password does not match", Toast.LONG);
+          return;
+        }
+        setLoading(true);
+        ApiClient.post("/register", bodyFormData, {
+          config: {headers: {"Content-Type": "multipart/form-data"}},
+        })
+          .then(({data}) => {
+            console.log(data);
+            setLoading(false);
+            if (data.status == 1) {
+              goToFirstIndex();
+            } else {
+              setLoading(false);
+              Toast.show(data.error, Toast.LONG);
+            }
+          })
+          .catch(error => {
+            setLoading(false);
+          });
+      } else {
+        Toast.show("Please enter the correct email address", Toast.LONG);
+      }
+    } else {
+      Toast.show("Please fill all the details", Toast.LONG);
+    }
   };
 
   return (
@@ -165,12 +211,11 @@ function Auth({onClose}) {
             label={t("FIRST_NAME")}
             labelColor="#FFFFFF"
             style={{color: "#FFFFFF"}}
-            value={fistname}
+            value={firstname}
             onChangeText={onChangeFirstname}
           />
           <View style={{marginTop: 10}}>
             <FloatingTextinput
-              secureTextEntry={true}
               label={t("LAST_NAME")}
               labelColor="#FFFFFF"
               style={{color: "#FFFFFF"}}
@@ -180,7 +225,6 @@ function Auth({onClose}) {
           </View>
           <View style={{marginTop: 10}}>
             <FloatingTextinput
-              secureTextEntry={true}
               label={t("EMAIL")}
               labelColor="#FFFFFF"
               style={{color: "#FFFFFF"}}
@@ -190,7 +234,7 @@ function Auth({onClose}) {
           </View>
           <View style={{marginTop: 10}}>
             <FloatingTextinput
-              secureTextEntry={true}
+              // secureTextEntry={true}
               label={t("PASSWORD")}
               labelColor="#FFFFFF"
               style={{color: "#FFFFFF"}}
@@ -200,7 +244,7 @@ function Auth({onClose}) {
           </View>
           <View style={{marginTop: 10}}>
             <FloatingTextinput
-              secureTextEntry={true}
+              //secureTextEntry={true}
               label={t("CONFIRM_PASSWORD")}
               labelColor="#FFFFFF"
               style={{color: "#FFFFFF"}}
@@ -209,7 +253,7 @@ function Auth({onClose}) {
             />
           </View>
 
-          <Button style={styles.btn} onPress={_login}>
+          <Button style={styles.btn} onPress={_register}>
             <Text style={styles.btnText}>Sign Up</Text>
           </Button>
           <Text style={[styles.socialBtnText, {marginTop: 15}]}>

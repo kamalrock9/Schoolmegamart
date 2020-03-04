@@ -1,27 +1,30 @@
-import React from 'react';
+import React from "react";
 //React-Navigation
-import {createAppContainer, createSwitchNavigator} from 'react-navigation';
-import {createStackNavigator} from 'react-navigation-stack';
-import {createDrawerNavigator} from 'react-navigation-drawer';
+import {createAppContainer, createSwitchNavigator} from "react-navigation";
+import {createStackNavigator} from "react-navigation-stack";
+import {createDrawerNavigator} from "react-navigation-drawer";
 
 //SIDEMENU
-import Drawer from './src/pages/drawer/Drawer';
-import TawkToChat from './src/pages/drawer/TawkToChat';
+import Drawer from "./src/pages/drawer/Drawer";
+import TawkToChat from "./src/pages/drawer/TawkToChat";
 
 //pages
-import HomeScreen from './src/pages/home/HomeScreen';
-import CategoryScreen from './src/pages/CategoryScreen';
-import SplashScreen from './src/pages/SplashScreen';
-import ProductScreen from './src/pages/product/ProductScreen';
-import ProductDetailScreen from './src/pages/product/ProductDetailScreen';
-import Cart from './src/pages/Cart/Cart';
-import WishlistScreen from './src/pages/WishlistScreen';
-import TermAndCondition from './src/pages/TermAndCondition';
+import HomeScreen from "./src/pages/home/HomeScreen";
+import CategoryScreen from "./src/pages/CategoryScreen";
+import SplashScreen from "./src/pages/SplashScreen";
+import ProductScreen from "./src/pages/product/ProductScreen";
+import ProductDetailScreen from "./src/pages/product/ProductDetailScreen";
+import Cart from "./src/pages/Cart/Cart";
+import WishlistScreen from "./src/pages/WishlistScreen";
+import TermAndCondition from "./src/pages/TermAndCondition";
+import Orders from "./src/pages/Orders";
+import OrderDetails from "./src/pages/OrderDetails";
+import AccountSetting from "./src/pages/AccountSetting";
 
 //Redux
-import {persistor, store} from './src/store';
-import {Provider} from 'react-redux';
-import {PersistGate} from 'redux-persist/lib/integration/react';
+import {persistor, store} from "./src/store";
+import {Provider} from "react-redux";
+import {PersistGate} from "redux-persist/lib/integration/react";
 
 //I18nManager.forceRTL(false);
 
@@ -64,6 +67,9 @@ const DrawerNavigator = createDrawerNavigator(
     CategoryStack,
     TawkToChat,
     TermAndCondition,
+    Orders,
+    OrderDetails,
+    AccountSetting,
   },
   {
     contentComponent: Drawer,
@@ -76,8 +82,8 @@ const AppNavigator = createSwitchNavigator(
     Drawer: DrawerNavigator,
   },
   {
-    initialRouteName: 'SplashScreen',
-    backBehavior: 'none',
+    initialRouteName: "SplashScreen",
+    backBehavior: "none",
   },
 );
 
