@@ -271,8 +271,8 @@ const styles = StyleSheet.create({
   },
   icon: {
     color: "#777777",
-    marginEnd: 16,
-    marginStart: 12,
+    marginEnd: 20,
+    marginStart: 15,
     fontSize: 24,
   },
   text: {

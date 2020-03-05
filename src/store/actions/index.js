@@ -47,3 +47,18 @@ export const logout = data => ({
   type: types.LOGOUT,
   payload: data,
 });
+
+export const updateUser = data => ({
+  type: types.UPDATE_USER,
+  payload: data,
+});
+
+export const updateBilling = data => ({
+  type: types.UPDATE_BILLING,
+  payload: data,
+});
+
+export const updateShipping = data => ({
+  type: types.UPDATE_SHIPPING,
+  payload: data,
+});

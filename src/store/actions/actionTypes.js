@@ -11,3 +11,6 @@ export const DELETE_WISHLIST = "DELETE_WISHLIST";
 export const HOME_LAYOUT = "HOME_LAYOUT";
 export const USER = "USER";
 export const LOGOUT = "LOGOUT";
+export const UPDATE_USER = "UPDATE_USER";
+export const UPDATE_BILLING = "UPDATE_BILLING";
+export const UPDATE_SHIPPING = "UPDATE_SHIPPING";

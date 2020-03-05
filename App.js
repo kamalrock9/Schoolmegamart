@@ -20,6 +20,9 @@ import TermAndCondition from "./src/pages/TermAndCondition";
 import Orders from "./src/pages/Orders";
 import OrderDetails from "./src/pages/OrderDetails";
 import AccountSetting from "./src/pages/AccountSetting";
+import ManageAddress from "./src/pages/ManageAddress/ManageAddress";
+import BillingAddress from "./src/pages/manageAddress/BillingAddress";
+import ShippingAddress from "./src/pages/manageAddress/ShippingAddress";
 
 //Redux
 import {persistor, store} from "./src/store";
@@ -70,6 +73,9 @@ const DrawerNavigator = createDrawerNavigator(
     Orders,
     OrderDetails,
     AccountSetting,
+    ManageAddress,
+    BillingAddress,
+    ShippingAddress,
   },
   {
     contentComponent: Drawer,
