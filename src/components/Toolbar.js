@@ -1,11 +1,13 @@
-import React from 'react';
-import {View, StyleSheet, StatusBar} from 'react-native';
-import Text from './Text';
-import Button from './Button';
-import Icon from './IconNB';
-import {useSelector} from 'react-redux';
-import {useNavigation, useNavigationState} from 'react-navigation-hooks';
-import {useTranslation} from 'react-i18next';
+import React from "react";
+import {View, StyleSheet, StatusBar} from "react-native";
+import Text from "./Text";
+import Button from "./Button";
+import Icon from "./IconNB";
+import HTMLRender from "./HTMLRender";
+import {useSelector} from "react-redux";
+import {useNavigation, useNavigationState} from "react-navigation-hooks";
+import {useTranslation} from "react-i18next";
+import {isEmpty} from "lodash";
 
 function Toolbar({
   title,
@@ -15,7 +17,9 @@ function Toolbar({
   cartButton,
   cancelButton,
   submit,
+  walletRupee,
 }) {
+  console.log(walletRupee);
   const navigation = useNavigation();
   const {routeName} = useNavigationState();
   const {t} = useTranslation();
@@ -61,12 +65,12 @@ function Toolbar({
 
         <View style={styles.right}>
           {wishListButton && (
-            <Button onPress={goTo('WishlistScreen')} style={styles.menuButton}>
+            <Button onPress={goTo("WishlistScreen")} style={styles.menuButton}>
               <Icon color={appSettings.primary_color_text} name="md-heart" size={24} />
             </Button>
           )}
           {cartButton && (
-            <Button onPress={goTo('Cart')} style={styles.menuButton}>
+            <Button onPress={goTo("Cart")} style={styles.menuButton}>
               <Icon color={appSettings.primary_color_text} name="md-cart" size={24} />
               <Text
                 style={[
@@ -77,6 +81,9 @@ function Toolbar({
               </Text>
             </Button>
           )}
+          {!isEmpty(walletRupee) && (
+            <HTMLRender html={walletRupee} baseFontStyle={{color: "#fff", paddingEnd: 10}} />
+          )}
         </View>
       </View>
     </>
@@ -85,13 +92,13 @@ function Toolbar({
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
     height: 56,
   },
   badge: {
-    position: 'absolute',
+    position: "absolute",
     end: 4,
     top: 4,
     //transform: [{scale: 0.7}],
@@ -99,19 +106,19 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     fontSize: 10,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    color: 'white',
-    fontWeight: '600',
+    textAlign: "center",
+    textAlignVertical: "center",
+    color: "white",
+    fontWeight: "600",
   },
   title: {
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: 16,
     paddingHorizontal: 16,
   },
   right: {
-    flexDirection: 'row',
-    marginStart: 'auto',
+    flexDirection: "row",
+    marginStart: "auto",
   },
   menuButton: {padding: 16},
 });

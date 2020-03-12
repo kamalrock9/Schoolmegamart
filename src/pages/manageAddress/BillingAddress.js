@@ -130,7 +130,7 @@ function BillingAddress() {
     return (
       <View style={styles.container}>
         <View>
-          {!selectedItem && <Text style={[styles.text, {color: "grey"}]}>{defaultText}</Text>}
+          {!selectedItem && <Text style={[styles.text, {color: "#000000"}]}>{defaultText}</Text>}
           {selectedItem && (
             <View style={{}}>
               <Text style={[styles.text, {color: selectedItem.color}]}>

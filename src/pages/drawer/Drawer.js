@@ -164,6 +164,18 @@ class Drawer extends React.PureComponent {
                   <Icon name="note" type="SimpleLineIcons" style={styles.icon} />
                   <Text style={styles.text}>{t("MANAGE_ADDRESS")}</Text>
                 </Button>
+                <Button style={styles.button} onPress={this.navigateToScreen("Notification")}>
+                  <Icon name="bell" type="Feather" style={styles.icon} />
+                  <Text style={styles.text}>{t("NOTIFICATIONS")}</Text>
+                </Button>
+                <Button style={styles.button} onPress={this.navigateToScreen("Download")}>
+                  <Icon name="download" type="Entypo" style={styles.icon} />
+                  <Text style={styles.text}>{t("DOWNLOAD")}</Text>
+                </Button>
+                <Button style={styles.button} onPress={this.navigateToScreen("Wallet")}>
+                  <Icon name="wallet" type="Entypo" style={styles.icon} />
+                  <Text style={styles.text}>{t("WALLET")}</Text>
+                </Button>
                 <View style={styles.divider} />
               </>
             )}

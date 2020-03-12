@@ -18,7 +18,7 @@ function OrderDetails({navigation}) {
           marginBottom: 25,
         }}>
         <Text style={{fontWeight: "600"}}>PRODUCTS</Text>
-        <Text>{item.line_items.length} Item(S)</Text>
+        <Text>{item.line_items.length + "Item(S)"}</Text>
       </View>
     );
   };
@@ -34,7 +34,7 @@ function OrderDetails({navigation}) {
           <Text style={{fontWeight: "600", fontSize: 16}}>{item.name}</Text>
           <View style={{flexDirection: "row", justifyContent: "space-between"}}>
             <Text style={styles.txt}>{item.price}</Text>
-            <Text style={styles.txt}>Qty:{item.quantity}</Text>
+            <Text style={styles.txt}>{"Qty:" + item.quantity}</Text>
             <Text style={styles.txt}>{item.subtotal}</Text>
           </View>
         </View>
@@ -44,7 +44,7 @@ function OrderDetails({navigation}) {
 
   const _listFooter = () => {
     return (
-      <View style={{}}>
+      <View>
         <View style={styles.line}></View>
         <Text style={styles.heading}>ORDER SUMMARY</Text>
         <View style={styles.footerSummaryView}>
@@ -56,7 +56,9 @@ function OrderDetails({navigation}) {
           <Text style={[styles.text, {color: "#000000"}]}>{item.payment_method_title}</Text>
         </View>
         <View style={styles.footerSummaryView}>
-          <Text style={styles.text}>Shipping ({item.shipping_lines[0].method_title})</Text>
+          <Text style={styles.text}>
+            {"Shipping (" + item.shipping_lines[0].method_title + ")"}
+          </Text>
           <Text style={[styles.text, {color: "#000000"}]}>{item.shipping_lines[0].total}</Text>
         </View>
         <View style={styles.footerSummaryView}>
@@ -67,7 +69,7 @@ function OrderDetails({navigation}) {
           item.coupon_lines.map(item => {
             return (
               <View style={styles.footerSummaryView}>
-                <Text style={styles.text}>Coupon ({item.code})</Text>
+                <Text style={styles.text}>{"Coupon (" + item.code + ")"}</Text>
                 <Text style={[styles.text, {color: "#000000"}]}>{item.discount}</Text>
               </View>
             );
@@ -105,7 +107,7 @@ function OrderDetails({navigation}) {
           <Text style={styles.billingtxt}>
             {item.billing.address_1 ? item.billing.address_1 : null}
           </Text>
-          {item.billing.address_2 && (
+          {!isEmpty(item.billing.address_2) && (
             <Text style={styles.billingtxt}>{item.billing.address_2}</Text>
           )}
           <Text style={styles.billingtxt}>
@@ -130,7 +132,7 @@ function OrderDetails({navigation}) {
           <Text style={styles.billingtxt}>
             {item.shipping.address_1 ? item.shipping.address_1 : null}
           </Text>
-          {item.shipping.address_2 && (
+          {!isEmpty(item.shipping.address_2) && (
             <Text style={styles.billingtxt}>{item.shipping.address_2}</Text>
           )}
           <Text style={styles.billingtxt}>
@@ -192,7 +194,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 10,
   },
-  heading: {fontWeight: "500", marginBottom: 10, paddingHorizontal: 16, fontSize: 16},
+  heading: {fontWeight: "600", marginBottom: 10, paddingHorizontal: 16},
   billingtxt: {
     color: "#757575",
   },
