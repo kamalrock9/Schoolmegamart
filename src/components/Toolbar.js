@@ -19,7 +19,6 @@ function Toolbar({
   submit,
   walletRupee,
 }) {
-  console.log(walletRupee);
   const navigation = useNavigation();
   const {routeName} = useNavigationState();
   const {t} = useTranslation();

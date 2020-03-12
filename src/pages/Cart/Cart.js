@@ -29,6 +29,10 @@ class Cart extends React.PureComponent {
     this.ApiCall(null);
   }
 
+  gotoCheckout = () => {
+    this.props.navigation.navigate("BillingAddresss", {cartData: this.state.cart_data});
+  };
+
   ApiCall = params => {
     let param = {
       shipping_method: params ? params : "",
@@ -86,7 +90,9 @@ class Cart extends React.PureComponent {
             ListFooterComponent={this.renderFooter}
           />
           <View style={styles.footer}>
-            <Button style={[styles.footerButton, {backgroundColor: appSettings.accent_color}]}>
+            <Button
+              style={[styles.footerButton, {backgroundColor: appSettings.accent_color}]}
+              onPress={this.gotoCheckout}>
               <Text style={{color: "white", marginEnd: 5}}>CHECKOUT {" | "}</Text>
               <HTMLRender html={cart_data.total} baseFontStyle={{color: "#fff"}} />
             </Button>

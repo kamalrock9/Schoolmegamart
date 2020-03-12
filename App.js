@@ -27,6 +27,10 @@ import Download from "./src/pages/Download";
 import Notification from "./src/pages/Notification";
 import Wallet from "./src/pages/Wallet";
 import ReferAndEarn from "./src/pages/ReferAndEarn";
+import Checkout from "./src/pages/Checkout";
+import BillingAddresss from "./src/pages/BillingAddress";
+import ShippingAddresss from "./src/pages/ShippingAddress";
+import Review from "./src/pages/Review";
 
 //Redux
 import {persistor, store} from "./src/store";
@@ -51,6 +55,9 @@ const HomeStack = createStackNavigator({
   HomeScreen,
   ProductDetailScreen,
   Cart,
+  BillingAddresss,
+  ShippingAddresss,
+  Review,
   WishlistScreen,
 });
 
@@ -84,6 +91,9 @@ const DrawerNavigator = createDrawerNavigator(
     Notification,
     Wallet,
     ReferAndEarn,
+    BillingAddresss,
+    ShippingAddresss,
+    Review,
   },
   {
     contentComponent: Drawer,
