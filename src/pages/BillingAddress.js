@@ -6,7 +6,7 @@ import {useTranslation} from "react-i18next";
 import {CustomPicker} from "react-native-custom-picker";
 import {useNavigation} from "react-navigation-hooks";
 
-function BillingAddresss() {
+function BillingAddresss(props) {
   const navigation = useNavigation();
   const {t} = useTranslation();
   const user = useSelector(state => state.user);
@@ -134,9 +134,13 @@ function BillingAddresss() {
         address_2: address2,
         country: counrtyy,
       };
-      navigation.navigate("Review", {billing: billing, shipping: shipping});
+      navigation.navigate("Review", {
+        ...props.navigation.state.params,
+        billing: billing,
+        shipping: shipping,
+      });
     } else {
-      navigation.navigate("ShippingAddresss", {billing: billing});
+      navigation.navigate("ShippingAddresss", {...props.navigation.state.params, billing: billing});
     }
   };
 

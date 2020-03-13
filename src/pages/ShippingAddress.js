@@ -6,7 +6,7 @@ import {useTranslation} from "react-i18next";
 import {CustomPicker} from "react-native-custom-picker";
 import {useNavigation} from "react-navigation-hooks";
 
-function ShippingAddresss() {
+function ShippingAddresss(props) {
   const navigation = useNavigation();
   const {t} = useTranslation();
   const user = useSelector(state => state.user);
@@ -100,7 +100,7 @@ function ShippingAddresss() {
   };
 
   const gotoReview = () => {
-    let billing = {
+    let shipping = {
       first_name: firstname,
       last_name: lastname,
       company: user.shipping.company,
@@ -111,7 +111,7 @@ function ShippingAddresss() {
       address_2: address2,
       country: counrtyy,
     };
-    navigation.navigate("Review", {billing: billing});
+    navigation.navigate("Review", {...props.navigation.state.params, shipping: shipping});
   };
 
   return (
@@ -188,15 +188,15 @@ function ShippingAddresss() {
         <Button
           style={[
             styles.footerButton,
-            {backgroundColor: appSettings.primary_color, marginStart: 5},
+            {backgroundColor: appSettings.primary_color, marginRight: -5},
           ]}
           onPress={gotoBack}>
-          <Text style={{color: "white", marginEnd: 5}}>PREVIOUS</Text>
+          <Text style={{color: "white"}}>PREVIOUS</Text>
         </Button>
         <Button
-          style={[styles.footerButton, {backgroundColor: appSettings.accent_color, marginEnd: 5}]}
+          style={[styles.footerButton, {backgroundColor: appSettings.accent_color, marginLeft: -5}]}
           onPress={gotoReview}>
-          <Text style={{color: "white", marginEnd: 5}}>NEXT</Text>
+          <Text style={{color: "white"}}>NEXT</Text>
         </Button>
       </View>
     </View>
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   },
   footerButton: {
     flex: 1,
-    height: 40,
+    height: 48,
     marginVertical: 5,
     flexDirection: "row",
     alignItems: "center",
