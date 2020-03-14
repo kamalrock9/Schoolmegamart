@@ -96,20 +96,41 @@ function Auth({onClose}) {
         if (result.isCancelled) {
           Toast.show("Login cancelled", Toast.LONG);
         } else {
-          AccessToken.getCurrentAccessToken().then(data => {
-            const infoRequest = new GraphRequest(
-              "/me?fields=id,first_name,last_name,email,name",
-              {accessToken: data.accessToken},
-              (error, result) => {
-                if (error) {
-                  Toast.show(error.toString(), Toast.LONG);
-                  console.log(error);
-                } else {
-                  console.log(result);
-                }
-              },
-            );
-          });
+          setLoading(true);
+          AccessToken.getCurrentAccessToken()
+            .then(data => {
+              const infoRequest = new GraphRequest(
+                "/me?fields=id,first_name,last_name,email,name",
+                {accessToken: data.accessToken},
+                (error, result) => {
+                  if (error) {
+                    setLoading(false);
+                    Toast.show(error.toString(), Toast.LONG);
+                    //  console.log(error);
+                  } else {
+                    console.log(result);
+                    let details = result;
+                    details.mode = "facebook";
+                    setLoading(true);
+                    ApiClient.post("/social-login", details).then(({data}) => {
+                      console.log(data);
+                      setLoading(false);
+                      if (data.code == 1) {
+                        dispatch(user(data.details));
+                        onClose && onClose();
+                        Toast.show("Login successfully", Toast.LONG);
+                      } else {
+                        Toast.show("Wrong Email / Password.", Toast.LONG);
+                      }
+                    });
+                  }
+                },
+              );
+              new GraphRequestManager().addRequest(infoRequest).start();
+            })
+            .then(error => {
+              setLoading(false);
+            });
         }
       });
     }
