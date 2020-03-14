@@ -8,12 +8,17 @@ import Constants from "service/Config";
 import {ApiClient} from "service";
 import {user} from "store/actions";
 import Toast from "react-native-simple-toast";
+import {GoogleSignin} from "@react-native-community/google-signin";
+import {LoginManager, AccessToken, GraphRequest, GraphRequestManager} from "react-native-fbsdk";
 
 const {width} = Dimensions.get("window");
 
 function Auth({onClose}) {
+  //login
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+
+  //signin
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
   const [signUpEmail, setsignUpEmail] = useState("");
@@ -61,6 +66,54 @@ function Auth({onClose}) {
   const onChangeConfirmPassword = useCallback(text => {
     setconfirmPassword(text);
   });
+
+  const socialLogin = social => () => {
+    if (social == "google") {
+      GoogleSignin.configure();
+      setLoading(true);
+      GoogleSignin.signIn()
+        .then(res => {
+          let details = res.user;
+          details.mode = "google";
+          ApiClient.post("/social-login", details).then(({data}) => {
+            console.log(data);
+            setLoading(false);
+            if (data.code == 1) {
+              dispatch(user(data.details));
+              onClose && onClose();
+              Toast.show("Login successfully", Toast.LONG);
+            } else {
+              Toast.show("Wrong Email / Password.", Toast.LONG);
+            }
+          });
+        })
+        .catch(error => {
+          setLoading(false);
+          console.log(error);
+        });
+    } else {
+      LoginManager.logInWithPermissions(["public_profile", "email"]).then(result => {
+        if (result.isCancelled) {
+          Toast.show("Login cancelled", Toast.LONG);
+        } else {
+          AccessToken.getCurrentAccessToken().then(data => {
+            const infoRequest = new GraphRequest(
+              "/me?fields=id,first_name,last_name,email,name",
+              {accessToken: data.accessToken},
+              (error, result) => {
+                if (error) {
+                  Toast.show(error.toString(), Toast.LONG);
+                  console.log(error);
+                } else {
+                  console.log(result);
+                }
+              },
+            );
+          });
+        }
+      });
+    }
+  };
 
   const _login = () => {
     let param = {
@@ -140,11 +193,15 @@ function Auth({onClose}) {
           <Text style={styles.title}>{t("WELCOME_TO_WOOAPP", {value: Constants.storeName})}</Text>
           <Text style={styles.subtitle}>{t("FASHION_INFO")}</Text>
           <View style={{width: "100%", flexDirection: "row", marginTop: 20}}>
-            <Button style={[styles.socialBtn, {flex: 1, marginEnd: 8}]}>
+            <Button
+              style={[styles.socialBtn, {flex: 1, marginEnd: 8}]}
+              onPress={socialLogin("facebook")}>
               <Icon name="logo-facebook" size={20} color="#FFF" />
               <Text style={[styles.socialBtnText, {marginStart: 8}]}>Facebook</Text>
             </Button>
-            <Button style={[styles.socialBtn, {flex: 1, marginStart: 8}]}>
+            <Button
+              style={[styles.socialBtn, {flex: 1, marginStart: 8}]}
+              onPress={socialLogin("google")}>
               <Icon name="logo-google" size={20} color="#FFF" />
               <Text style={[styles.socialBtnText, {marginStart: 8}]}>Google</Text>
             </Button>
@@ -192,11 +249,15 @@ function Auth({onClose}) {
           <Text style={styles.title}>{t("WELCOME_TO_WOOAPP", {value: Constants.storeName})}</Text>
           <Text style={styles.subtitle}>{t("FASHION_INFO")}</Text>
           <View style={{width: "100%", flexDirection: "row", marginTop: 20}}>
-            <Button style={[styles.socialBtn, {flex: 1, marginEnd: 8}]}>
+            <Button
+              style={[styles.socialBtn, {flex: 1, marginEnd: 8}]}
+              onPress={socialLogin("facebook")}>
               <Icon name="logo-facebook" size={20} color="#FFF" />
               <Text style={[styles.socialBtnText, {marginStart: 8}]}>Facebook</Text>
             </Button>
-            <Button style={[styles.socialBtn, {flex: 1, marginStart: 8}]}>
+            <Button
+              style={[styles.socialBtn, {flex: 1, marginStart: 8}]}
+              onPress={socialLogin("google")}>
               <Icon name="logo-google" size={20} color="#FFF" />
               <Text style={[styles.socialBtnText, {marginStart: 8}]}>Google</Text>
             </Button>
