@@ -1,13 +1,15 @@
 import {View, StyleSheet, ActivityIndicator} from "react-native";
-import {Text, Toolbar, Button, Icon, HTMLRender} from "components";
-import React, {useEffect, useState} from "react";
+import {Text, Toolbar, Button, Icon, HTMLRender, FloatingTextinput} from "components";
+import React, {useEffect, useState, useCallback} from "react";
 import {useTranslation} from "react-i18next";
 import {useSelector} from "react-redux";
 import {ApiClient} from "service";
 import {FlatList} from "react-native-gesture-handler";
-import {isEmpty} from "lodash";
+import {isEmpty, isArray} from "lodash";
 import moment from "moment";
 import {useNavigation} from "react-navigation-hooks";
+import Modal from "react-native-modal";
+import Toast from "react-native-simple-toast";
 
 function Wallet() {
   const navigation = useNavigation();
@@ -18,21 +20,46 @@ function Wallet() {
   const [transaction, setTransaction] = useState([]);
   const [balance, setBalance] = useState("");
   const [loading, setloading] = useState(false);
+  const [showModal, setModal] = useState(false);
+  const [amount, setAmount] = useState("");
+
+  const onChangeAmount = useCallback(text => {
+    setAmount(text);
+  });
+
+  const closeModal = (item, itemEach) => () => {
+    if (item == "false") {
+      setModal(false);
+    } else {
+      if (amount != "") {
+        console.log(amount);
+        setModal(false);
+      } else {
+        Toast.show("Please enter the amount");
+      }
+    }
+  };
+
+  const openModal = () => {
+    setModal(true);
+  };
 
   useEffect(() => {
-    setloading(true);
-    ApiClient.get("/wallet?uid=" + user.id)
-      .then(res => {
-        console.log(res);
-        setloading(false);
-        if (res.status == 200) {
-          setTransaction(res.data.transaction);
-          setBalance(res.data.balance);
-        }
-      })
-      .catch(error => {
-        setloading(false);
-      });
+    navigation.addListener("didFocus", () => {
+      setloading(true);
+      ApiClient.get("/wallet?uid=" + user.id)
+        .then(res => {
+          console.log(res);
+          setloading(false);
+          if (res.status == 200) {
+            setTransaction(res.data.transaction);
+            setBalance(res.data.balance);
+          }
+        })
+        .catch(error => {
+          setloading(false);
+        });
+    });
   }, []);
 
   const _gotoReferAndEarn = () => {
@@ -58,7 +85,9 @@ function Wallet() {
     <View>
       <Toolbar backButton title={t("WALLET")} walletRupee={balance} />
       <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-        <Button style={[styles.btn, {backgroundColor: appSettings.accent_color}]}>
+        <Button
+          style={[styles.btn, {backgroundColor: appSettings.accent_color}]}
+          onPress={openModal}>
           <Icon type="Entypo" name="plus" color={"#ffffff"} size={18} />
           <Text style={styles.txt}>Add Money</Text>
         </Button>
@@ -69,10 +98,43 @@ function Wallet() {
           <Text style={styles.txt}>Refer & Earn</Text>
         </Button>
       </View>
-      {!isEmpty(transaction) && (
+      {isArray(transaction) && transaction.length == 0 ? (
+        <Text style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+          No transaction found
+        </Text>
+      ) : (
         <FlatList data={transaction} renderItem={_renderItem} keyExtractor={_keyExtractor} />
       )}
-      {loading && <ActivityIndicator />}
+      <Modal
+        isVisible={showModal}
+        style={{margin: 0}}
+        onBackButtonPress={closeModal("false", null)}
+        onBackdropPress={closeModal("false", null)}
+        useNativeDriver
+        hideModalContentWhileAnimating>
+        <View style={{backgroundColor: "#fff", marginHorizontal: 64, padding: 20}}>
+          <Text style={{fontWeight: "500", fontSize: 20, marginBottom: 15}}>
+            Add Money To Wallet
+          </Text>
+          <FloatingTextinput
+            label={"Amount"}
+            labelColor="#000000"
+            style={{color: "#000000"}}
+            value={amount}
+            onChangeText={onChangeAmount}
+            keyboardType={"numeric"}
+          />
+          <View style={{flexDirection: "row", justifyContent: "flex-end", marginTop: 30}}>
+            <Button onPress={closeModal("false", null)}>
+              <Text style={{color: appSettings.accent_color}}>CANCEL</Text>
+            </Button>
+            <Button onPress={closeModal("amount", null)} style={{marginStart: 20}}>
+              <Text style={{color: appSettings.accent_color}}>OK</Text>
+            </Button>
+          </View>
+        </View>
+      </Modal>
+      {loading && <ActivityIndicator style={{alignItems: "center", justifyContent: "center"}} />}
     </View>
   );
 }
