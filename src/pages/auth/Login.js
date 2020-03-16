@@ -18,7 +18,9 @@ const initialState = {loginEmail: "", loginPassword: ""};
 function reducer(state = initialState, action) {
   switch (action.type) {
     case "changeEmail":
-      return {...state, ...action.payload};
+      return {...state, loginEmail: action.payload};
+    case "changePassword":
+      return {...state, loginPassword: action.payload};
     default:
       return state;
   }
@@ -27,7 +29,7 @@ function reducer(state = initialState, action) {
 function Auth({onClose}) {
   //login
   // const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
+  //const [loginPassword, setLoginPassword] = useState("");
 
   //signin
   const [firstname, setFirstName] = useState("");
@@ -53,12 +55,11 @@ function Auth({onClose}) {
   };
   ///Login//
   const onChangeEmail = text => {
-    console.log(text);
     dispatch({type: "changeEmail", payload: text});
   };
-  const onChangePassword = useCallback(text => {
-    setLoginPassword(text);
-  });
+  const onChangePassword = text => {
+    dispatch({type: "changePassword", payload: text});
+  };
 
   //signup//
   const onChangeFirstname = useCallback(text => {
@@ -130,7 +131,7 @@ function Auth({onClose}) {
                       console.log(data);
                       setLoading(false);
                       if (data.code == 1) {
-                        dispatch(user(data.details));
+                        dispatchAction(user(data.details));
                         onClose && onClose();
                         Toast.show("Login successfully", Toast.LONG);
                       } else {
@@ -151,11 +152,9 @@ function Auth({onClose}) {
   };
 
   const _login = () => {
-    console.log(state);
-    return;
     let param = {
-      email: loginEmail,
-      password: loginPassword,
+      email: state.loginEmail,
+      password: state.loginPassword,
     };
     setLoading(true);
     ApiClient.post("/login", param)
@@ -163,7 +162,7 @@ function Auth({onClose}) {
         console.log(data);
         setLoading(false);
         if (data.code == 1) {
-          dispatch(user(data.details));
+          dispatchAction(user(data.details));
           onClose && onClose();
         }
       })
@@ -262,7 +261,7 @@ function Auth({onClose}) {
               label={t("PASSWORD")}
               labelColor="#FFFFFF"
               style={{color: "#FFFFFF"}}
-              value={loginPassword}
+              value={state.loginPassword}
               onChangeText={onChangePassword}
             />
           </View>
