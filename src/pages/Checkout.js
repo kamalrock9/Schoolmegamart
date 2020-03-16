@@ -1,7 +1,6 @@
 import React from "react";
 import {View} from "react-native";
 import {Text} from "components";
-import MultiStep from "react-multistep";
 import BillingAddress from "./BillingAddress";
 import ShippingAddress from "./ShippingAddress";
 import Review from "./Review";

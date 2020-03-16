@@ -4,32 +4,28 @@ import {useSelector} from "react-redux";
 import {useNavigation} from "react-navigation-hooks";
 import {HTMLRender, Text, WishlistIcon, ScaledImage} from "components";
 import StarRating from "react-native-star-rating";
+import FitImage from "react-native-fit-image";
 
-function ProductItem({containerStyle, width: propWidth, item}) {
+function ProductItem({containerStyle, width: width, item}) {
   const navigation = useNavigation();
   const {accent_color} = useSelector(state => state.appSettings);
-
-  const [width, setWidth] = useState(propWidth);
 
   const goToProductDetails = () => {
     navigation.push("ProductDetailScreen", item);
   };
 
-  const onLayout = e => {
-    if (!(width || width == e.nativeEvent.layout.width)) {
-      setWidth(Math.floor(e.nativeEvent.layout.width));
-    }
-  };
-
   return (
     <TouchableWithoutFeedback onPress={goToProductDetails}>
-      <View style={[containerStyle, styles.container, {width}]} onLayout={onLayout}>
+      <View style={[containerStyle, styles.container, {width}]}>
         {item.images.length > 0 && (
-          <ScaledImage
+          <>
+            <FitImage source={{uri: item.images[0].src}} width={width} />
+            {/* <ScaledImage
             source={{uri: item.images[0].src}}
             width={width - 1}
-            approxHeight={width ? width : 180}
-          />
+            approxHeight={width ? width : 180} 
+          /> */}
+          </>
         )}
         <View>
           <Text style={[styles.itemMargin, {fontWeight: "600"}]} numberOfLines={1}>
