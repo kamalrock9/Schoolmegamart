@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {View, StyleSheet, TouchableWithoutFeedback} from "react-native";
 import {useSelector} from "react-redux";
 import {useNavigation} from "react-navigation-hooks";
-import {HTMLRender, Text, WishlistIcon, ScaledImage} from "components";
+import {HTMLRender, Text, WishlistIcon} from "components";
 import StarRating from "react-native-star-rating";
 import FitImage from "react-native-fit-image";
 
@@ -17,16 +17,7 @@ function ProductItem({containerStyle, width: width, item}) {
   return (
     <TouchableWithoutFeedback onPress={goToProductDetails}>
       <View style={[containerStyle, styles.container, {width}]}>
-        {item.images.length > 0 && (
-          <>
-            <FitImage source={{uri: item.images[0].src}} width={width} />
-            {/* <ScaledImage
-            source={{uri: item.images[0].src}}
-            width={width - 1}
-            approxHeight={width ? width : 180} 
-          /> */}
-          </>
-        )}
+        {item.images.length > 0 && <FitImage source={{uri: item.images[0].src}} />}
         <View>
           <Text style={[styles.itemMargin, {fontWeight: "600"}]} numberOfLines={1}>
             {item.name}
@@ -64,11 +55,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: "#bdbdbd",
     paddingBottom: 8,
-    justifyContent: "flex-end",
-  },
-  thumb: {
-    resizeMode: "contain",
-    height: 180,
+    //justifyContent: "flex-end",
   },
   star: {
     justifyContent: "flex-start",

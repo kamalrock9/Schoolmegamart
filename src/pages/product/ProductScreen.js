@@ -68,7 +68,7 @@ class ProductScreen extends React.PureComponent {
         //numColumns={2}
         // style={{margin: 2}}
         onEndReached={this.loadProducts}
-        onEndReachedThreshold={0.1}
+        onEndReachedThreshold={0.33}
         showsVerticalScrollIndicator={!refreshing}
         itemContainerStyle={{justifyContent: "flex-start"}}
         ListFooterComponent={
