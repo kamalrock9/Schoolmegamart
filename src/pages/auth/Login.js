@@ -13,7 +13,15 @@ import {LoginManager, AccessToken, GraphRequest, GraphRequestManager} from "reac
 
 const {width} = Dimensions.get("window");
 
-const initialState = {loginEmail: "", loginPassword: ""};
+const initialState = {
+  loginEmail: "",
+  loginPassword: "",
+  firstname: "",
+  lastname: "",
+  signUpEmail: "",
+  password: "",
+  confirmPassword: "",
+};
 
 function reducer(state = initialState, action) {
   switch (action.type) {
@@ -21,22 +29,22 @@ function reducer(state = initialState, action) {
       return {...state, loginEmail: action.payload};
     case "changePassword":
       return {...state, loginPassword: action.payload};
+    case "changeFirstname":
+      return {...state, firstname: action.payload};
+    case "changeLastname":
+      return {...state, lastname: action.payload};
+    case "changeSignupEmail":
+      return {...state, signUpEmail: action.payload};
+    case "changePasswordSignup":
+      return {...state, password: action.payload};
+    case "changeConfirmPassword":
+      return {...state, confirmPassword: action.payload};
     default:
       return state;
   }
 }
 
 function Auth({onClose}) {
-  //login
-  // const [loginEmail, setLoginEmail] = useState("");
-  //const [loginPassword, setLoginPassword] = useState("");
-
-  //signin
-  const [firstname, setFirstName] = useState("");
-  const [lastname, setLastName] = useState("");
-  const [signUpEmail, setsignUpEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setconfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const {t} = useTranslation();
@@ -62,25 +70,25 @@ function Auth({onClose}) {
   };
 
   //signup//
-  const onChangeFirstname = useCallback(text => {
-    setFirstName(text);
-  });
+  const onChangeFirstname = text => {
+    dispatch({type: "changeFirstname", payload: text});
+  };
 
-  const onChangeLastname = useCallback(text => {
-    setLastName(text);
-  });
+  const onChangeLastname = text => {
+    dispatch({type: "changeLastname", payload: text});
+  };
 
-  const onChangeSignupEmail = useCallback(text => {
-    setsignUpEmail(text);
-  });
+  const onChangeSignupEmail = text => {
+    dispatch({type: "changeSignupEmail", payload: text});
+  };
 
-  const onChangepassword = useCallback(text => {
-    setPassword(text);
-  });
+  const onChangepassword = text => {
+    dispatch({type: "changePasswordSignup", payload: text});
+  };
 
-  const onChangeConfirmPassword = useCallback(text => {
-    setconfirmPassword(text);
-  });
+  const onChangeConfirmPassword = text => {
+    dispatch({type: "changeConfirmPassword", payload: text});
+  };
 
   const socialLogin = social => () => {
     if (social == "google") {
@@ -174,20 +182,20 @@ function Auth({onClose}) {
   const _register = () => {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     var bodyFormData = new FormData();
-    bodyFormData.append("fname", firstname);
-    bodyFormData.append("lname", lastname);
-    bodyFormData.append("email", signUpEmail);
-    bodyFormData.append("password", password);
+    bodyFormData.append("fname", state.firstname);
+    bodyFormData.append("lname", state.lastname);
+    bodyFormData.append("email", state.signUpEmail);
+    bodyFormData.append("password", state.password);
 
     if (
-      firstname != "" &&
-      lastname != "" &&
-      signUpEmail != "" &&
-      password != "" &&
-      confirmPassword != ""
+      state.firstname != "" &&
+      state.lastname != "" &&
+      state.signUpEmail != "" &&
+      state.password != "" &&
+      state.confirmPassword != ""
     ) {
-      if (reg.test(signUpEmail) === true) {
-        if (password != confirmPassword) {
+      if (reg.test(state.signUpEmail) === true) {
+        if (state.password != state.confirmPassword) {
           Toast.show("Password does not match", Toast.LONG);
           return;
         }
@@ -308,7 +316,7 @@ function Auth({onClose}) {
             label={t("FIRST_NAME")}
             labelColor="#FFFFFF"
             style={{color: "#FFFFFF"}}
-            value={firstname}
+            value={state.firstname}
             onChangeText={onChangeFirstname}
           />
           <View style={{marginTop: 10}}>
@@ -316,7 +324,7 @@ function Auth({onClose}) {
               label={t("LAST_NAME")}
               labelColor="#FFFFFF"
               style={{color: "#FFFFFF"}}
-              value={lastname}
+              value={state.lastname}
               onChangeText={onChangeLastname}
             />
           </View>
@@ -325,27 +333,25 @@ function Auth({onClose}) {
               label={t("EMAIL")}
               labelColor="#FFFFFF"
               style={{color: "#FFFFFF"}}
-              value={signUpEmail}
+              value={state.signUpEmail}
               onChangeText={onChangeSignupEmail}
             />
           </View>
           <View style={{marginTop: 10}}>
             <FloatingTextinput
-              // secureTextEntry={true}
               label={t("PASSWORD")}
               labelColor="#FFFFFF"
               style={{color: "#FFFFFF"}}
-              value={password}
+              value={state.password}
               onChangeText={onChangepassword}
             />
           </View>
           <View style={{marginTop: 10}}>
             <FloatingTextinput
-              //secureTextEntry={true}
               label={t("CONFIRM_PASSWORD")}
               labelColor="#FFFFFF"
               style={{color: "#FFFFFF"}}
-              value={confirmPassword}
+              value={state.confirmPassword}
               onChangeText={onChangeConfirmPassword}
             />
           </View>
