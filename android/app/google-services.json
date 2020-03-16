@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "303250729052",
+    "firebase_url": "https://wooapp-1f1a6.firebaseio.com",
+    "project_id": "wooapp-1f1a6",
+    "storage_bucket": "wooapp-1f1a6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:303250729052:android:f71c4549d1bb7abe",
+        "android_client_info": {
+          "package_name": "com.phoeniixx.wooapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "303250729052-hm8kq1ej42p4c616cnmng9mkv2j136a6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.phoeniixx.wooapp",
+            "certificate_hash": "eb411e81e94d0517e7ffade9c4e56837a58cc479"
+          }
+        },
+        {
+          "client_id": "303250729052-jinti63hib1kcgb2sklrreruskke729q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.phoeniixx.wooapp",
+            "certificate_hash": "815ebcb147839c47ee8624811d61693b1b7e754a"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBf0vg9fbi7ZlcKlG2zpobHF7U87fQnIqI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "303250729052-1u11sp9liidpo0rqa4vi1ps01jenqc8q.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.phoeniixx.wooapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

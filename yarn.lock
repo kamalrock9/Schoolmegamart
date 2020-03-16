@@ -5390,6 +5390,10 @@ react-native-fast-image@^7.0.2:
   resolved "https://github.com/IntelliJAbhishek/react-native-fit-image#a552a1eea44195a7fee4f8e5bde39f029be498de"
   dependencies:
     prop-types "^15.5.10"
+react-native-fbsdk@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/react-native-fbsdk/-/react-native-fbsdk-1.1.2.tgz#4264903add869d05b84ef55ade9ff720c2957781"
+  integrity sha512-Sp+oja868QVsB5vpEFbwZkEcCJOSBuZgh7UGJzUhaoTCs/zwSUHA6b4QichM7GiTxtQyKfT/F31DtvLj2N/qAQ==
 
 react-native-gesture-handler@^1.5.2:
   version "1.5.2"

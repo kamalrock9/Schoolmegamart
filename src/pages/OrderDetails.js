@@ -95,7 +95,7 @@ function OrderDetails({navigation}) {
         <View style={styles.card}>
           <Text style={{fontSize: 18, fontWeight: "600", color: "#757575"}}>Billing Address</Text>
           <Text style={styles.billingtxt}>
-            {item.billing.company ? item.billing.company : null}
+            {item.billing.company != "" ? item.billing.company : null}
           </Text>
           <Text style={styles.billingtxt}>
             {item.billing.first_name && item.billing.last_name
@@ -120,7 +120,7 @@ function OrderDetails({navigation}) {
         <View style={[styles.card, {marginTop: 16, marginBottom: 30}]}>
           <Text style={{fontSize: 18, fontWeight: "600", color: "#757575"}}>Shipping Address</Text>
           <Text style={styles.billingtxt}>
-            {item.shipping.company ? item.shipping.company : null}
+            {item.shipping.company != "" ? item.shipping.company : null}
           </Text>
           <Text style={styles.billingtxt}>
             {item.shipping.first_name && item.shipping.last_name
