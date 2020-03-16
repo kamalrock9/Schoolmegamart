@@ -1,4 +1,4 @@
-import React, {useRef, useState, useCallback} from "react";
+import React, {useRef, useState, useCallback, useReducer} from "react";
 import {View, StyleSheet, ImageBackground, Dimensions, ActivityIndicator} from "react-native";
 import {Icon, Text, Button, FloatingTextinput} from "components";
 import SwiperFlatList from "react-native-swiper-flatlist";
@@ -13,9 +13,20 @@ import {LoginManager, AccessToken, GraphRequest, GraphRequestManager} from "reac
 
 const {width} = Dimensions.get("window");
 
+const initialState = {loginEmail: "", loginPassword: ""};
+
+function reducer(state = initialState, action) {
+  switch (action.type) {
+    case "changeEmail":
+      return {...state, ...action.payload};
+    default:
+      return state;
+  }
+}
+
 function Auth({onClose}) {
   //login
-  const [loginEmail, setLoginEmail] = useState("");
+  // const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
 
   //signin
@@ -27,7 +38,9 @@ function Auth({onClose}) {
   const [loading, setLoading] = useState(false);
 
   const {t} = useTranslation();
-  const dispatch = useDispatch();
+  const dispatchAction = useDispatch();
+
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const scrollRef = useRef(null);
 
@@ -39,9 +52,10 @@ function Auth({onClose}) {
     scrollRef.current.goToLastIndex();
   };
   ///Login//
-  const onChangeEmail = useCallback(text => {
-    setLoginEmail(text);
-  });
+  const onChangeEmail = text => {
+    console.log(text);
+    dispatch({type: "changeEmail", payload: text});
+  };
   const onChangePassword = useCallback(text => {
     setLoginPassword(text);
   });
@@ -79,7 +93,7 @@ function Auth({onClose}) {
             console.log(data);
             setLoading(false);
             if (data.code == 1) {
-              dispatch(user(data.details));
+              dispatchAction(user(data.details));
               onClose && onClose();
               Toast.show("Login successfully", Toast.LONG);
             } else {
@@ -137,6 +151,8 @@ function Auth({onClose}) {
   };
 
   const _login = () => {
+    console.log(state);
+    return;
     let param = {
       email: loginEmail,
       password: loginPassword,
@@ -237,7 +253,7 @@ function Auth({onClose}) {
             label={t("EMAIL")}
             labelColor="#FFFFFF"
             style={{color: "#FFFFFF"}}
-            value={loginEmail}
+            value={state.loginEmail}
             onChangeText={onChangeEmail}
           />
           <View style={{marginTop: 10}}>
