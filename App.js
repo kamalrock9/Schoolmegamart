@@ -73,15 +73,19 @@ const ProductStack = createStackNavigator({
   WishlistScreen,
 });
 
+const OrderStack = createStackNavigator({
+  Orders,
+  OrderDetails,
+});
+
 const DrawerNavigator = createDrawerNavigator(
   {
     HomeStack,
     ProductStack,
     CategoryStack,
+    OrderStack,
     TawkToChat,
     TermAndCondition,
-    Orders,
-    OrderDetails,
     AccountSetting,
     ManageAddress,
     BillingAddress,

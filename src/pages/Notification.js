@@ -6,25 +6,15 @@ import {useSelector, useDispatch} from "react-redux";
 import {isArray, isEmpty} from "lodash";
 import {SwipeListView} from "react-native-swipe-list-view";
 import {deleteNotification} from "../store/actions";
+import NotificationItem from "./NotificationItem";
 
 function Notification() {
   const dispatch = useDispatch();
   const notification = useSelector(state => state.saveNotification);
   const appSettings = useSelector(state => state.appSettings);
-  console.log(notification);
   const {t} = useTranslation();
 
-  const _renderItem = ({item, index}) => {
-    return (
-      <View style={[styles.card, {marginTop: index > 0 ? 5 : 10, marginBottom: 5}]}>
-        <Icon name="md-notifications" size={24} />
-        <View style={{marginStart: 20}}>
-          <Text style={styles.text}>{item.title}</Text>
-          <Text style={[styles.text, {color: "grey"}]}>{item.body}</Text>
-        </View>
-      </View>
-    );
-  };
+  const _renderItem = ({item, index}) => <NotificationItem item={item} index={index} />;
 
   const deleteItem = item => () => {
     dispatch(deleteNotification(item));
@@ -90,20 +80,6 @@ function Notification() {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    shadowRadius: 2,
-    shadowOpacity: 0.2,
-    shadowOffset: {width: 0, height: 1},
-    elevation: 2,
-    backgroundColor: "#fff",
-    paddingVertical: 15,
-    paddingHorizontal: 10,
-    marginHorizontal: 16,
-    borderRadius: 4,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  text: {lineHeight: 16},
   deleteButton: {
     flex: 1,
     shadowColor: "#000",

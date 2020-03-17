@@ -4,10 +4,10 @@ import {Text, Toolbar} from "components";
 import {WooCommerce} from "service";
 import {useSelector} from "react-redux";
 import moment from "moment";
-import {useNavigation} from "react-navigation-hooks";
+import {useTranslation} from "react-i18next";
 
-function Orders() {
-  const navigation = useNavigation();
+function Orders({navigation}) {
+  const {t} = useTranslation();
   const user = useSelector(state => state.user);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -66,9 +66,11 @@ function Orders() {
           <Text style={[styles.text, styles.font, {color: "#757575"}]}>
             {moment(item.date_created).format("MMM DD,YYYY") +
               " " +
-              moment(item.date_created).format("hh:MM A")}
+              moment(item.date_created).format("hh:mm A")}
           </Text>
-          <Text style={[styles.text, styles.font, {color: "#757575"}]}>kamlesh Gangwar</Text>
+          <Text style={[styles.text, styles.font, {color: "#757575"}]}>
+            {item.billing.first_name + "" + item.billing.last_name}
+          </Text>
         </View>
       </TouchableOpacity>
     );
@@ -78,16 +80,16 @@ function Orders() {
 
   return (
     <View>
-      <Toolbar backButton title="Orders" />
+      <Toolbar backButton title={t("ORDERS")} />
       <FlatList data={orders} renderItem={_renderItem} keyExtractor={_keyExtractor} />
       {loading && <ActivityIndicator style={{alignItems: "center", justifyContent: "center"}} />}
     </View>
   );
 }
 
-// Orders.navigationOptions = {
-//   header: <Toolbar backButton title="Orders" />,
-// };
+Orders.navigationOptions = {
+  header: null,
+};
 
 const styles = StyleSheet.create({
   card: {

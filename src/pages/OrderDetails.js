@@ -2,8 +2,10 @@ import React from "react";
 import {View, Image, FlatList, StyleSheet} from "react-native";
 import {Text, Toolbar} from "components";
 import {isEmpty} from "lodash";
+import {useTranslation} from "react-i18next";
 
 function OrderDetails({navigation}) {
+  const {t} = useTranslation();
   const item = navigation.getParam("item");
   console.log(item);
 
@@ -25,7 +27,9 @@ function OrderDetails({navigation}) {
 
   const _renderItem = ({item, index}) => {
     return (
-      <View style={{flexDirection: "row", alignItems: "center", marginHorizontal: 16}}>
+      <View
+        style={{flexDirection: "row", alignItems: "center", marginHorizontal: 16}}
+        key={"Sap" + item.id}>
         <Image
           style={{height: 100, width: 100}}
           source={{uri: "https://www.bigstockphoto.com/images/homepage/module-6.jpg"}}
@@ -55,12 +59,14 @@ function OrderDetails({navigation}) {
           <Text style={styles.text}>Payment Method</Text>
           <Text style={[styles.text, {color: "#000000"}]}>{item.payment_method_title}</Text>
         </View>
-        <View style={styles.footerSummaryView}>
-          <Text style={styles.text}>
-            {"Shipping (" + item.shipping_lines[0].method_title + ")"}
-          </Text>
-          <Text style={[styles.text, {color: "#000000"}]}>{item.shipping_lines[0].total}</Text>
-        </View>
+        {!isEmpty(item.shipping_lines) && (
+          <View style={styles.footerSummaryView}>
+            <Text style={styles.text}>
+              {"Shipping (" + item.shipping_lines[0].method_title + ")"}
+            </Text>
+            <Text style={[styles.text, {color: "#000000"}]}>{item.shipping_lines[0].total}</Text>
+          </View>
+        )}
         <View style={styles.footerSummaryView}>
           <Text style={styles.text}>Tax</Text>
           <Text style={[styles.text, {color: "#000000"}]}>{item.total_tax}</Text>
@@ -163,7 +169,7 @@ function OrderDetails({navigation}) {
 
   return (
     <View style={{flex: 1}}>
-      <Toolbar backButton title="Orders" />
+      <Toolbar backButton title={t("ORDER") + " #" + item.id} />
       <FlatList
         data={item.line_items}
         renderItem={_renderItem}
@@ -175,6 +181,10 @@ function OrderDetails({navigation}) {
     </View>
   );
 }
+
+OrderDetails.navigationOptions = {
+  header: null,
+};
 
 const styles = StyleSheet.create({
   text: {
