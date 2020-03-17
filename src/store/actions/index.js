@@ -62,3 +62,13 @@ export const updateShipping = data => ({
   type: types.UPDATE_SHIPPING,
   payload: data,
 });
+
+export const saveNotification = data => ({
+  type: types.SAVE_NOTIFICATION,
+  payload: data,
+});
+
+export const deleteNotification = data => ({
+  type: types.DELETE_NOTIFICATION,
+  payload: data,
+});

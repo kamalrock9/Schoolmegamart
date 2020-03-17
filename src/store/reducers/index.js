@@ -5,6 +5,7 @@ import {appSettingsReducer} from "./appSettingsReducer";
 import {wishlistReducer} from "./wishlistReducer";
 import {cartCountReducer} from "./cartCountReducer";
 import {userReducer} from "./userReducer";
+import {saveNotification} from "./saveNotification";
 
 export default combineReducers({
   homeLayout: homeReducer,
@@ -13,4 +14,5 @@ export default combineReducers({
   wishlist: wishlistReducer,
   cartCount: cartCountReducer,
   user: userReducer,
+  saveNotification: saveNotification,
 });
