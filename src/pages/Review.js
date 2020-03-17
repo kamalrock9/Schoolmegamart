@@ -9,7 +9,6 @@ function Review({navigation}) {
   const shipping = navigation.getParam("shipping");
   console.log(shipping);
   const cartData = navigation.getParam("cartData");
-  // console.log(cartData);
 
   const cartdata = Object.assign({}, cartData);
   const [data, setCart] = useState(cartdata);

@@ -34,7 +34,7 @@ const customStyles = {
 };
 
 function CheckoutScreen() {
-  const [stepPos, setStepPos] = useState(2);
+  const [stepPos, setStepPos] = useState(0);
   const appSettings = useReducer(state => state.appSettings);
   const steps = [
     {name: "Billing Adress", component: <BillingAddress />},

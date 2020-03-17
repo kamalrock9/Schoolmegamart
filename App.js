@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 //React-Navigation
 import {createAppContainer, createSwitchNavigator} from "react-navigation";
 import {createStackNavigator} from "react-navigation-stack";
@@ -39,16 +39,46 @@ import {PersistGate} from "redux-persist/lib/integration/react";
 
 //I18nManager.forceRTL(false);
 
-class App extends React.Component {
-  render() {
-    return (
-      <Provider store={store}>
-        <PersistGate persistor={persistor}>
-          <AppContainer />
-        </PersistGate>
-      </Provider>
-    );
-  }
+//Notification
+import OneSignal from "react-native-onesignal";
+import moment from "moment";
+
+function App() {
+  useEffect(() => {
+    OneSignal.init("71c73d59-6d8f-4824-a473-e76fe6663814", {
+      kOSSettingsKeyAutoPrompt: true,
+    });
+    OneSignal.inFocusDisplaying(2);
+    OneSignal.addEventListener("received", onReceived);
+    OneSignal.addEventListener("opened", onOpened);
+    return () => {
+      OneSignal.removeEventListener("received", onReceived);
+      OneSignal.removeEventListener("opened", onOpened);
+    };
+  });
+
+  const onReceived = notification => {
+    console.log("Notification received: ", notification);
+    console.log(moment(notification.payload.additionalData.date).local());
+  };
+
+  const onOpened = openResult => {
+    console.log("Message: ", openResult.notification.payload.body);
+    console.log("Data: ", openResult.notification.payload.additionalData);
+    console.log("isActive: ", openResult.notification.isAppInFocus);
+    console.log("openResult: ", openResult);
+    // navigationDeferred.promise.then(() => {
+    //   NavigationService.navigate("NotificationScreen");
+    // });
+  };
+
+  return (
+    <Provider store={store}>
+      <PersistGate persistor={persistor}>
+        <AppContainer />
+      </PersistGate>
+    </Provider>
+  );
 }
 
 const HomeStack = createStackNavigator({
