@@ -1,5 +1,5 @@
-import React, {useState, useCallback, useEffect} from "react";
-import {View, ScrollView, StyleSheet, Alert, TouchableOpacity} from "react-native";
+import React, {useState, useCallback, useEffect, useReducer} from "react";
+import {View, ScrollView, StyleSheet} from "react-native";
 import {Text, Toolbar, FloatingTextinput, Button} from "components";
 import {useTranslation} from "react-i18next";
 import {useSelector, useDispatch} from "react-redux";
@@ -8,66 +8,102 @@ import {WooCommerce} from "service";
 import {updateShipping} from "../../store/actions";
 import Toast from "react-native-simple-toast";
 
+const initialState = {
+  first_name: "",
+  last_name: "",
+  company: "",
+  city: "",
+  postcode: "",
+  address_1: "",
+  address_2: "",
+  country: "",
+  state: "",
+};
+
+function reducer(state = initialState, action) {
+  switch (action.type) {
+    case "changeFirstname":
+      return {...state, first_name: action.payload};
+    case "changeLastname":
+      return {...state, last_name: action.payload};
+    case "changeCompany":
+      return {...state, company: action.payload};
+    case "changeCity":
+      return {...state, city: action.payload};
+    case "changePostcode":
+      return {...state, postcode: action.payload};
+    case "changeAddress1":
+      return {...state, address_1: action.payload};
+    case "changeAddress2":
+      return {...state, address_2: action.payload};
+    case "changeCountry":
+      return {...state, country: action.payload};
+    case "changeState":
+      return {...state, state: action.payload};
+    default:
+      return state;
+  }
+}
+
 function ShippingAddress() {
   const {t} = useTranslation();
   const user = useSelector(state => state.user);
   const appSettings = useSelector(state => state.appSettings);
-  const dispatch = useDispatch();
+  const dispatchAction = useDispatch();
+
+  const [state, dispatch] = useReducer(reducer, user.shipping);
 
   useEffect(() => {
     let arr = [];
     for (let i in appSettings.countries) arr.push({id: i, name: appSettings.countries[i]});
-    console.log(arr);
     setCountry(arr);
   }, []);
 
-  const [firstname, setFirstname] = useState(user.shipping.first_name);
-  const [lastname, setLastname] = useState(user.shipping.last_name);
-  const [company, setCompany] = useState(user.shipping.company);
-  const [city, setCity] = useState(user.shipping.city);
-  const [postcode, setPostcode] = useState(user.shipping.postcode);
-  const [address1, setAddress1] = useState(user.shipping.address_1);
-  const [address2, setAddress2] = useState(user.shipping.address_2);
-  const [counrtyy, setCountryy] = useState(user.shipping.country);
-  const [state, setState] = useState(user.shipping.state);
-
-  const [country, setCountry] = useState([]);
+  const [arrCountry, setCountry] = useState([]);
 
   const [stateData, setStateData] = useState([]);
 
-  const onChangeFirstname = useCallback(text => {
-    setFirstname(text);
-  });
-  const onChangeLastname = useCallback(text => {
-    setLastname(text);
-  });
-  const onChangeCompany = useCallback(text => {
-    setCompany(text);
-  });
-  const onChangeCity = useCallback(text => {
-    setCity(text);
-  });
-  const onChangePostcode = useCallback(text => {
-    setPostcode(text);
-  });
-  const onChangeAddress1 = useCallback(text => {
-    setAddress1(text);
-  });
-  const onChangeAddress2 = useCallback(text => {
-    setAddress2(text);
-  });
+  const onChangeFirstname = text => {
+    dispatch({type: "changeFirstname", payload: text});
+  };
+  const onChangeLastname = text => {
+    dispatch({type: "changeLastname", payload: text});
+  };
+  const onChangeCompany = text => {
+    dispatch({type: "changeAddress2", payload: text});
+  };
+  const onChangeCity = text => {
+    dispatch({type: "changeAddress2", payload: text});
+  };
+  const onChangePostcode = text => {
+    dispatch({type: "changeAddress2", payload: text});
+  };
+  const onChangeAddress1 = text => {
+    dispatch({type: "changeAddress2", payload: text});
+  };
+  const onChangeAddress2 = text => {
+    dispatch({type: "changeAddress2", payload: text});
+  };
+
+  const onChangeCountry = text => {
+    dispatch({type: "changeCountry", payload: text});
+  };
+
+  const onChangeState = text => {
+    dispatch({type: "changeState", payload: text});
+  };
 
   const _UpdateAddress = () => {
     let param = {
-      first_name: firstname,
-      last_name: lastname,
-      company: company,
-      city: city,
-      state: state,
-      postcode: postcode,
-      address_1: address1,
-      address_2: address2,
-      country: counrtyy,
+      first_name: state.first_name,
+      last_name: state.last_name,
+      company: state.company,
+      city: state.city,
+      state: state.state,
+      postcode: state.postcode,
+      address_1: state.address_1,
+      address_2: state.address_2,
+      country: state.country,
     };
     console.log(param);
 
@@ -77,21 +113,21 @@ function ShippingAddress() {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
     if (
-      firstname == "" &&
-      lastname == "" &&
-      company == "" &&
-      city == "" &&
-      state == "" &&
-      postcode == "" &&
-      address1 == "" &&
-      counrtyy == ""
+      state.first_name == "" &&
+      state.last_name == "" &&
+      state.company == "" &&
+      state.city == "" &&
+      state.state == "" &&
+      state.postcode == "" &&
+      state.address_1 == "" &&
+      state.country == ""
     ) {
       Toast.show("Please fill all the fields");
     } else {
       WooCommerce.post("customers/" + user.id, data).then(res => {
         console.log(res);
         if (res.status == 200) {
-          dispatch(updateShipping(param));
+          dispatchAction(updateShipping(param));
         } else {
           Toast.show("Nothing to update", Toast.LONG);
         }
@@ -116,7 +152,7 @@ function ShippingAddress() {
     return (
       <View style={styles.container}>
         <View>
-          {!selectedItem && <Text style={[styles.text, {color: "grey"}]}>{defaultText}</Text>}
+          {!selectedItem && <Text style={[styles.text, {color: "#000000"}]}>{defaultText}</Text>}
           {selectedItem && (
             <View style={{}}>
               <Text style={[styles.text, {color: selectedItem.color}]}>
@@ -130,8 +166,7 @@ function ShippingAddress() {
   };
 
   const setCount = text => {
-    setCountryy(text.name);
-
+    onChangeCountry(text.name);
     let arr = [];
     let obj = appSettings.county_states[text.id];
     for (let i in obj) arr.push({id: i, name: obj[i]});
@@ -139,7 +174,7 @@ function ShippingAddress() {
   };
 
   const setStateD = text => {
-    setState(text.name);
+    onChangeState(text.name);
   };
 
   return (
@@ -150,21 +185,21 @@ function ShippingAddress() {
           label={t("FIRST_NAME")}
           labelColor="#000000"
           style={{color: "#000000"}}
-          value={firstname}
+          value={state.first_name}
           onChangeText={onChangeFirstname}
         />
         <FloatingTextinput
           label={t("LAST_NAME")}
           labelColor="#000000"
           style={{color: "#000000"}}
-          value={lastname}
+          value={state.last_name}
           onChangeText={onChangeLastname}
         />
         <FloatingTextinput
           label={t("COMPANY")}
           labelColor="#000000"
           style={{color: "#000000"}}
-          value={company}
+          value={state.company}
           onChangeText={onChangeCompany}
         />
 
@@ -172,28 +207,28 @@ function ShippingAddress() {
           label={t("CITY")}
           labelColor="#000000"
           style={{color: "#000000"}}
-          value={city}
+          value={state.city}
           onChangeText={onChangeCity}
         />
         <FloatingTextinput
           label={t("POSTCODE")}
           labelColor="#000000"
           style={{color: "#000000"}}
-          value={postcode}
+          value={state.postcode}
           onChangeText={onChangePostcode}
         />
         <FloatingTextinput
           label={t("ADDRESS_1")}
           labelColor="#000000"
           style={{color: "#000000"}}
-          value={address1}
+          value={state.address_1}
           onChangeText={onChangeAddress1}
         />
         <FloatingTextinput
           label={t("ADDRESS_2")}
           labelColor="#000000"
           style={{color: "#000000"}}
-          value={address2}
+          value={state.address_2}
           onChangeText={onChangeAddress2}
         />
         <>
@@ -201,8 +236,8 @@ function ShippingAddress() {
             Counrty
           </Text>
           <CustomPicker
-            options={country}
-            placeholder={counrtyy}
+            options={arrCountry}
+            placeholder={state.country}
             getLabel={item => item.name}
             optionTemplate={renderOption}
             fieldTemplate={renderField}
@@ -213,7 +248,7 @@ function ShippingAddress() {
           <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 10}}>State</Text>
           <CustomPicker
             options={stateData}
-            placeholder={state}
+            placeholder={state.state}
             getLabel={item => item.name}
             optionTemplate={renderOption}
             fieldTemplate={renderField}

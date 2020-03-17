@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect} from "react";
+import React, {useState, useCallback, useEffect, useReducer} from "react";
 import {View, ScrollView, StyleSheet, Alert, TouchableOpacity} from "react-native";
 import {Text, Toolbar, FloatingTextinput, Button} from "components";
 import {useTranslation} from "react-i18next";
@@ -8,76 +8,118 @@ import {WooCommerce} from "service";
 import {updateBilling} from "../../store/actions";
 import Toast from "react-native-simple-toast";
 
+function user() {
+  return useSelector(state => state.user);
+}
+
+const initialState = {
+  first_name: "",
+  last_name: "",
+  company: "",
+  email: "",
+  phone: "",
+  city: "",
+  postcode: "",
+  address_1: "",
+  address_2: "",
+  country: "",
+  state: "",
+};
+
+function reducer(state = initialState, action) {
+  switch (action.type) {
+    case "changeFirstname":
+      return {...state, first_name: action.payload};
+    case "changeLastname":
+      return {...state, last_name: action.payload};
+    case "changeCompany":
+      return {...state, company: action.payload};
+    case "changeEmail":
+      return {...state, email: action.payload};
+    case "changePhone":
+      return {...state, phone: action.payload};
+    case "changeCity":
+      return {...state, city: action.payload};
+    case "changePostcode":
+      return {...state, postcode: action.payload};
+    case "changeAddress1":
+      return {...state, address_1: action.payload};
+    case "changeAddress2":
+      return {...state, address_2: action.payload};
+    case "changeCountry":
+      return {...state, country: action.payload};
+    case "changeState":
+      return {...state, state: action.payload};
+    default:
+      return state;
+  }
+}
+
 function BillingAddress() {
   const {t} = useTranslation();
   const user = useSelector(state => state.user);
   const appSettings = useSelector(state => state.appSettings);
-  const dispatch = useDispatch();
+  const dispatchAction = useDispatch();
+
+  const [state, dispatch] = useReducer(reducer, user.billing);
 
   useEffect(() => {
     let arr = [];
     for (let i in appSettings.countries) arr.push({id: i, name: appSettings.countries[i]});
-    console.log(arr);
     setCountry(arr);
   }, []);
 
-  const [firstname, setFirstname] = useState(user.billing.first_name);
-  const [lastname, setLastname] = useState(user.billing.last_name);
-  const [company, setCompany] = useState(user.billing.company);
-  const [email, setEmail] = useState(user.billing.email);
-  const [phone, setPhone] = useState(user.billing.phone);
-  const [city, setCity] = useState(user.billing.city);
-  const [postcode, setPostcode] = useState(user.billing.postcode);
-  const [address1, setAddress1] = useState(user.billing.address_1);
-  const [address2, setAddress2] = useState(user.billing.address_2);
-  const [counrtyy, setCountryy] = useState(user.billing.country);
-  const [state, setState] = useState(user.billing.state);
-
-  const [country, setCountry] = useState([]);
+  const [allCountry, setCountry] = useState([]);
 
   const [stateData, setStateData] = useState([]);
 
-  const onChangeFirstname = useCallback(text => {
-    setFirstname(text);
-  });
-  const onChangeLastname = useCallback(text => {
-    setLastname(text);
-  });
-  const onChangeCompany = useCallback(text => {
-    setCompany(text);
-  });
-  const onChangeEmail = useCallback(text => {
-    setEmail(text);
-  });
-  const onChangePhone = useCallback(text => {
-    setPhone(text);
-  });
-  const onChangeCity = useCallback(text => {
-    setCity(text);
-  });
-  const onChangePostcode = useCallback(text => {
-    setPostcode(text);
-  });
-  const onChangeAddress1 = useCallback(text => {
-    setAddress1(text);
-  });
-  const onChangeAddress2 = useCallback(text => {
-    setAddress2(text);
-  });
+  const onChangeFirstname = text => {
+    dispatch({type: "changeFirstname", payload: text});
+  };
+  const onChangeLastname = text => {
+    dispatch({type: "changeLastname", payload: text});
+  };
+  const onChangeCompany = text => {
+    dispatch({type: "changeCompany", payload: text});
+  };
+  const onChangeEmail = text => {
+    dispatch({type: "changeEmail", payload: text});
+  };
+  const onChangePhone = text => {
+    dispatch({type: "changePhone", payload: text});
+  };
+  const onChangeCity = text => {
+    dispatch({type: "changeCity", payload: text});
+  };
+  const onChangePostcode = text => {
+    dispatch({type: "changePostcode", payload: text});
+  };
+  const onChangeAddress1 = text => {
+    dispatch({type: "changeAddress1", payload: text});
+  };
+  const onChangeAddress2 = text => {
+    dispatch({type: "changeAddress2", payload: text});
+  };
+  const onChangeCountry = text => {
+    dispatch({type: "changeCountry", payload: text});
+  };
+  const onChangeState = text => {
+    dispatch({type: "changeState", payload: text});
+  };
 
   const _UpdateAddress = () => {
     let param = {
-      first_name: firstname,
-      last_name: lastname,
-      company: company,
-      email: email,
-      phone: phone,
-      city: city,
-      state: state,
-      postcode: postcode,
-      address_1: address1,
-      address_2: address2,
-      country: counrtyy,
+      first_name: state.first_name,
+      last_name: state.last_name,
+      company: state.company,
+      email: state.email,
+      phone: state.phone,
+      city: state.city,
+      state: state.state,
+      postcode: state.postcode,
+      address_1: state.address_1,
+      address_2: state.address_2,
+      country: state.country,
     };
     console.log(param);
 
@@ -87,25 +129,24 @@ function BillingAddress() {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
     if (
-      firstname == "" &&
-      lastname == "" &&
-      company == "" &&
-      email == "" &&
-      phone == "" &&
-      city == "" &&
-      state == "" &&
-      postcode == "" &&
-      address1 == "" &&
-      counrtyy == ""
+      state.first_name == "" &&
+      state.last_name == "" &&
+      state.company == "" &&
+      state.email == "" &&
+      state.phone == "" &&
+      state.city == "" &&
+      state.state == "" &&
+      state.postcode == "" &&
+      state.address_1 == "" &&
+      state.country == ""
     ) {
       Toast.show("Please fill all the fields");
-    } else if (!reg.test(email)) {
+    } else if (!reg.test(state.email)) {
       Toast.show("Your email address is not correct", Toast.LONG);
     } else {
       WooCommerce.post("customers/" + user.id, data).then(res => {
-        console.log(res);
         if (res.status == 200) {
-          dispatch(updateBilling(param));
+          dispatchAction(updateBilling(param));
         } else {
           Toast.show("Nothing to update", Toast.LONG);
         }
@@ -144,8 +185,7 @@ function BillingAddress() {
   };
 
   const setCount = text => {
-    setCountryy(text.name);
-
+    onChangeCountry(text.name);
     let arr = [];
     let obj = appSettings.county_states[text.id];
     for (let i in obj) arr.push({id: i, name: obj[i]});
@@ -153,7 +193,7 @@ function BillingAddress() {
   };
 
   const setStateD = text => {
-    setState(text.name);
+    onChangeState(text.name);
   };
 
   return (
@@ -164,63 +204,63 @@ function BillingAddress() {
           label={t("FIRST_NAME")}
           labelColor="#000000"
           style={{color: "#000000"}}
-          value={firstname}
+          value={state.first_name}
           onChangeText={onChangeFirstname}
         />
         <FloatingTextinput
           label={t("LAST_NAME")}
           labelColor="#000000"
           style={{color: "#000000"}}
-          value={lastname}
+          value={state.last_name}
           onChangeText={onChangeLastname}
         />
         <FloatingTextinput
           label={t("COMPANY")}
           labelColor="#000000"
           style={{color: "#000000"}}
-          value={company}
+          value={state.company}
           onChangeText={onChangeCompany}
         />
         <FloatingTextinput
           label={t("EMAIL")}
           labelColor="#000000"
           style={{color: "#000000"}}
-          value={email}
+          value={state.email}
           onChangeText={onChangeEmail}
         />
         <FloatingTextinput
           label={t("PHONE_NUMBER")}
           labelColor="#000000"
           style={{color: "#000000"}}
-          value={phone}
+          value={state.phone}
           onChangeText={onChangePhone}
         />
         <FloatingTextinput
           label={t("CITY")}
           labelColor="#000000"
           style={{color: "#000000"}}
-          value={city}
+          value={state.city}
           onChangeText={onChangeCity}
         />
         <FloatingTextinput
           label={t("POSTCODE")}
           labelColor="#000000"
           style={{color: "#000000"}}
-          value={postcode}
+          value={state.postcode}
           onChangeText={onChangePostcode}
         />
         <FloatingTextinput
           label={t("ADDRESS_1")}
           labelColor="#000000"
           style={{color: "#000000"}}
-          value={address1}
+          value={state.address1}
           onChangeText={onChangeAddress1}
         />
         <FloatingTextinput
           label={t("ADDRESS_2")}
           labelColor="#000000"
           style={{color: "#000000"}}
-          value={address2}
+          value={state.address2}
           onChangeText={onChangeAddress2}
         />
         <>
@@ -228,8 +268,8 @@ function BillingAddress() {
             Counrty
           </Text>
           <CustomPicker
-            options={country}
-            placeholder={counrtyy}
+            options={allCountry}
+            placeholder={state.country}
             getLabel={item => item.name}
             optionTemplate={renderOption}
             fieldTemplate={renderField}
@@ -240,7 +280,7 @@ function BillingAddress() {
           <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 10}}>State</Text>
           <CustomPicker
             options={stateData}
-            placeholder={state}
+            placeholder={state.state}
             getLabel={item => item.name}
             optionTemplate={renderOption}
             fieldTemplate={renderField}
