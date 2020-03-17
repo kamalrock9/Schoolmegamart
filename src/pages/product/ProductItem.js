@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: "#bdbdbd",
     paddingBottom: 8,
-    //justifyContent: "flex-end",
+    justifyContent: "flex-end",
   },
   star: {
     justifyContent: "flex-start",

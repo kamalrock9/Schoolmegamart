@@ -7,7 +7,7 @@ import {
   FlatList,
   unstable_batchedUpdates,
 } from "react-native";
-import {Slider, Toolbar} from "components";
+import {Slider, Toolbar, Container} from "components";
 import {useSelector, useDispatch} from "react-redux";
 import {isEmpty} from "lodash";
 import CategoryItem from "./CategoryItem";
@@ -51,67 +51,70 @@ function HomeScreen({navigation}) {
     return <View />;
   } else {
     return (
-      <ScrollView nestedScrollEnabled={true}>
-        <View>
-          <Slider
-            //autoplay
-            //autoplayLoop
-            //autoplayDelay={5}
-            data={layout.banner}
-            approxHeight={180}
+      <Container>
+        <Toolbar menuButton cartButton wishListButton title="HOME" />
+        <ScrollView nestedScrollEnabled={true}>
+          <View>
+            <Slider
+              //autoplay
+              //autoplayLoop
+              //autoplayDelay={5}
+              data={layout.banner}
+              approxHeight={180}
+            />
+          </View>
+
+          <SectonHeader
+            title="Categories"
+            titleEnd="View All"
+            onPress={goTo}
+            onPressArgs={["CategoryScreen"]}
           />
-        </View>
 
-        <SectonHeader
-          title="Categories"
-          titleEnd="View All"
-          onPress={goTo}
-          onPressArgs={["CategoryScreen"]}
-        />
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={layout.categories}
+            keyExtractor={_categoryKeyExtractor}
+            renderItem={CategoryItem}
+            removeClippedSubviews={true}
+          />
 
-        <FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={layout.categories}
-          keyExtractor={_categoryKeyExtractor}
-          renderItem={CategoryItem}
-          removeClippedSubviews={true}
-        />
+          {layout.featured_products && layout.featured_products.length > 0 && (
+            <>
+              <SectonHeader title="Featured" titleEnd="See More" style={{marginTop: 8}} />
+              <ProductsRow keyPrefix="featured" products={layout.featured_products} />
+            </>
+          )}
 
-        {layout.featured_products && layout.featured_products.length > 0 && (
-          <>
-            <SectonHeader title="Featured" titleEnd="See More" style={{marginTop: 8}} />
-            <ProductsRow keyPrefix="featured" products={layout.featured_products} />
-          </>
-        )}
+          {layout.top_rated_products && layout.top_rated_products.length > 0 && (
+            <>
+              <SectonHeader title="Top Rated" titleEnd="See More" style={{marginTop: 8}} />
+              <ProductsRow keyPrefix="toprated" products={layout.top_rated_products} />
+            </>
+          )}
 
-        {layout.top_rated_products && layout.top_rated_products.length > 0 && (
-          <>
-            <SectonHeader title="Top Rated" titleEnd="See More" style={{marginTop: 8}} />
-            <ProductsRow keyPrefix="toprated" products={layout.top_rated_products} />
-          </>
-        )}
+          {layout.sale_products && layout.sale_products.length > 0 && (
+            <>
+              <SectonHeader title="Tranding Offers" titleEnd="See More" style={{marginTop: 8}} />
+              <ProductsRow keyPrefix="sale" products={layout.sale_products} />
+            </>
+          )}
 
-        {layout.sale_products && layout.sale_products.length > 0 && (
-          <>
-            <SectonHeader title="Tranding Offers" titleEnd="See More" style={{marginTop: 8}} />
-            <ProductsRow keyPrefix="sale" products={layout.sale_products} />
-          </>
-        )}
-
-        {layout.top_seller && layout.top_seller.length > 0 && (
-          <>
-            <SectonHeader title="Top Sellers" titleEnd="See More" style={{marginTop: 8}} />
-            <ProductsRow keyPrefix="topseller" products={layout.top_seller} />
-          </>
-        )}
-      </ScrollView>
+          {layout.top_seller && layout.top_seller.length > 0 && (
+            <>
+              <SectonHeader title="Top Sellers" titleEnd="See More" style={{marginTop: 8}} />
+              <ProductsRow keyPrefix="topseller" products={layout.top_seller} />
+            </>
+          )}
+        </ScrollView>
+      </Container>
     );
   }
 }
 
 HomeScreen.navigationOptions = {
-  header: <Toolbar menuButton cartButton wishListButton title="HOME" />,
+  header: null,
 };
 
 const styles = StyleSheet.create({

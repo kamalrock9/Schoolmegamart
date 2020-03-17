@@ -7,7 +7,7 @@ import {withTranslation} from "react-i18next";
 import {withNavigation} from "react-navigation-hooks";
 import Modal from "react-native-modal";
 import Login from "../auth/Login";
-import {getReadableVersion} from "react-native-device-info";
+import {getVersion} from "react-native-device-info";
 import {isEmpty} from "lodash";
 import {logout} from "store/actions";
 
@@ -18,6 +18,7 @@ class Drawer extends React.PureComponent {
       isOpenModal: false,
       isContactModalOpen: false,
     };
+    console.log(getVersion());
   }
 
   _Call = () => {
@@ -210,7 +211,7 @@ class Drawer extends React.PureComponent {
             )}
           </ScrollView>
           <View style={styles.footer}>
-            <Text>{t("VERSION") + " : " + getReadableVersion()}</Text>
+            <Text>{t("VERSION") + " : " + getVersion()}</Text>
           </View>
         </View>
         <Modal

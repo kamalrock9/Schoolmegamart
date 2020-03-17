@@ -71,13 +71,13 @@ function Toolbar({
           {cartButton && (
             <Button onPress={goTo("Cart")} style={styles.menuButton}>
               <Icon color={appSettings.primary_color_text} name="md-cart" size={24} />
-              <Text
+              <View
                 style={[
                   styles.badge,
                   {backgroundColor: appSettings.toolbarbadgecolor || appSettings.accent_color},
                 ]}>
-                {count}
-              </Text>
+                <Text style={styles.badgeText}>{count}</Text>
+              </View>
             </Button>
           )}
           {!isEmpty(walletRupee) && (
@@ -100,14 +100,15 @@ const styles = StyleSheet.create({
     position: "absolute",
     end: 4,
     top: 4,
-    //transform: [{scale: 0.7}],
     width: 20,
     height: 20,
     borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  badgeText: {
     fontSize: 10,
-    textAlign: "center",
-    textAlignVertical: "center",
-    color: "white",
+    color: "#FFF",
     fontWeight: "600",
   },
   title: {

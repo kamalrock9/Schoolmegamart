@@ -30,7 +30,7 @@ class Cart extends React.PureComponent {
   }
 
   gotoCheckout = () => {
-    this.props.navigation.navigate("BillingAddresss", {cartData: this.state.cart_data});
+    this.props.navigation.navigate("CheckoutScreen", {cartData: this.state.cart_data});
   };
 
   ApiCall = params => {

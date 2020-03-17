@@ -1,6 +1,6 @@
 import React from "react";
 import {StyleSheet, Dimensions} from "react-native";
-import {FlatListLoading, Toolbar} from "components";
+import {FlatListLoading, Toolbar, Container} from "components";
 import Toast from "react-native-simple-toast";
 import ProductItem from "./ProductItem";
 import {ApiClient} from "service";
@@ -22,7 +22,7 @@ class ProductScreen extends React.PureComponent {
   }
 
   static navigationOptions = {
-    header: <Toolbar backButton title="PRODUCTS" />,
+    header: null,
   };
 
   componentDidMount() {
@@ -59,22 +59,25 @@ class ProductScreen extends React.PureComponent {
   render() {
     const {products, flatListEndReached, refreshing} = this.state;
     return (
-      <FlatGrid
-        items={products}
-        //keyExtractor={this._keyExtractor}
-        renderItem={this._renderItem}
-        itemDimension={160}
-        spacing={8}
-        //numColumns={2}
-        // style={{margin: 2}}
-        onEndReached={this.loadProducts}
-        onEndReachedThreshold={0.33}
-        showsVerticalScrollIndicator={!refreshing}
-        itemContainerStyle={{justifyContent: "flex-start"}}
-        ListFooterComponent={
-          <FlatListLoading bottomIndicator={!flatListEndReached} centerIndicator={refreshing} />
-        }
-      />
+      <Container>
+        <Toolbar backButton title="PRODUCTS" />
+        <FlatGrid
+          items={products}
+          //keyExtractor={this._keyExtractor}
+          renderItem={this._renderItem}
+          itemDimension={160}
+          spacing={8}
+          //numColumns={2}
+          // style={{margin: 2}}
+          onEndReached={this.loadProducts}
+          onEndReachedThreshold={0.33}
+          showsVerticalScrollIndicator={!refreshing}
+          itemContainerStyle={{justifyContent: "flex-start"}}
+          ListFooterComponent={
+            <FlatListLoading bottomIndicator={!flatListEndReached} centerIndicator={refreshing} />
+          }
+        />
+      </Container>
     );
   }
 }

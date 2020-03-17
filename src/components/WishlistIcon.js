@@ -27,7 +27,7 @@ class WishlistIcon extends React.PureComponent {
           type="MaterialCommunityIcons"
           style={{
             color: appSettings.accent_color,
-            marginHorizontal: 8,
+            margin: 4,
             fontSize: 24,
           }}
         />

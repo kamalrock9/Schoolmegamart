@@ -102,7 +102,7 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
     );
   } else {
     return (
-      <View>
+      <>
         <View
           style={{
             flexDirection: "row",
@@ -136,11 +136,11 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
               <HTMLRender html={item.subtotal} />
               <View style={{flexDirection: "row"}}>
                 <Button style={styles.btn} onPress={decrement(item, index)}>
-                  <Text style={styles.btnTxt}>–</Text>
+                  <Icon name="minus" type="Entypo" size={16} color="#757575" />
                 </Button>
                 <Text style={{paddingHorizontal: 8}}>{item.quantity}</Text>
                 <Button style={styles.btn} onPress={increment(item, index)}>
-                  <Text style={styles.btnTxt}>+</Text>
+                  <Icon name="plus" type="Entypo" size={16} color="#757575" />
                 </Button>
               </View>
             </View>
@@ -168,7 +168,7 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
             </View>
           </View>
         </Modal>
-      </View>
+      </>
     );
   }
 }
@@ -179,10 +179,8 @@ const styles = StyleSheet.create({
   },
   btn: {
     borderWidth: 1,
-    borderColor: "#D2d2d9",
-    backgroundColor: "#D2d2d2",
-    width: 22,
-    height: 22,
+    borderColor: "#dedede",
+    backgroundColor: "#EFEFEF",
     alignItems: "center",
     justifyContent: "center",
   },
