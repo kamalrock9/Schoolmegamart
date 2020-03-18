@@ -1,11 +1,10 @@
 import React from "react";
-import {StyleSheet, Dimensions} from "react-native";
-import {FlatListLoading, Toolbar, Container} from "components";
+import {StyleSheet, View} from "react-native";
+import {FlatListLoading, Toolbar, Container, Text, Button, Icon} from "components";
 import Toast from "react-native-simple-toast";
 import ProductItem from "./ProductItem";
 import {ApiClient} from "service";
 import {FlatGrid} from "react-native-super-grid";
-
 class ProductScreen extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -61,6 +60,20 @@ class ProductScreen extends React.PureComponent {
     return (
       <Container>
         <Toolbar backButton title="PRODUCTS" />
+        <View style={styles.filterView}>
+          <Button style={styles.button}>
+            <Icon name="md-menu" size={20} />
+            <Text style={styles.btntext}>Categories</Text>
+          </Button>
+          <Button style={styles.button}>
+            <Icon name="exchange" type="FontAwesome" size={20} />
+            <Text style={styles.btntext}>Sort By</Text>
+          </Button>
+          <Button style={styles.button}>
+            <Icon name="filter" type="AntDesign" size={20} />
+            <Text style={styles.btntext}>Filter</Text>
+          </Button>
+        </View>
         <FlatGrid
           items={products}
           //keyExtractor={this._keyExtractor}
@@ -88,6 +101,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  filterView: {
+    elevation: 5,
+    paddingHorizontal: 15,
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  button: {
+    paddingVertical: 10,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  btntext: {marginStart: 5},
 });
 
 export default ProductScreen;

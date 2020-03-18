@@ -7,7 +7,7 @@ import HTMLRender from "./HTMLRender";
 import {useSelector} from "react-redux";
 import {useNavigation, useNavigationState} from "react-navigation-hooks";
 import {useTranslation} from "react-i18next";
-import {isEmpty} from "lodash";
+import {isEmpty, isArray} from "lodash";
 
 function Toolbar({
   title,
@@ -24,6 +24,7 @@ function Toolbar({
   const {t} = useTranslation();
   const appSettings = useSelector(state => state.appSettings);
   const count = useSelector(state => state.cartCount);
+  const wishlist = useSelector(state => state.wishlist);
 
   const goTo = route => () => {
     navigation.navigate(route);
@@ -66,6 +67,15 @@ function Toolbar({
           {wishListButton && (
             <Button onPress={goTo("WishlistScreen")} style={styles.menuButton}>
               <Icon color={appSettings.primary_color_text} name="md-heart" size={24} />
+              {isArray(wishlist) && !isEmpty(wishlist) && (
+                <View
+                  style={[
+                    styles.badge,
+                    {backgroundColor: appSettings.toolbarbadgecolor || appSettings.accent_color},
+                  ]}>
+                  <Text style={styles.badgeText}>{wishlist.length}</Text>
+                </View>
+              )}
             </Button>
           )}
           {cartButton && (
