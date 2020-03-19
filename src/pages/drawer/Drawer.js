@@ -211,7 +211,7 @@ class Drawer extends React.PureComponent {
             )}
           </ScrollView>
           <View style={styles.footer}>
-            <Text>{t("VERSION") + " : " + getVersion()}</Text>
+            <Text style={{fontSize: 10}}>{t("v") + getVersion()}</Text>
           </View>
         </View>
         <Modal
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     justifyContent: "center",
     paddingEnd: 16,
-    paddingVertical: 8,
+    paddingVertical: 4,
     borderTopWidth: 0.5,
     borderTopColor: "#dedede",
   },
