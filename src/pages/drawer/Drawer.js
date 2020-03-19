@@ -211,7 +211,7 @@ class Drawer extends React.PureComponent {
             )}
           </ScrollView>
           <View style={styles.footer}>
-            <Text style={{fontSize: 10}}>{t("v") + getVersion()}</Text>
+            <Text style={{fontSize: 12, fontWeight: "300"}}>{t("v") + getVersion()}</Text>
           </View>
         </View>
         <Modal
