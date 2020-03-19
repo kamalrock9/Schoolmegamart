@@ -149,35 +149,31 @@ function BillingAddresss(props) {
       <ScrollView style={{paddingHorizontal: 16}}>
         <FloatingTextinput
           label={t("FIRST_NAME")}
-          labelColor="#000000"
-          style={{color: "#000000"}}
+          labelColor="#757575"
           value={firstname}
           onChangeText={onChangeFirstname}
         />
         <FloatingTextinput
           label={t("LAST_NAME")}
           labelColor="#000000"
-          style={{color: "#000000"}}
           value={lastname}
           onChangeText={onChangeLastname}
         />
         <FloatingTextinput
           label={t("EMAIL")}
           labelColor="#000000"
-          style={{color: "#000000"}}
           value={email}
           onChangeText={onChangeEmail}
         />
         <FloatingTextinput
           label={t("PHONE_NUMBER")}
           labelColor="#000000"
-          style={{color: "#000000"}}
           value={phone}
           onChangeText={onChangePhone}
         />
         <>
           <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 10}}>
-            Counrty
+            Country
           </Text>
           <CustomPicker
             options={country}
@@ -202,65 +198,33 @@ function BillingAddresss(props) {
         <FloatingTextinput
           label={t("CITY")}
           labelColor="#000000"
-          style={{color: "#000000"}}
           value={city}
           onChangeText={onChangeCity}
         />
         <FloatingTextinput
           label={t("POSTCODE")}
           labelColor="#000000"
-          style={{color: "#000000"}}
           value={postcode}
           onChangeText={onChangePostcode}
         />
         <FloatingTextinput
           label={t("ADDRESS_1")}
           labelColor="#000000"
-          style={{color: "#000000"}}
           value={address1}
           onChangeText={onChangeAddress1}
         />
         <FloatingTextinput
           label={t("ADDRESS_2")}
           labelColor="#000000"
-          style={{color: "#000000"}}
           value={address2}
           onChangeText={onChangeAddress2}
         />
       </ScrollView>
-      <View style={{margin: 5, flexDirection: "row", justifyContent: "space-between"}}>
-        <Text>Same For Shipping</Text>
-        <Switch onValueChange={changeSwitch} value={switchh} />
-      </View>
-      <View style={styles.footer}>
-        <Button
-          style={[styles.footerButton, {backgroundColor: appSettings.accent_color}]}
-          onPress={gotoShipping}>
-          <Text style={{color: "white", marginEnd: 5}}>NEXT</Text>
-        </Button>
-      </View>
     </View>
   );
 }
 
-BillingAddresss.navigationOptions = {
-  header: <Toolbar backButton title="Billing Address" />,
-};
-
 const styles = StyleSheet.create({
-  footer: {
-    width: "100%",
-    elevation: 2,
-    backgroundcolor: "#fff",
-  },
-  footerButton: {
-    flex: 1,
-    height: 40,
-    margin: 5,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
   container: {
     borderBottomColor: "#EDEBF2",
     borderBottomWidth: 1,
@@ -285,18 +249,6 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     marginRight: 10,
-  },
-  footer: {
-    width: "100%",
-    flexDirection: "row",
-  },
-  footerButton: {
-    flex: 1,
-    height: 40,
-    margin: 5,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
   },
 });
 

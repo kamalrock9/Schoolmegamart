@@ -28,8 +28,6 @@ import Notification from "./src/pages/Notification";
 import Wallet from "./src/pages/Wallet";
 import ReferAndEarn from "./src/pages/ReferAndEarn";
 import CheckoutScreen from "./src/pages/checkout/CheckoutScreen";
-import BillingAddresss from "./src/pages/BillingAddress";
-import ShippingAddresss from "./src/pages/ShippingAddress";
 import Review from "./src/pages/Review";
 
 //Redux
@@ -51,31 +49,50 @@ class App extends React.Component {
   }
 }
 
-const HomeStack = createStackNavigator({
-  HomeScreen,
-  ProductDetailScreen,
-  Cart,
-  CheckoutScreen,
-  BillingAddresss,
-  ShippingAddresss,
-  Review,
-  WishlistScreen,
-});
+const HomeStack = createStackNavigator(
+  {
+    HomeScreen,
+    ProductDetailScreen,
+    Cart,
+    CheckoutScreen,
+    Review,
+    WishlistScreen,
+  },
+  {
+    defaultNavigationOptions: {
+      header: null,
+    },
+  },
+);
 
-const CategoryStack = createStackNavigator({
-  CategoryScreen,
-  Cart,
-  CheckoutScreen,
-  WishlistScreen,
-});
+const CategoryStack = createStackNavigator(
+  {
+    CategoryScreen,
+    Cart,
+    CheckoutScreen,
+    WishlistScreen,
+  },
+  {
+    defaultNavigationOptions: {
+      header: null,
+    },
+  },
+);
 
-const ProductStack = createStackNavigator({
-  ProductScreen,
-  ProductDetailScreen,
-  CheckoutScreen,
-  Cart,
-  WishlistScreen,
-});
+const ProductStack = createStackNavigator(
+  {
+    ProductScreen,
+    ProductDetailScreen,
+    CheckoutScreen,
+    Cart,
+    WishlistScreen,
+  },
+  {
+    defaultNavigationOptions: {
+      header: null,
+    },
+  },
+);
 
 const DrawerNavigator = createDrawerNavigator(
   {
@@ -94,8 +111,6 @@ const DrawerNavigator = createDrawerNavigator(
     Notification,
     Wallet,
     ReferAndEarn,
-    BillingAddresss,
-    ShippingAddresss,
     Review,
   },
   {
