@@ -1,11 +1,12 @@
 import React from "react";
-import {StyleSheet, Dimensions} from "react-native";
-import {FlatListLoading, Toolbar, Container} from "components";
+import {StyleSheet, View} from "react-native";
+import {FlatListLoading, Toolbar, Container, Text, Button, Icon} from "components";
 import Toast from "react-native-simple-toast";
 import ProductItem from "./ProductItem";
 import {ApiClient} from "service";
 import {FlatGrid} from "react-native-super-grid";
-
+import Filter from "./Filter";
+import Modal from "react-native-modal";
 class ProductScreen extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -13,6 +14,7 @@ class ProductScreen extends React.PureComponent {
       products: [],
       refreshing: true,
       flatListEndReached: false,
+      showFilter: false,
     };
     this.params = {
       page: 0,
@@ -23,6 +25,15 @@ class ProductScreen extends React.PureComponent {
 
   static navigationOptions = {
     header: null,
+  };
+
+  openFilter = () => {
+    console.log("hey");
+    this.setState({showFilter: true});
+  };
+
+  closeFilter = () => {
+    this.setState({showFilter: false});
   };
 
   componentDidMount() {
@@ -57,10 +68,24 @@ class ProductScreen extends React.PureComponent {
   _keyExtractor = item => "products_" + item.id;
 
   render() {
-    const {products, flatListEndReached, refreshing} = this.state;
+    const {products, flatListEndReached, refreshing, showFilter} = this.state;
     return (
       <Container>
         <Toolbar backButton title="PRODUCTS" />
+        <View style={styles.filterView}>
+          <Button style={styles.button}>
+            <Icon name="md-menu" size={20} />
+            <Text style={styles.btntext}>Categories</Text>
+          </Button>
+          <Button style={styles.button}>
+            <Icon name="exchange" type="FontAwesome" size={20} />
+            <Text style={styles.btntext}>Sort By</Text>
+          </Button>
+          <Button style={styles.button} onPress={this.openFilter}>
+            <Icon name="filter" type="AntDesign" size={20} />
+            <Text style={styles.btntext}>Filter</Text>
+          </Button>
+        </View>
         <FlatGrid
           items={products}
           //keyExtractor={this._keyExtractor}
@@ -77,6 +102,20 @@ class ProductScreen extends React.PureComponent {
             <FlatListLoading bottomIndicator={!flatListEndReached} centerIndicator={refreshing} />
           }
         />
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={showFilter}
+          onRequestClose={this.closeFilter}>
+          <Filter
+            // data={this.state.flights}
+            onBackPress={this.closeFilter}
+            // filterValues={this.state.filterValues}
+            // onChangeFilter={this.onChangeFilter}
+            // flight_type={flight_type}
+            // filter={this.filter}
+          />
+        </Modal>
       </Container>
     );
   }
@@ -88,6 +127,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  filterView: {
+    elevation: 5,
+    paddingHorizontal: 15,
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  button: {
+    paddingVertical: 10,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  btntext: {marginStart: 5},
 });
 
 export default ProductScreen;

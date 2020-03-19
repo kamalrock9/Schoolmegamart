@@ -153,7 +153,7 @@ class Drawer extends React.PureComponent {
             <View style={styles.divider} />
             {!isEmpty(user) && (
               <>
-                <Button style={styles.button} onPress={this.navigateToScreen("Orders")}>
+                <Button style={styles.button} onPress={this.navigateToScreen("OrderStack")}>
                   <Icon name="list-unordered" type="Octicons" style={styles.icon} />
                   <Text style={styles.text}>{t("ORDERS")}</Text>
                 </Button>

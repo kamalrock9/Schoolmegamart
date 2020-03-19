@@ -72,7 +72,6 @@ function Wallet() {
         <View style={{flexDirection: "row", justifyContent: "space-between", marginBottom: 8}}>
           <Text style={styles.text}>{item.details[0]}</Text>
           <HTMLRender html={item.amount[0]} baseFontStyle={[{color: "green"}, styles.text]} />
-          {/* <Text style={{fontWeight: "500", fontSize: 16, color: "green"}}>{item.amount[0]}</Text> */}
         </View>
         <Text style={styles.text}>{moment(item.date[0], "MM DD,YYYY").format("MMM DD,YYYY")}</Text>
       </View>

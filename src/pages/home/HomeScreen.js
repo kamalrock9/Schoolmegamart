@@ -13,8 +13,9 @@ import {isEmpty} from "lodash";
 import CategoryItem from "./CategoryItem";
 import SectonHeader from "./SectonHeader";
 import ProductsRow from "../product/ProductsRow";
-import {saveHomeLayout} from "store/actions";
+import {saveHomeLayout, saveNotification} from "store/actions";
 import {ApiClient} from "service";
+import OneSignal from "react-native-onesignal";
 
 function HomeScreen({navigation}) {
   const [loading, setLoading] = useState(false);
@@ -35,7 +36,31 @@ function HomeScreen({navigation}) {
       .catch(e => {
         setLoading(false);
       });
+
+    OneSignal.init("71c73d59-6d8f-4824-a473-e76fe6663814", {
+      kOSSettingsKeyAutoPrompt: true,
+    });
+    OneSignal.inFocusDisplaying(2);
+    OneSignal.addEventListener("received", onReceived);
+    OneSignal.addEventListener("opened", onOpened);
+    return () => {
+      OneSignal.removeEventListener("received", onReceived);
+      OneSignal.removeEventListener("opened", onOpened);
+    };
   }, []);
+
+  const onReceived = notification => {
+    console.log("Notification received: ", notification);
+    dispatch(saveNotification(notification.payload));
+  };
+
+  const onOpened = openResult => {
+    console.log("Message: ", openResult.notification.payload);
+    console.log("openResult: ", openResult.notification);
+    // navigationDeferred.promise.then(() => {
+    //   NavigationService.navigate("NotificationScreen");
+    // });
+  };
 
   const goTo = (route, params = {}) => {
     navigation.navigate(route, params);

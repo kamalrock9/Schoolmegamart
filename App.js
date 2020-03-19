@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 //React-Navigation
 import {createAppContainer, createSwitchNavigator} from "react-navigation";
 import {createStackNavigator} from "react-navigation-stack";
@@ -17,8 +17,8 @@ import ProductDetailScreen from "./src/pages/product/ProductDetailScreen";
 import Cart from "./src/pages/Cart/Cart";
 import WishlistScreen from "./src/pages/WishlistScreen";
 import TermAndCondition from "./src/pages/TermAndCondition";
-import Orders from "./src/pages/Orders";
-import OrderDetails from "./src/pages/OrderDetails";
+import Orders from "./src/pages/Order/Orders";
+import OrderDetails from "./src/pages/Order/OrderDetails";
 import AccountSetting from "./src/pages/AccountSetting";
 import ManageAddress from "./src/pages/manageAddress/ManageAddress";
 import BillingAddress from "./src/pages/manageAddress/BillingAddress";
@@ -35,18 +35,14 @@ import {persistor, store} from "./src/store";
 import {Provider} from "react-redux";
 import {PersistGate} from "redux-persist/lib/integration/react";
 
-//I18nManager.forceRTL(false);
-
-class App extends React.Component {
-  render() {
-    return (
-      <Provider store={store}>
-        <PersistGate persistor={persistor}>
-          <AppContainer />
-        </PersistGate>
-      </Provider>
-    );
-  }
+function App() {
+  return (
+    <Provider store={store}>
+      <PersistGate persistor={persistor}>
+        <AppContainer />
+      </PersistGate>
+    </Provider>
+  );
 }
 
 const HomeStack = createStackNavigator(
@@ -94,15 +90,19 @@ const ProductStack = createStackNavigator(
   },
 );
 
+const OrderStack = createStackNavigator({
+  Orders,
+  OrderDetails,
+});
+
 const DrawerNavigator = createDrawerNavigator(
   {
     HomeStack,
     ProductStack,
     CategoryStack,
+    OrderStack,
     TawkToChat,
     TermAndCondition,
-    Orders,
-    OrderDetails,
     AccountSetting,
     ManageAddress,
     BillingAddress,
