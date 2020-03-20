@@ -1,10 +1,10 @@
 import React from "react";
-import {StyleSheet, View} from "react-native";
-import {FlatListLoading, Toolbar, Container, Text, Button, Icon} from "components";
+import { StyleSheet, View } from "react-native";
+import { FlatListLoading, Toolbar, Container, Text, Button, Icon } from "components";
 import Toast from "react-native-simple-toast";
 import ProductItem from "./ProductItem";
-import {ApiClient} from "service";
-import {FlatGrid} from "react-native-super-grid";
+import { ApiClient } from "service";
+import { FlatGrid } from "react-native-super-grid";
 import Filter from "./Filter";
 import Modal from "react-native-modal";
 class ProductScreen extends React.PureComponent {
@@ -15,6 +15,11 @@ class ProductScreen extends React.PureComponent {
       refreshing: true,
       flatListEndReached: false,
       showFilter: false,
+      filterValues: {
+        price: [],
+        categories: [],
+      },
+      filterProducts: []
     };
     this.params = {
       page: 0,
@@ -28,12 +33,11 @@ class ProductScreen extends React.PureComponent {
   };
 
   openFilter = () => {
-    console.log("hey");
-    this.setState({showFilter: true});
+    this.setState({ showFilter: true });
   };
 
   closeFilter = () => {
-    this.setState({showFilter: false});
+    this.setState({ showFilter: false });
   };
 
   componentDidMount() {
@@ -45,10 +49,18 @@ class ProductScreen extends React.PureComponent {
       return;
     }
     this.params.page++;
+
+    const { filterValues } = this.state;
+    let params = {
+      attribute: "Color",
+      attribute_term: filterValues.SelectedColor
+    }
+
     ApiClient.get("custom-products", this.params)
-      .then(({data}) => {
+      .then(({ data }) => {
         this.setState({
           products: [...this.state.products, ...data],
+          filterProducts: [...this.state.products, ...data],
           flatListEndReached: data.length < this.params.per_page,
           refreshing: false,
         });
@@ -56,9 +68,57 @@ class ProductScreen extends React.PureComponent {
       .catch(e => {
         Toast.show(e.toString(), Toast.LONG);
       });
+
+    let p = this.joinProductIds(this.state.filterProducts);
+    let param = {
+      product: p
+    }
+    ApiClient.get("products/custom-attributes?hide_empty=true", param).then(({ data }) => {
+      console.log(data);
+      for (var i = 0; i < data.length; i++) {
+        let name = data[i].name;
+
+        let newdata = { ...this.state.filterValues, [name]: data[i].options }
+        console.log(newdata);
+        this.setState({ filterValues: newdata })
+        console.log(this.state.filterValues);
+
+      }
+    });
   };
 
-  _renderItem = ({item, index}) => {
+  joinProductIds(p) {
+    let arr = [];
+    for (let i of p) {
+      if (i.attributes.length > 0) {
+        arr.push(i.id);
+      }
+    }
+    return arr.join(",");
+  }
+
+  onChangeFilter = filterValues => {
+    console.log(filterValues);
+    this.setState({ filterValues });
+
+  };
+  filter = () => {
+    const { filterValues, products } = this.state
+    let filterProducts = [];
+
+    /******FILTER*****/
+    filterProducts = products.filter(item => {
+      return (
+        (filterValues.price.length == 0 ||
+          (filterValues.price[0] <= item.price &&
+            filterValues.price[1] >= item.price))
+      )
+    })
+
+    this.setState({ filterProducts, showFilter: false });
+  }
+
+  _renderItem = ({ item, index }) => {
     return (
       /***** For providing dynamic width to scaledimages 
       {width - (MarginVertical of Container + borderWidth)}/2] ****/
@@ -68,7 +128,7 @@ class ProductScreen extends React.PureComponent {
   _keyExtractor = item => "products_" + item.id;
 
   render() {
-    const {products, flatListEndReached, refreshing, showFilter} = this.state;
+    const { products, flatListEndReached, refreshing, showFilter, filterValues, filterProducts } = this.state;
     return (
       <Container>
         <Toolbar backButton title="PRODUCTS" />
@@ -87,7 +147,7 @@ class ProductScreen extends React.PureComponent {
           </Button>
         </View>
         <FlatGrid
-          items={products}
+          items={filterProducts}
           //keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
           itemDimension={160}
@@ -97,7 +157,7 @@ class ProductScreen extends React.PureComponent {
           onEndReached={this.loadProducts}
           onEndReachedThreshold={0.33}
           showsVerticalScrollIndicator={!refreshing}
-          itemContainerStyle={{justifyContent: "flex-start"}}
+          itemContainerStyle={{ justifyContent: "flex-start" }}
           ListFooterComponent={
             <FlatListLoading bottomIndicator={!flatListEndReached} centerIndicator={refreshing} />
           }
@@ -108,12 +168,12 @@ class ProductScreen extends React.PureComponent {
           visible={showFilter}
           onRequestClose={this.closeFilter}>
           <Filter
-            // data={this.state.flights}
+            data={products}
             onBackPress={this.closeFilter}
-            // filterValues={this.state.filterValues}
-            // onChangeFilter={this.onChangeFilter}
+            filterVal={filterValues}
+            onChangeFilter={this.onChangeFilter}
             // flight_type={flight_type}
-            // filter={this.filter}
+            filter={this.filter}
           />
         </Modal>
       </Container>
@@ -139,7 +199,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  btntext: {marginStart: 5},
+  btntext: { marginStart: 5 },
 });
 
 export default ProductScreen;
