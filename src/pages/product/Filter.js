@@ -8,6 +8,7 @@ import MultiSlider from "@ptomasroos/react-native-multi-slider";
 
 function Filter({ onBackPress, data, filterVal, onChangeFilter, filter }) {
   console.log(filterVal);
+  console.log(data)
   const { primary_color_dark, primary_color, primary_color_text } = useSelector(
     state => state.appSettings,
   );
@@ -56,7 +57,7 @@ function Filter({ onBackPress, data, filterVal, onChangeFilter, filter }) {
       //setcolorFilter(newdata);
       //console.log(colorFilter);
       var newDataVal = { ...filterVal, [key]: newdata };
-      if (key == "SelectedSize") {
+      if (key == "pa_size") {
         setsizeFilter(newDataVal[key])
       } else {
         setcolorFilter(newDataVal[key])
@@ -68,7 +69,7 @@ function Filter({ onBackPress, data, filterVal, onChangeFilter, filter }) {
       console.log(newVal);
       //setcolorFilter(newdata)
       var newDataVal = { ...filterVal, [key]: newVal };
-      if (key == "SelectedSize") {
+      if (key == "pa_size") {
         setsizeFilter(newDataVal[key])
       } else {
         setcolorFilter(newDataVal[key])
@@ -160,12 +161,12 @@ function Filter({ onBackPress, data, filterVal, onChangeFilter, filter }) {
                 alignItems: "center",
                 padding: 8,
               }}>
-              {filterVal.Color.map((item, index) => (
+              {filterVal.Color.options.map((item, index) => (
                 <CheckBox
                   label={item.name}
                   key={"color" + item + index}
-                  checked={filterVal["SelectedColor"] ? filterVal["SelectedColor"].includes(item.name) : colorFilter.includes(item.name)}
-                  onPress={updateFilter("SelectedColor", item.name, index)}
+                  checked={filterVal["pa_color"] ? filterVal["pa_color"].includes(item.name) : colorFilter.includes(item.name)}
+                  onPress={updateFilter(filterVal.Color.slug, item.name, index)}
                 />
               ))}
             </View>
@@ -177,12 +178,12 @@ function Filter({ onBackPress, data, filterVal, onChangeFilter, filter }) {
                 alignItems: "center",
                 padding: 8,
               }}>
-              {filterVal.Size.map((item, index) => (
+              {filterVal.Size.options.map((item, index) => (
                 <CheckBox
                   label={item.name}
                   key={"size" + item + index}
-                  checked={filterVal["SelectedSize"] ? filterVal["SelectedSize"].includes(item.name) : sizeFilter.includes(item.name)}
-                  onPress={updateFilter("SelectedSize", item.name, index)}
+                  checked={filterVal["pa_size"] ? filterVal["pa_size"].includes(item.name) : sizeFilter.includes(item.name)}
+                  onPress={updateFilter(filterVal.Size.slug, item.name, index)}
                 />
               ))}
             </View>

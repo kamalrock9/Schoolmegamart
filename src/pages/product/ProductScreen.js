@@ -50,17 +50,22 @@ class ProductScreen extends React.PureComponent {
     }
     this.params.page++;
 
+    console.log("load product");
     const { filterValues } = this.state;
-    let params = {
-      attribute: "Color",
-      attribute_term: filterValues.SelectedColor
+    //let params = {};
+    if (filterValues.pa_color) {
+      this.params.pa_color = filterValues.pa_color
     }
+    if (filterValues.pa_size) {
+      this.params.pa_size = filterValues.pa_size
+    }
+    console.log(this.params);
 
     ApiClient.get("custom-products", this.params)
       .then(({ data }) => {
         this.setState({
           products: [...this.state.products, ...data],
-          filterProducts: [...this.state.products, ...data],
+          filterProducts: data,
           flatListEndReached: data.length < this.params.per_page,
           refreshing: false,
         });
@@ -77,8 +82,7 @@ class ProductScreen extends React.PureComponent {
       console.log(data);
       for (var i = 0; i < data.length; i++) {
         let name = data[i].name;
-
-        let newdata = { ...this.state.filterValues, [name]: data[i].options }
+        let newdata = { ...this.state.filterValues, [name]: data[i] }
         console.log(newdata);
         this.setState({ filterValues: newdata })
         console.log(this.state.filterValues);
@@ -100,10 +104,13 @@ class ProductScreen extends React.PureComponent {
   onChangeFilter = filterValues => {
     console.log(filterValues);
     this.setState({ filterValues });
-
+    //this.loadProducts();
   };
   filter = () => {
-    const { filterValues, products } = this.state
+    console.log("filter");
+    const { filterValues, products } = this.state;
+    this.setState({ filterProducts: [], flatListEndReached: false });
+    this.loadProducts();
     let filterProducts = [];
 
     /******FILTER*****/
@@ -114,8 +121,7 @@ class ProductScreen extends React.PureComponent {
             filterValues.price[1] >= item.price))
       )
     })
-
-    this.setState({ filterProducts, showFilter: false });
+    this.setState({  filterProducts, showFilter: false });
   }
 
   _renderItem = ({ item, index }) => {
