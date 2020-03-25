@@ -7,14 +7,26 @@ import { ApiClient } from "service";
 import { FlatGrid } from "react-native-super-grid";
 import Filter from "./Filter";
 import Modal from "react-native-modal";
+import { withTranslation } from "react-i18next";
 class ProductScreen extends React.PureComponent {
+
+  static navigationOptions = {
+    header: null
+  };
+
   constructor(props) {
     super(props);
+
+     const { feature, sortby, on_sale } = props.navigation.state.params;
+
+    //var feature = props.navigation.state.params.feature;
+    //console.log(feature);
     this.state = {
       products: [],
       refreshing: true,
       flatListEndReached: false,
       showFilter: false,
+      showFilterSort: false,
       filterValues: {
         price: [],
         categories: [],
@@ -24,48 +36,68 @@ class ProductScreen extends React.PureComponent {
     this.params = {
       page: 0,
       per_page: 10,
-      sort: "default",
+      on_sale: '',
+      sort: "popularity",
+      featured: ''
     };
-  }
 
-  static navigationOptions = {
-    header: null,
-  };
+  }
 
   openFilter = () => {
     this.setState({ showFilter: true });
   };
 
+  openFilterForSort = () => {
+    this.setState({ showFilterSort: true, flatListEndReached: false });
+  }
+
   closeFilter = () => {
     this.setState({ showFilter: false });
   };
 
+  closeFilterForSort = () => {
+    this.setState({ showFilterSort: false });
+  }
+
+  sortData = text => () => {
+    this.setState({ showFilterSort: false, products: [], filterProducts: [], flatListEndReached: false });
+    this.params.sort = text;
+    this.params.page = 0;
+    this.loadProducts();
+  }
+
   componentDidMount() {
     this.loadProducts();
+    // this.props.navigation.addListener('focus',
+    //   () => { this.loadProducts })
   }
 
   loadProducts = () => {
     if (this.state.flatListEndReached) {
+      this.filter();
+    }
+    if (this.state.flatListEndReached) {
       return;
     }
+
     this.params.page++;
 
     console.log("load product");
-    const { filterValues } = this.state;
-    //let params = {};
+    const { filterValues, sortBy } = this.state;
+    let filterData = {};
     if (filterValues.pa_color) {
-      this.params.pa_color = filterValues.pa_color
+      filterData.pa_color = filterValues.pa_color;
     }
     if (filterValues.pa_size) {
-      this.params.pa_size = filterValues.pa_size
+      filterData.pa_size = filterValues.pa_size
     }
     console.log(this.params);
 
-    ApiClient.get("custom-products", this.params)
+    ApiClient.get("custom-products", this.params, filterData)
       .then(({ data }) => {
         this.setState({
-          products: [...this.state.products, ...data],
-          filterProducts: data,
+          products: this.state.products.concat(data),
+          filterProducts: this.state.products.concat(data),
           flatListEndReached: data.length < this.params.per_page,
           refreshing: false,
         });
@@ -79,14 +111,10 @@ class ProductScreen extends React.PureComponent {
       product: p
     }
     ApiClient.get("products/custom-attributes?hide_empty=true", param).then(({ data }) => {
-      console.log(data);
       for (var i = 0; i < data.length; i++) {
         let name = data[i].name;
         let newdata = { ...this.state.filterValues, [name]: data[i] }
-        console.log(newdata);
         this.setState({ filterValues: newdata })
-        console.log(this.state.filterValues);
-
       }
     });
   };
@@ -102,18 +130,23 @@ class ProductScreen extends React.PureComponent {
   }
 
   onChangeFilter = filterValues => {
-    console.log(filterValues);
     this.setState({ filterValues });
-    //this.loadProducts();
+    if (filterValues.pa_size || filterValues.pa_color) {
+      this.setState({ flatListEndReached: false });
+    }
   };
   filter = () => {
     console.log("filter");
-    const { filterValues, products } = this.state;
-    this.setState({ filterProducts: [], flatListEndReached: false });
-    this.loadProducts();
+    const { filterValues, products, flatListEndReached } = this.state;
+    // this.setState({ filterProducts: [], products: [], flatListEndReached: false });
     let filterProducts = [];
 
+    if (!flatListEndReached) {
+      this.loadProducts();
+    }
+
     /******FILTER*****/
+    console.log("after load");
     filterProducts = products.filter(item => {
       return (
         (filterValues.price.length == 0 ||
@@ -121,7 +154,8 @@ class ProductScreen extends React.PureComponent {
             filterValues.price[1] >= item.price))
       )
     })
-    this.setState({  filterProducts, showFilter: false });
+
+    this.setState({ filterProducts, showFilter: false });
   }
 
   _renderItem = ({ item, index }) => {
@@ -134,16 +168,17 @@ class ProductScreen extends React.PureComponent {
   _keyExtractor = item => "products_" + item.id;
 
   render() {
-    const { products, flatListEndReached, refreshing, showFilter, filterValues, filterProducts } = this.state;
+    const { products, flatListEndReached, refreshing, showFilter, showFilterSort, filterValues, filterProducts } = this.state;
+    const { t } = this.props;
     return (
       <Container>
         <Toolbar backButton title="PRODUCTS" />
         <View style={styles.filterView}>
-          <Button style={styles.button}>
+          <Button style={styles.button} onPress={this.openFilter}>
             <Icon name="md-menu" size={20} />
             <Text style={styles.btntext}>Categories</Text>
           </Button>
-          <Button style={styles.button}>
+          <Button style={styles.button} onPress={this.openFilterForSort}>
             <Icon name="exchange" type="FontAwesome" size={20} />
             <Text style={styles.btntext}>Sort By</Text>
           </Button>
@@ -178,14 +213,55 @@ class ProductScreen extends React.PureComponent {
             onBackPress={this.closeFilter}
             filterVal={filterValues}
             onChangeFilter={this.onChangeFilter}
-            // flight_type={flight_type}
             filter={this.filter}
           />
+        </Modal>
+        <Modal
+          style={{ justifyContent: "flex-end", margin: 0, marginTop: "auto" }}
+          onBackButtonPress={this.closeFilterForSort}
+          onBackdropPress={this.closeFilterForSort}
+          hasBackdrop
+          useNativeDriver
+          animationType="slide"
+          transparent={true}
+          backdropColor={'black'}
+          backdropOpacity={1}
+          visible={showFilterSort}
+          onRequestClose={this.closeFilterForSort}>
+          <View
+            style={{ padding: 15, backgroundColor: "#fff" }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", paddingBottom: 5 }}>
+              <Text style={{ fontWeight: "400", fontSize: 16 }}>Sort By</Text>
+              <Button onPress={this.closeFilterForSort}><Icon type="Entypo" name="cross" size={24} /></Button>
+            </View>
+            <Button style={styles.sortbtn} onPress={this.sortData("popularity")}>
+              <Text style={{ color: this.params.sort == "popularity" ? "#0275f9" : "#000" }}>{t("POPULARITY")}</Text>
+              {this.params.sort == "popularity" && <Icon name="md-checkmark" size={20} color={this.params.sort == "popularity" ? "#0275f9" : "#000"} />}
+            </Button>
+            <Button style={styles.sortbtn} onPress={this.sortData("rating")}>
+              <Text style={{ color: this.params.sort == "rating" ? "#0275f9" : "#000" }}>{t("AVERAGE_RATING")}</Text>
+              {this.params.sort == "rating" && <Icon name="md-checkmark" size={20} color={this.params.sort == "rating" ? "#0275f9" : "#000"} />}
+            </Button>
+            <Button style={styles.sortbtn} onPress={this.sortData("date")}>
+              <Text style={{ color: this.params.sort == "date" ? "#0275f9" : "#000" }}>{t("NEWNESS")}</Text>
+              {this.params.sort == "date" && <Icon name="md-checkmark" size={20} color={this.params.sort == "date" ? "#0275f9" : "#000"} />}
+            </Button>
+            <Button style={styles.sortbtn} onPress={this.sortData("price_asc")}>
+              <Text style={{ color: this.params.sort == "price_asc" ? "#0275f9" : "#000" }}>{t("PRICE_ASC")}</Text>
+              {this.params.sort == "price_asc" && <Icon name="md-checkmark" size={20} color={this.params.sort == "price_asc" ? "#0275f9" : "#000"} />}
+            </Button>
+            <Button style={styles.sortbtn} onPress={this.sortData("price_desc")}>
+              <Text style={{ color: this.params.sort == "price_desc" ? "#0275f9" : "#000" }}>{t("PRICE_DESC")}</Text>
+              {this.params.sort == "price_desc" && <Icon name="md-checkmark" size={20} color={this.params.sort == "price_desc" ? "#0275f9" : "#000"} />}
+            </Button>
+          </View>
+
         </Modal>
       </Container>
     );
   }
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -206,6 +282,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   btntext: { marginStart: 5 },
+  sortbtn: {
+    paddingTop: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingBottom: 10
+  }
 });
 
-export default ProductScreen;
+export default withTranslation()(ProductScreen);

@@ -1,6 +1,6 @@
 import React from "react";
-import {View, StyleSheet} from "react-native";
-import {Text, Button, Icon} from "components";
+import { View, StyleSheet } from "react-native";
+import { Text, Button, Icon } from "components";
 
 class SectonHeader extends React.PureComponent {
   constructor(props) {
@@ -12,13 +12,13 @@ class SectonHeader extends React.PureComponent {
     }
   };
   render() {
-    const {icon, title, titleEnd, style} = this.props;
+    const { icon, title, titleEnd, style } = this.props;
     return (
       <View style={[styles.container, style]}>
         <Text style={styles.title}>{title}</Text>
         <Button onPress={this._handleOnPress} style={styles.rightButton}>
-          <Text>{titleEnd}</Text>
-          <Icon name={icon} style={{fontSize: 18, marginStart: 8, marginEnd: 8}} />
+          <Text style={{ color: "#0275f9",fontSize:12 }}>{titleEnd}</Text>
+          <Icon name={icon} style={{ fontSize: 16, marginStart: 8,  }} color="#0275f9" />
         </Button>
       </View>
     );

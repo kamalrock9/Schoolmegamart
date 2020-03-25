@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   ScrollView,
@@ -7,17 +7,17 @@ import {
   FlatList,
   unstable_batchedUpdates,
 } from "react-native";
-import {Slider, Toolbar, Container} from "components";
-import {useSelector, useDispatch} from "react-redux";
-import {isEmpty} from "lodash";
+import { Slider, Toolbar, Container } from "components";
+import { useSelector, useDispatch } from "react-redux";
+import { isEmpty } from "lodash";
 import CategoryItem from "./CategoryItem";
 import SectonHeader from "./SectonHeader";
 import ProductsRow from "../product/ProductsRow";
-import {saveHomeLayout, saveNotification} from "store/actions";
-import {ApiClient} from "service";
+import { saveHomeLayout, saveNotification } from "store/actions";
+import { ApiClient } from "service";
 import OneSignal from "react-native-onesignal";
 
-function HomeScreen({navigation}) {
+function HomeScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const layout = useSelector(state => state.homeLayout);
   const dispatch = useDispatch();
@@ -27,7 +27,7 @@ function HomeScreen({navigation}) {
   useEffect(() => {
     setLoading(layout ? false : true);
     ApiClient.get("/layout")
-      .then(({data}) => {
+      .then(({ data }) => {
         unstable_batchedUpdates(() => {
           dispatch(saveHomeLayout(data));
           setLoading(false);
@@ -36,7 +36,6 @@ function HomeScreen({navigation}) {
       .catch(e => {
         setLoading(false);
       });
-
     OneSignal.init("71c73d59-6d8f-4824-a473-e76fe6663814", {
       kOSSettingsKeyAutoPrompt: true,
     });
@@ -65,6 +64,10 @@ function HomeScreen({navigation}) {
   const goTo = (route, params = {}) => {
     navigation.navigate(route, params);
   };
+
+  const goToPage = (route, params = {}) => () => {
+    navigation.navigate(route, params);
+  }
 
   if (loading) {
     return (
@@ -107,28 +110,28 @@ function HomeScreen({navigation}) {
 
           {layout.featured_products && layout.featured_products.length > 0 && (
             <>
-              <SectonHeader title="Featured" titleEnd="See More" style={{marginTop: 8}} />
+              <SectonHeader title="Featured" titleEnd="See More" style={{ marginTop: 8 }} onPress={goToPage("ProductScreen", { feature: true })} />
               <ProductsRow keyPrefix="featured" products={layout.featured_products} />
             </>
           )}
 
           {layout.top_rated_products && layout.top_rated_products.length > 0 && (
             <>
-              <SectonHeader title="Top Rated" titleEnd="See More" style={{marginTop: 8}} />
+              <SectonHeader title="Top Rated" titleEnd="See More" style={{ marginTop: 8 }} onPress={goToPage("ProductScreen", { sortby: 'rating' })} />
               <ProductsRow keyPrefix="toprated" products={layout.top_rated_products} />
             </>
           )}
 
           {layout.sale_products && layout.sale_products.length > 0 && (
             <>
-              <SectonHeader title="Tranding Offers" titleEnd="See More" style={{marginTop: 8}} />
+              <SectonHeader title="Tranding Offers" titleEnd="See More" style={{ marginTop: 8 }} onPress={goToPage("ProductScreen", { on_sale: 'true' })} />
               <ProductsRow keyPrefix="sale" products={layout.sale_products} />
             </>
           )}
 
           {layout.top_seller && layout.top_seller.length > 0 && (
             <>
-              <SectonHeader title="Top Sellers" titleEnd="See More" style={{marginTop: 8}} />
+              <SectonHeader title="Top Sellers" titleEnd="See More" style={{ marginTop: 8 }} onPress={goToPage("ProductScreen", { sortby: 'popularity' })} />
               <ProductsRow keyPrefix="topseller" products={layout.top_seller} />
             </>
           )}

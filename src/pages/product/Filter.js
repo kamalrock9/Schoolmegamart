@@ -8,7 +8,7 @@ import MultiSlider from "@ptomasroos/react-native-multi-slider";
 
 function Filter({ onBackPress, data, filterVal, onChangeFilter, filter }) {
   console.log(filterVal);
-  console.log(data)
+  console.log(data);
   const { primary_color_dark, primary_color, primary_color_text } = useSelector(
     state => state.appSettings,
   );
@@ -20,7 +20,8 @@ function Filter({ onBackPress, data, filterVal, onChangeFilter, filter }) {
   const [priceFilter, setpriceFilter] = useState([]);
   const [colorFilter, setcolorFilter] = useState([]);
   const [sizeFilter, setsizeFilter] = useState([]);
-  const [cateFilter, setcateFilter] = useState([])
+  const [cateFilter, setcateFilter] = useState([]);
+  const [sortBy,setSortBy]  = useState([""]);
 
   useEffect(() => {
     let price = [];
@@ -43,19 +44,14 @@ function Filter({ onBackPress, data, filterVal, onChangeFilter, filter }) {
   };
 
   const updateFilter = (key, item, index) => () => {
-    console.log(filterVal);
     if (!filterVal[key]) {
       var newData = { ...filterVal, [key]: [] };
     } else {
       var newData = { ...filterVal };
     }
-    console.log(newData[key].includes(item));
-    //return;
     if (newData[key].includes(item)) {
       let newdata = newData[key].filter(val => val !== item);
-      console.log(newdata);
       //setcolorFilter(newdata);
-      //console.log(colorFilter);
       var newDataVal = { ...filterVal, [key]: newdata };
       if (key == "pa_size") {
         setsizeFilter(newDataVal[key])
@@ -63,10 +59,8 @@ function Filter({ onBackPress, data, filterVal, onChangeFilter, filter }) {
         setcolorFilter(newDataVal[key])
       }
     } else {
-      // console.log("key"+newData[key])
       let newVal = newData[key];
       newVal.push(item);
-      console.log(newVal);
       //setcolorFilter(newdata)
       var newDataVal = { ...filterVal, [key]: newVal };
       if (key == "pa_size") {

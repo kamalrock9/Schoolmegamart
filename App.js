@@ -7,6 +7,7 @@ import {createDrawerNavigator} from "react-navigation-drawer";
 //SIDEMENU
 import Drawer from "./src/pages/drawer/Drawer";
 import TawkToChat from "./src/pages/drawer/TawkToChat";
+import Notification from "./src/pages/drawer/Notification/Notification";
 
 //pages
 import HomeScreen from "./src/pages/home/HomeScreen";
@@ -24,7 +25,6 @@ import ManageAddress from "./src/pages/manageAddress/ManageAddress";
 import BillingAddress from "./src/pages/manageAddress/BillingAddress";
 import ShippingAddress from "./src/pages/manageAddress/ShippingAddress";
 import Download from "./src/pages/Download";
-import Notification from "./src/pages/Notification";
 import Wallet from "./src/pages/Wallet";
 import ReferAndEarn from "./src/pages/ReferAndEarn";
 import CheckoutScreen from "./src/pages/checkout/CheckoutScreen";
