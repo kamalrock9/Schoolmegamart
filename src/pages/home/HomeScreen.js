@@ -80,7 +80,7 @@ function HomeScreen({ navigation }) {
   } else {
     return (
       <Container>
-        <Toolbar menuButton cartButton wishListButton title="HOME" />
+        <Toolbar menuButton cartButton wishListButton searchButton title="HOME" />
         <ScrollView nestedScrollEnabled={true}>
           <View>
             <Slider

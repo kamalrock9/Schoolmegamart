@@ -18,6 +18,7 @@ function Toolbar({
   cancelButton,
   submit,
   walletRupee,
+  searchButton
 }) {
   const navigation = useNavigation();
   const { routeName } = useNavigationState();
@@ -64,8 +65,13 @@ function Toolbar({
         </Text>
 
         <View style={styles.right}>
+          {searchButton && (
+            <Button style={[styles.right, { paddingVertical: 16, paddingHorizontal: 10 }]} onPress={goTo("Search")}>
+              <Icon color={appSettings.primary_color_text} name="md-search" size={24} />
+            </Button>
+          )}
           {wishListButton && (
-            <Button onPress={goTo("WishlistScreen")} style={styles.menuButton}>
+            <Button onPress={goTo("WishlistScreen")} style={[styles.menuButton, { paddingVertical: 16, paddingHorizontal: 10 }]}>
               <Icon color={appSettings.primary_color_text} name="md-heart" size={24} />
               {isArray(wishlist) && !isEmpty(wishlist) && (
                 <View
@@ -79,7 +85,7 @@ function Toolbar({
             </Button>
           )}
           {cartButton && (
-            <Button onPress={goTo("Cart")} style={styles.menuButton}>
+            <Button onPress={goTo("Cart")} style={[styles.menuButton, { paddingVertical: 16, paddingHorizontal: 10 }]}>
               <Icon color={appSettings.primary_color_text} name="md-cart" size={24} />
               {count > 0 && (<View
                 style={[

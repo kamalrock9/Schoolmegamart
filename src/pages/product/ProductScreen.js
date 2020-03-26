@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, FlatList, ImageBackground, TouchableOpacity } from "react-native";
 import { FlatListLoading, Toolbar, Container, Text, Button, Icon } from "components";
 import Toast from "react-native-simple-toast";
 import ProductItem from "./ProductItem";
@@ -8,6 +8,13 @@ import { FlatGrid } from "react-native-super-grid";
 import Filter from "./Filter";
 import Modal from "react-native-modal";
 import { withTranslation } from "react-i18next";
+import { isEmpty } from "lodash";
+import LinearGradient from "react-native-linear-gradient";
+import CategoryItem from "../home/CategoryItem";
+import PropTypes from "prop-types";
+import { getTotalMemory } from "react-native-device-info";
+
+
 class ProductScreen extends React.PureComponent {
 
   static navigationOptions = {
@@ -17,10 +24,11 @@ class ProductScreen extends React.PureComponent {
   constructor(props) {
     super(props);
 
-     const { feature, sortby, on_sale } = props.navigation.state.params;
+    // const { feature, sortby, on_sale } = props.navigation.state.params;
 
-    //var feature = props.navigation.state.params.feature;
-    //console.log(feature);
+    const { params } = props.navigation.state.params;
+    console.log(props.navigation.state.params);
+
     this.state = {
       products: [],
       refreshing: true,
@@ -31,14 +39,16 @@ class ProductScreen extends React.PureComponent {
         price: [],
         categories: [],
       },
-      filterProducts: []
+      filterProducts: [],
+      categories: []
     };
     this.params = {
       page: 0,
       per_page: 10,
       on_sale: '',
       sort: "popularity",
-      featured: ''
+      featured: '',
+      category: params
     };
 
   }
@@ -59,17 +69,23 @@ class ProductScreen extends React.PureComponent {
     this.setState({ showFilterSort: false });
   }
 
-  sortData = text => () => {
+  sortData = text => async () => {
     this.setState({ showFilterSort: false, products: [], filterProducts: [], flatListEndReached: false });
     this.params.sort = text;
     this.params.page = 0;
-    this.loadProducts();
+    await this.loadProducts();
   }
 
   componentDidMount() {
     this.loadProducts();
     // this.props.navigation.addListener('focus',
     //   () => { this.loadProducts })
+    const { params } = this.props.navigation.state.params;
+
+    ApiClient.get("products/all-categories?parent=" + params).then(({ data }) => {
+      console.log(data);
+      this.setState({ categories: data });
+    })
   }
 
   loadProducts = () => {
@@ -92,6 +108,7 @@ class ProductScreen extends React.PureComponent {
       filterData.pa_size = filterValues.pa_size
     }
     console.log(this.params);
+    console.log(this.state);
 
     ApiClient.get("custom-products", this.params, filterData)
       .then(({ data }) => {
@@ -165,10 +182,54 @@ class ProductScreen extends React.PureComponent {
       <ProductItem item={item} />
     );
   };
+
+  getToProductPage = (param) => () => {
+    this.params.category = param;
+    this.params.page = 0;
+    this.setState({ flatListEndReached: false, products: [] });
+    this.loadProducts();
+  }
+
+  CategoryItem = ({ item, index }) => {
+    return (
+      <TouchableOpacity
+        style={[
+          { width: 80, height: 60, borderRadius: 3, marginTop: 5, marginBottom: 15 },
+          index == 0 ? { marginStart: 12, marginEnd: 10 } : { marginEnd: 10 },
+        ]} onPress={this.getToProductPage(item.id)}>
+        <ImageBackground
+          source={{
+            uri: item.image ? item.image.src : "https://source.unsplash.com/1600x900/?" + item.name,
+          }}
+          style={{ width: 80, height: 60, flex: 1, borderRadius: 3 }} resizeMode="cover">
+          <LinearGradient
+            colors={["#afafaf5e", "#000000ff"]}
+            style={{ position: "absolute", width: "100%", bottom: 0 }}>
+            <Text style={{ color: "white", textAlign: "center", fontSize: 10, paddingVertical: 2, fontWeight: "700" }}>{item.name.toUpperCase()}</Text>
+          </LinearGradient>
+        </ImageBackground>
+      </TouchableOpacity>
+    )
+  }
+
+  listHeaderComponent = () =>
+    !isEmpty(this.state.categories) && <FlatList
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      data={this.state.categories}
+      keyExtractor={this._categoryKeyExtractor}
+      renderItem={this.CategoryItem}
+      removeClippedSubviews={true}
+    />
+
+
+
+  _categoryKeyExtractor = item => "category_" + item.id;
+
   _keyExtractor = item => "products_" + item.id;
 
   render() {
-    const { products, flatListEndReached, refreshing, showFilter, showFilterSort, filterValues, filterProducts } = this.state;
+    const { products, flatListEndReached, refreshing, showFilter, showFilterSort, filterValues, filterProducts, categories } = this.state;
     const { t } = this.props;
     return (
       <Container>
@@ -199,6 +260,7 @@ class ProductScreen extends React.PureComponent {
           onEndReachedThreshold={0.33}
           showsVerticalScrollIndicator={!refreshing}
           itemContainerStyle={{ justifyContent: "flex-start" }}
+          ListHeaderComponent={this.listHeaderComponent}
           ListFooterComponent={
             <FlatListLoading bottomIndicator={!flatListEndReached} centerIndicator={refreshing} />
           }
@@ -289,5 +351,18 @@ const styles = StyleSheet.create({
     paddingBottom: 10
   }
 });
+
+
+// ProductScreen.propTypes = {
+//   feature: PropTypes.bool,
+//   sortby: PropTypes.string,
+//   on_sale: PropTypes.string
+// }
+
+// ProductScreen.defaultProps = {
+//   feature: false,
+//   sortby: 'popularity',
+//   on_sale: ''
+// }
 
 export default withTranslation()(ProductScreen);

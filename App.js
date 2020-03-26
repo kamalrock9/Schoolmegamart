@@ -31,6 +31,7 @@ import CheckoutScreen from "./src/pages/checkout/CheckoutScreen";
 import BillingAddresss from "./src/pages/BillingAddress";
 import ShippingAddresss from "./src/pages/ShippingAddress";
 import Review from "./src/pages/Review";
+import Search from "./src/pages/Search";
 
 //Redux
 import {persistor, store} from "./src/store";
@@ -56,6 +57,7 @@ const HomeStack = createStackNavigator({
   ShippingAddresss,
   Review,
   WishlistScreen,
+  Search
 });
 
 const CategoryStack = createStackNavigator({
@@ -63,6 +65,7 @@ const CategoryStack = createStackNavigator({
   Cart,
   CheckoutScreen,
   WishlistScreen,
+  Search
 });
 
 const ProductStack = createStackNavigator({
@@ -71,6 +74,7 @@ const ProductStack = createStackNavigator({
   CheckoutScreen,
   Cart,
   WishlistScreen,
+  Search
 });
 
 const OrderStack = createStackNavigator({
