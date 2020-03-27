@@ -20,8 +20,6 @@ function Filter({ onBackPress, data, filterVal, onChangeFilter, filter }) {
   const [priceFilter, setpriceFilter] = useState([]);
   const [colorFilter, setcolorFilter] = useState([]);
   const [sizeFilter, setsizeFilter] = useState([]);
-  const [cateFilter, setcateFilter] = useState([]);
-  const [sortBy,setSortBy]  = useState([""]);
 
   useEffect(() => {
     let price = [];

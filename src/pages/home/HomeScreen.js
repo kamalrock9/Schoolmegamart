@@ -71,6 +71,12 @@ function HomeScreen({ navigation }) {
     navigation.navigate(route, params);
   }
 
+  const gotoProductPage = (id) => {
+    navigation.navigate("ProductScreen", { params: id });
+  }
+
+  const _renderItem = ({ item, index }) => <CategoryItem item={item} index={index} onpress={gotoProductPage} />
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -95,8 +101,8 @@ function HomeScreen({ navigation }) {
           </View>
 
           <SectonHeader
-            title="Categories"
-            titleEnd="View All"
+            title={t("ALL_CATEGORIES")}
+            titleEnd={t("VIEW_ALL")}
             onPress={goTo}
             onPressArgs={["CategoryScreen"]}
           />
@@ -106,7 +112,7 @@ function HomeScreen({ navigation }) {
             showsHorizontalScrollIndicator={false}
             data={layout.categories}
             keyExtractor={_categoryKeyExtractor}
-            renderItem={CategoryItem}
+            renderItem={_renderItem}
             removeClippedSubviews={true}
           />
 

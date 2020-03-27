@@ -54,7 +54,7 @@ class ProductScreen extends React.PureComponent {
     this.setState({showFilter: true});
   };
 
-  openFilterForSort = () => {
+  openSort = () => {
     this.setState({showFilterSort: true, flatListEndReached: false});
   };
 
@@ -62,7 +62,7 @@ class ProductScreen extends React.PureComponent {
     this.setState({showFilter: false});
   };
 
-  closeFilterForSort = () => {
+  closeSort = () => {
     this.setState({showFilterSort: false});
   };
 
@@ -101,7 +101,7 @@ class ProductScreen extends React.PureComponent {
     this.params.page++;
 
     console.log("load product");
-    const {filterValues, sortBy} = this.state;
+    const {filterValues} = this.state;
     let filterData = {};
     if (filterValues.pa_color) {
       filterData.pa_color = filterValues.pa_color;
@@ -184,45 +184,16 @@ class ProductScreen extends React.PureComponent {
     );
   };
 
-  getToProductPage = param => () => {
+  getToProductPage = param => {
     this.params.category = param;
     this.params.page = 0;
     this.setState({flatListEndReached: false, products: []});
     this.loadProducts();
   };
 
-  CategoryItem = ({item, index}) => {
-    return (
-      <TouchableOpacity
-        style={[
-          {width: 80, height: 60, borderRadius: 3, marginTop: 5, marginBottom: 15},
-          index == 0 ? {marginStart: 12, marginEnd: 10} : {marginEnd: 10},
-        ]}
-        onPress={this.getToProductPage(item.id)}>
-        <ImageBackground
-          source={{
-            uri: item.image ? item.image.src : "https://source.unsplash.com/1600x900/?" + item.name,
-          }}
-          style={{width: 80, height: 60, flex: 1, borderRadius: 3}}
-          resizeMode="cover">
-          <LinearGradient
-            colors={["#afafaf5e", "#000000ff"]}
-            style={{position: "absolute", width: "100%", bottom: 0}}>
-            <Text
-              style={{
-                color: "white",
-                textAlign: "center",
-                fontSize: 10,
-                paddingVertical: 2,
-                fontWeight: "700",
-              }}>
-              {item.name.toUpperCase()}
-            </Text>
-          </LinearGradient>
-        </ImageBackground>
-      </TouchableOpacity>
-    );
-  };
+  _renderItemCat = ({item, index}) => (
+    <CategoryItem item={item} index={index} onpress={this.getToProductPage} />
+  );
 
   listHeaderComponent = () =>
     !isEmpty(this.state.categories) && (
@@ -231,7 +202,7 @@ class ProductScreen extends React.PureComponent {
         showsHorizontalScrollIndicator={false}
         data={this.state.categories}
         keyExtractor={this._categoryKeyExtractor}
-        renderItem={this.CategoryItem}
+        renderItem={this._renderItemCat}
         removeClippedSubviews={true}
       />
     );
@@ -260,7 +231,7 @@ class ProductScreen extends React.PureComponent {
             <Icon name="md-menu" size={20} />
             <Text style={styles.btntext}>Categories</Text>
           </Button>
-          <Button style={styles.button} onPress={this.openFilterForSort}>
+          <Button style={styles.button} onPress={this.openSort}>
             <Icon name="exchange" type="FontAwesome" size={20} />
             <Text style={styles.btntext}>Sort By</Text>
           </Button>
@@ -301,8 +272,8 @@ class ProductScreen extends React.PureComponent {
         </Modal>
         <Modal
           style={{justifyContent: "flex-end", margin: 0, marginTop: "auto"}}
-          onBackButtonPress={this.closeFilterForSort}
-          onBackdropPress={this.closeFilterForSort}
+          onBackButtonPress={this.closeSort}
+          onBackdropPress={this.closeSort}
           hasBackdrop
           useNativeDriver
           animationType="slide"
@@ -310,11 +281,11 @@ class ProductScreen extends React.PureComponent {
           backdropColor={"black"}
           backdropOpacity={1}
           visible={showFilterSort}
-          onRequestClose={this.closeFilterForSort}>
+          onRequestClose={this.closeSort}>
           <View style={{padding: 15, backgroundColor: "#fff"}}>
             <View style={{flexDirection: "row", justifyContent: "space-between", paddingBottom: 5}}>
               <Text style={{fontWeight: "400", fontSize: 16}}>Sort By</Text>
-              <Button onPress={this.closeFilterForSort}>
+              <Button onPress={this.closeSort}>
                 <Icon type="Entypo" name="cross" size={24} />
               </Button>
             </View>
