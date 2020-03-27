@@ -1,11 +1,6 @@
 import React from "react";
-<<<<<<< HEAD
-import { StyleSheet, View, FlatList } from "react-native";
-import { FlatListLoading, Toolbar, Container, Text, Button, Icon } from "components";
-=======
-import {StyleSheet, View, FlatList, ImageBackground, TouchableOpacity} from "react-native";
+import {StyleSheet, View, FlatList} from "react-native";
 import {FlatListLoading, Toolbar, Container, Text, Button, Icon} from "components";
->>>>>>> 430eaba8811278a720d2c532e335efb8e573d3d3
 import Toast from "react-native-simple-toast";
 import ProductItem from "./ProductItem";
 import {ApiClient} from "service";
@@ -14,10 +9,7 @@ import Filter from "./Filter";
 import Modal from "react-native-modal";
 import {withTranslation} from "react-i18next";
 import {isEmpty} from "lodash";
-import LinearGradient from "react-native-linear-gradient";
 import CategoryItem from "../home/CategoryItem";
-import PropTypes from "prop-types";
-import {getTotalMemory} from "react-native-device-info";
 
 class ProductScreen extends React.PureComponent {
   static navigationOptions = {
@@ -27,10 +19,9 @@ class ProductScreen extends React.PureComponent {
   constructor(props) {
     super(props);
 
-    // const { feature, sortby, on_sale } = props.navigation.state.params;
-    console.log(props.navigation.state.params);
+    console.log(props.navigation.state);
 
-    const {params} = props.navigation.state.params;
+    const {category_id, featured, sortby, on_sale} = props.navigation.state.params;
 
     this.state = {
       products: [],
@@ -48,10 +39,10 @@ class ProductScreen extends React.PureComponent {
     this.params = {
       page: 0,
       per_page: 10,
-      on_sale: "",
-      sort: "popularity",
-      featured: "",
-      category: params,
+      on_sale: on_sale || "",
+      sort: sortby || "popularity",
+      featured,
+      category_id,
     };
   }
 
@@ -87,12 +78,12 @@ class ProductScreen extends React.PureComponent {
     this.loadProducts();
     // this.props.navigation.addListener('focus',
     //   () => { this.loadProducts })
-    const {params} = this.props.navigation.state.params;
-
-    ApiClient.get("products/all-categories?parent=" + params).then(({data}) => {
-      console.log(data);
-      this.setState({categories: data});
-    });
+    if (this.params.category_id) {
+      ApiClient.get("products/all-categories", {parent: this.params.category_id}).then(({data}) => {
+        console.log(data);
+        this.setState({categories: data});
+      });
+    }
   }
 
   loadProducts = () => {
@@ -114,10 +105,10 @@ class ProductScreen extends React.PureComponent {
     if (filterValues.pa_size) {
       filterData.pa_size = filterValues.pa_size;
     }
-    console.log(this.params);
+    console.log(JSON.stringify(filterData));
     console.log(this.state);
 
-    ApiClient.get("custom-products", this.params, filterData)
+    ApiClient.post("custom-products", filterData, {params: this.params})
       .then(({data}) => {
         this.setState({
           products: this.state.products.concat(data),
@@ -196,9 +187,7 @@ class ProductScreen extends React.PureComponent {
     this.loadProducts();
   };
 
-  _renderItemCat = ({item, index}) => (
-    <CategoryItem item={item} index={index} onpress={this.getToProductPage} />
-  );
+  _renderItemCat = ({item, index}) => <CategoryItem item={item} index={index} />;
 
   listHeaderComponent = () =>
     !isEmpty(this.state.categories) && (

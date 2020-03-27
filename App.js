@@ -46,34 +46,55 @@ function App() {
   );
 }
 
-const HomeStack = createStackNavigator({
-  HomeScreen,
-  ProductDetailScreen,
-  Cart,
-  CheckoutScreen,
-  BillingAddress,
-  ShippingAddress,
-  Review,
-  WishlistScreen,
-  Search,
-});
+const HomeStack = createStackNavigator(
+  {
+    HomeScreen,
+    ProductDetailScreen,
+    Cart,
+    CheckoutScreen,
+    BillingAddress,
+    ShippingAddress,
+    Review,
+    WishlistScreen,
+    Search,
+  },
+  {
+    defaultNavigationOptions: {
+      header: null,
+    },
+  },
+);
 
-const CategoryStack = createStackNavigator({
-  CategoryScreen,
-  Cart,
-  CheckoutScreen,
-  WishlistScreen,
-  Search,
-});
+const CategoryStack = createStackNavigator(
+  {
+    CategoryScreen,
+    Cart,
+    CheckoutScreen,
+    WishlistScreen,
+    Search,
+  },
+  {
+    defaultNavigationOptions: {
+      header: null,
+    },
+  },
+);
 
-const ProductStack = createStackNavigator({
-  ProductScreen,
-  ProductDetailScreen,
-  CheckoutScreen,
-  Cart,
-  WishlistScreen,
-  Search,
-});
+const ProductStack = createStackNavigator(
+  {
+    ProductScreen,
+    ProductDetailScreen,
+    CheckoutScreen,
+    Cart,
+    WishlistScreen,
+    Search,
+  },
+  {
+    defaultNavigationOptions: {
+      header: null,
+    },
+  },
+);
 
 const OrderStack = createStackNavigator({
   Orders,
