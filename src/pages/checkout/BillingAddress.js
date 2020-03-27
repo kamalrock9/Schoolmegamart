@@ -185,7 +185,9 @@ function BillingAddresss(props) {
           />
         </>
         <>
-          <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 10}}>State</Text>
+          <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 10}}>
+            {t("STATE")}
+          </Text>
           <CustomPicker
             options={stateData}
             placeholder={state}

@@ -11,6 +11,7 @@ import Icon from "./IconNB";
 import WishlistIcon from "./WishlistIcon";
 import FloatingTextinput from "./FloatingTextinput";
 import Container from "./Container";
+import CheckBox from "./CheckBox"
 
 export {
   Text,
@@ -26,4 +27,5 @@ export {
   WishlistIcon,
   FloatingTextinput,
   Container,
+  CheckBox
 };

@@ -42,9 +42,9 @@ function CheckoutScreen() {
   const {accent_color} = useSelector(state => state.appSettings);
 
   const steps = [
-    {name: "Billing Adress", component: <BillingAddress />},
-    {name: "Shipping Address", component: <ShippingAddress />},
-    {name: "Review", component: <Review />},
+    {name: t("BILLING") + t("ADDRESS"), component: <BillingAddress />},
+    {name: t("SHIPPING") + t("ADDRESS"), component: <ShippingAddress />},
+    {name: t("REVIEW") + t("ADDRESS"), component: <Review />},
   ];
   const onChangeShipToDifferent = useCallback(() => {
     setShipToDifferent(prevState => !prevState);

@@ -6,6 +6,7 @@ import {ApiClient} from "service";
 import CartPriceBreakup from "./CartPriceBreakup";
 import CartItem from "./CartItem";
 import {isArray, isEmpty} from "lodash";
+import {withTranslation} from "react-i18next";
 
 class Cart extends React.PureComponent {
   static navigationOptions = {
@@ -29,8 +30,8 @@ class Cart extends React.PureComponent {
     this.ApiCall(null);
   }
 
-  gotoCheckout = () => {
-    this.props.navigation.navigate("CheckoutScreen", {cartData: this.state.cart_data});
+  gotoCheckout = (route, param) => () => {
+    this.props.navigation.navigate(route, param);
   };
 
   ApiCall = params => {
@@ -160,4 +161,4 @@ const mapStateToProps = state => ({
   appSettings: state.appSettings,
 });
 
-export default connect(mapStateToProps)(Cart);
+export default connect(mapStateToProps)(withTranslation()(Cart));

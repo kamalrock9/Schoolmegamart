@@ -1,32 +1,34 @@
-import React, {useState} from "react";
-import {View, StyleSheet, TouchableWithoutFeedback} from "react-native";
-import {useSelector} from "react-redux";
-import {useNavigation} from "react-navigation-hooks";
-import {HTMLRender, Text, WishlistIcon} from "components";
+import React, { useState } from "react";
+import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import { useSelector } from "react-redux";
+import { useNavigation } from "react-navigation-hooks";
+import { HTMLRender, Text, WishlistIcon } from "components";
 import StarRating from "react-native-star-rating";
 import FitImage from "react-native-fit-image";
 
-function ProductItem({containerStyle, width: width, item}) {
+function ProductItem({ containerStyle, width: width, item }) {
   const navigation = useNavigation();
-  const {accent_color} = useSelector(state => state.appSettings);
+  const { accent_color } = useSelector(state => state.appSettings);
 
   const goToProductDetails = () => {
     navigation.push("ProductDetailScreen", item);
   };
 
+  var discount = Math.ceil((item.regular_price - item.price) / item.regular_price * 100);
+
   return (
     <TouchableWithoutFeedback onPress={goToProductDetails}>
-      <View style={[containerStyle, styles.container, {width}]}>
-        {item.images.length > 0 && <FitImage source={{uri: item.images[0].src}} />}
+      <View style={[containerStyle, styles.container, { width }]}>
+        {item.images.length > 0 && <FitImage source={{ uri: item.images[0].src }} />}
         <View>
-          <Text style={[styles.itemMargin, {fontWeight: "600"}]} numberOfLines={1}>
+          <Text style={[styles.itemMargin, { fontWeight: "600" }]} numberOfLines={1}>
             {item.name}
           </Text>
           {item.price_html != "" && (
             <HTMLRender
               html={item.price_html}
               containerStyle={styles.itemMargin}
-              baseFontStyle={{fontSize: 13}}
+              baseFontStyle={{ fontSize: 13 }}
             />
           )}
           <StarRating
@@ -34,7 +36,7 @@ function ProductItem({containerStyle, width: width, item}) {
             maxStars={5}
             rating={parseInt(item.average_rating)}
             containerStyle={[styles.itemMargin, styles.star]}
-            starStyle={{marginEnd: 5}}
+            starStyle={{ marginEnd: 5 }}
             starSize={14}
             halfStarEnabled
             emptyStarColor={accent_color}
@@ -42,6 +44,9 @@ function ProductItem({containerStyle, width: width, item}) {
             halfStarColor={accent_color}
           />
         </View>
+        {item.on_sale && <View style={{ marginStart: 5, marginTop: 5, position: "absolute", top: 0, start: 0, backgroundColor: accent_color, width: 30, height: 30, borderRadius: 15, alignItems: "center", justifyContent: "center" }}>
+          <Text style={{ fontSize: 10, color: "#fff", fontWeight: "600" }}>{isFinite(discount) ? discount + "%" : "SALE"}</Text>
+        </View>}
         <WishlistIcon style={styles.right} item={item} />
       </View>
     </TouchableWithoutFeedback>

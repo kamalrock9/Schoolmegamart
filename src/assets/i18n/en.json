@@ -241,5 +241,7 @@
     "ADD_MONEY_TO_WALLET": "Add money to wallet",
     "AMOUNT": "Amount",
     "REFER_EARN_DESC": "Invite your friends on {{ storeName }} and get {{amount_referrer}} as wallet credit. Your friend Will also get {{amount_earner}} as wallet credit.",
-    "TOTAL_SALE_SAVING": "You save"
+    "TOTAL_SALE_SAVING": "You save",
+    "SEE_MORE": "See More",
+    "CALL": "CALL"
 }

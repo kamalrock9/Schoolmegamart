@@ -1,15 +1,15 @@
 import React from "react";
-import {NavigationActions} from "react-navigation";
-import {ScrollView, View, StyleSheet, Linking, Platform, Alert} from "react-native";
-import {Button, Text, Icon} from "components";
-import {connect} from "react-redux";
-import {withTranslation} from "react-i18next";
-import {withNavigation} from "react-navigation-hooks";
+import { NavigationActions } from "react-navigation";
+import { ScrollView, View, StyleSheet, Linking, Platform, Alert } from "react-native";
+import { Button, Text, Icon } from "components";
+import { connect } from "react-redux";
+import { withTranslation } from "react-i18next";
+import { withNavigation } from "react-navigation-hooks";
 import Modal from "react-native-modal";
 import Login from "../auth/Login";
-import {getVersion} from "react-native-device-info";
-import {isEmpty} from "lodash";
-import {logout} from "store/actions";
+import { getVersion } from "react-native-device-info";
+import { isEmpty } from "lodash";
+import { logout } from "store/actions";
 
 class Drawer extends React.PureComponent {
   constructor(props) {
@@ -53,26 +53,26 @@ class Drawer extends React.PureComponent {
   };
 
   openModal = () => {
-    this.setState({isOpenModal: true});
+    this.setState({ isOpenModal: true });
   };
 
   closeModal = () => {
-    this.setState({isOpenModal: false});
+    this.setState({ isOpenModal: false });
   };
 
   toggleContactModal = () => {
-    this.setState({isContactModalOpen: !this.state.isContactModalOpen});
+    this.setState({ isContactModalOpen: !this.state.isContactModalOpen });
   };
 
   navigateToScreen = (route, param = {}) => () => {
-    const {navigation} = this.props;
+    const { navigation } = this.props;
     switch (route) {
       case "giveFeedback":
         Alert.alert(
           "Do You like using WooApp",
           null,
           [
-            {text: "NOT REALLY", onPress: () => console.log("Cancel Pressed"), style: "cancel"},
+            { text: "NOT REALLY", onPress: () => console.log("Cancel Pressed"), style: "cancel" },
             {
               text: "YES!",
               onPress: () => {
@@ -88,7 +88,7 @@ class Drawer extends React.PureComponent {
               },
             },
           ],
-          {cancelable: false},
+          { cancelable: false },
         );
         break;
       case "Logout":
@@ -108,32 +108,32 @@ class Drawer extends React.PureComponent {
   };
 
   render() {
-    const {appSettings, t, user} = this.props;
-    const {isOpenModal, isContactModalOpen} = this.state;
+    const { appSettings, t, user } = this.props;
+    const { isOpenModal, isContactModalOpen } = this.state;
 
     return (
       <>
         <View style={styles.container}>
           <View style={styles.header}>
-            <Icon name="account-circle" type="MaterialCommunityIcons" style={{fontSize: 54}} />
+            <Icon name="account-circle" type="MaterialCommunityIcons" style={{ fontSize: 54 }} />
             {isEmpty(user) ? (
-              <Text style={{fontSize: 16}} onPress={this.openModal}>
+              <Text style={{ fontSize: 16 }} onPress={this.openModal}>
                 {t("LOGIN/REGISTER")}
               </Text>
             ) : (
-              <View style={{alignItems: "center"}}>
-                <Text style={{fontSize: 16}}>
-                  {user.first_name && user.last_name
-                    ? user.first_name + " " + user.last_name
-                    : user.first_name
-                    ? user.first_name
-                    : user.username
-                    ? user.username
-                    : ""}
-                </Text>
-                <Text>{user.email}</Text>
-              </View>
-            )}
+                <View style={{ alignItems: "center" }}>
+                  <Text style={{ fontSize: 16 }}>
+                    {user.first_name && user.last_name
+                      ? user.first_name + " " + user.last_name
+                      : user.first_name
+                        ? user.first_name
+                        : user.username
+                          ? user.username
+                          : ""}
+                  </Text>
+                  <Text>{user.email}</Text>
+                </View>
+              )}
           </View>
           <ScrollView>
             <Button style={styles.button} onPress={this.navigateToScreen("HomeStack")}>
@@ -216,7 +216,7 @@ class Drawer extends React.PureComponent {
         </View>
         <Modal
           isVisible={isOpenModal}
-          style={{margin: 0}}
+          style={{ margin: 0 }}
           onBackButtonPress={this.closeModal}
           useNativeDriver
           hideModalContentWhileAnimating>
@@ -225,14 +225,14 @@ class Drawer extends React.PureComponent {
 
         <Modal
           isVisible={isContactModalOpen}
-          style={{justifyContent: "flex-end", margin: 0, marginTop: "auto"}}
+          style={{ justifyContent: "flex-end", margin: 0, marginTop: "auto" }}
           onBackButtonPress={this.toggleContactModal}
           onBackdropPress={this.toggleContactModal}
           hasBackdrop
           useNativeDriver
           hideModalContentWhileAnimating>
-          <View style={{backgroundColor: "#FFF", padding: 10}}>
-            <Text style={{fontSize: 20}}>Contact Us</Text>
+          <View style={{ backgroundColor: "#FFF", padding: 10 }}>
+            <Text style={{ fontSize: 20 }}>Contact Us</Text>
             <View
               style={{
                 height: 1.35,
@@ -240,7 +240,7 @@ class Drawer extends React.PureComponent {
                 width: "100%",
                 marginVertical: 10,
               }}></View>
-            <View style={{flexDirection: "row"}}>
+            <View style={{ flexDirection: "row" }}>
               <Button
                 style={[
                   styles.contact_btn,
@@ -249,7 +249,7 @@ class Drawer extends React.PureComponent {
                   },
                 ]}
                 onPress={this._OpenEmail}>
-                <Text style={{color: "#fff"}}>EMAIL</Text>
+                <Text style={{ color: "#fff" }}>{t("EMAIL").toUpperCase()}</Text>
               </Button>
               <Button
                 style={[
@@ -259,7 +259,7 @@ class Drawer extends React.PureComponent {
                   },
                 ]}
                 onPress={this._Call}>
-                <Text style={{color: "#fff"}}>CALL</Text>
+                <Text style={{ color: "#fff" }}>{t("CALL")}</Text>
               </Button>
             </View>
           </View>

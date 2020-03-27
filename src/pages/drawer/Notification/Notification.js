@@ -5,7 +5,7 @@ import {useTranslation} from "react-i18next";
 import {useSelector, useDispatch} from "react-redux";
 import {isArray, isEmpty} from "lodash";
 import {SwipeListView} from "react-native-swipe-list-view";
-import {deleteNotification} from "../store/actions";
+import {deleteNotification} from "store/actions";
 import NotificationItem from "./NotificationItem";
 
 function Notification() {
