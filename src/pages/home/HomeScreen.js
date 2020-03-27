@@ -15,11 +15,13 @@ import SectonHeader from "./SectonHeader";
 import ProductsRow from "../product/ProductsRow";
 import { saveHomeLayout, saveNotification } from "store/actions";
 import { ApiClient } from "service";
+import { useTranslation } from "react-i18next";
 import OneSignal from "react-native-onesignal";
 
 function HomeScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const layout = useSelector(state => state.homeLayout);
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const _categoryKeyExtractor = item => "category_" + item.id;
@@ -110,28 +112,28 @@ function HomeScreen({ navigation }) {
 
           {layout.featured_products && layout.featured_products.length > 0 && (
             <>
-              <SectonHeader title="Featured" titleEnd="See More" style={{ marginTop: 8 }} onPress={goToPage("ProductScreen", { feature: true })} />
+              <SectonHeader title={t("FEATURED")} titleEnd={t("SEE_MORE")} style={{ marginTop: 8 }} onPress={goToPage("ProductScreen", { feature: true })} />
               <ProductsRow keyPrefix="featured" products={layout.featured_products} />
             </>
           )}
 
           {layout.top_rated_products && layout.top_rated_products.length > 0 && (
             <>
-              <SectonHeader title="Top Rated" titleEnd="See More" style={{ marginTop: 8 }} onPress={goToPage("ProductScreen", { sortby: 'rating' })} />
+              <SectonHeader title={t("TOP_SELLERS")} titleEnd={t("SEE_MORE")} style={{ marginTop: 8 }} onPress={goToPage("ProductScreen", { sortby: 'rating' })} />
               <ProductsRow keyPrefix="toprated" products={layout.top_rated_products} />
             </>
           )}
 
           {layout.sale_products && layout.sale_products.length > 0 && (
             <>
-              <SectonHeader title="Tranding Offers" titleEnd="See More" style={{ marginTop: 8 }} onPress={goToPage("ProductScreen", { on_sale: 'true' })} />
+              <SectonHeader title={t("TRENDING_OFFERS")} titleEnd={t("SEE_MORE")} style={{ marginTop: 8 }} onPress={goToPage("ProductScreen", { on_sale: 'true' })} />
               <ProductsRow keyPrefix="sale" products={layout.sale_products} />
             </>
           )}
 
           {layout.top_seller && layout.top_seller.length > 0 && (
             <>
-              <SectonHeader title="Top Sellers" titleEnd="See More" style={{ marginTop: 8 }} onPress={goToPage("ProductScreen", { sortby: 'popularity' })} />
+              <SectonHeader title={t("TOP_SELLERS")} titleEnd={t("SEE_MORE")} style={{ marginTop: 8 }} onPress={goToPage("ProductScreen", { sortby: 'popularity' })} />
               <ProductsRow keyPrefix="topseller" products={layout.top_seller} />
             </>
           )}

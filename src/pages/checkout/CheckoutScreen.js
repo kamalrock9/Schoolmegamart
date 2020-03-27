@@ -1,11 +1,12 @@
-import React, {useState, useReducer} from "react";
-import {View, StyleSheet} from "react-native";
-import {Text, Toolbar, Container} from "components";
-import {useSelector} from "react-redux";
+import React, { useState, useReducer } from "react";
+import { View, StyleSheet } from "react-native";
+import { Text, Toolbar, Container } from "components";
+import { useSelector } from "react-redux";
 import BillingAddress from "../BillingAddress";
 import ShippingAddress from "../ShippingAddress";
 import Review from "../Review";
 import StepIndicator from "react-native-step-indicator";
+import { useTranslation } from "react-i18next"
 
 const labels = ["Billing Address", "Shipping Address", "Order Summary", "Payment Method"];
 const customStyles = {
@@ -36,10 +37,11 @@ const customStyles = {
 function CheckoutScreen() {
   const [stepPos, setStepPos] = useState(0);
   const appSettings = useReducer(state => state.appSettings);
+  const { t } = useTranslation();
   const steps = [
-    {name: "Billing Adress", component: <BillingAddress />},
-    {name: "Shipping Address", component: <ShippingAddress />},
-    {name: "Review", component: <Review />},
+    { name: t("BILLING") + t("ADDRESS"), component: <BillingAddress /> },
+    { name: t("SHIPPING") + t("ADDRESS"), component: <ShippingAddress /> },
+    { name: t("REVIEW") + t("ADDRESS"), component: <Review /> },
   ];
 
   return (

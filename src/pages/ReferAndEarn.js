@@ -6,17 +6,19 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from "react-native";
-import {Text, Button, Icon, HTMLRender} from "components";
-import React, {useEffect, useState} from "react";
-import {useSelector} from "react-redux";
-import {ApiClient} from "service";
+import { Text, Button, Icon, HTMLRender } from "components";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { ApiClient } from "service";
+import { useTranslation } from "react-i18next";
 import Share from "react-native-share";
 
-const {height, width} = Dimensions.get("window");
+const { height, width } = Dimensions.get("window");
 
-function ReferAndEarn({navigation}) {
+function ReferAndEarn({ navigation }) {
   const user = useSelector(state => state.user);
   const appSettings = useSelector(state => state.appSettings);
+  const { t } = useTranslation();
 
   const [code, setCode] = useState("");
   const [loading, setloading] = useState(false);
@@ -77,7 +79,7 @@ function ReferAndEarn({navigation}) {
         <>
           <ImageBackground
             resizeMode="cover"
-            style={{height: height / 3, width}}
+            style={{ height: height / 3, width }}
             source={require("../assets/imgs/referandearn.jpg")}>
             <Button
               style={[
@@ -92,19 +94,19 @@ function ReferAndEarn({navigation}) {
                 type="Entypo"
                 color="#fff"
                 size={28}
-                style={{alignSelf: "center"}}
+                style={{ alignSelf: "center" }}
               />
             </Button>
           </ImageBackground>
-          <Text style={{alignSelf: "center", marginTop: 20, fontWeight: "300"}}>
-            YOUR REFERRAL CODE
+          <Text style={{ alignSelf: "center", marginTop: 20, fontWeight: "300" }}>
+            {t("YOUR_REFERRAL_CODE")}
           </Text>
           <View style={styles.codeView}>
-            <Text style={{fontWeight: "600", fontSize: 16}}>{code.refer_earn_code}</Text>
+            <Text style={{ fontWeight: "600", fontSize: 16 }}>{code.refer_earn_code}</Text>
           </View>
-          <View style={{marginHorizontal: 16}}>
-            <HTMLRender html={code.htmlMsg || "<b></b>"} baseFontStyle={{fontWeight: "300"}} />
-            <Text style={{marginTop: 30, fontWeight: "300"}}>
+          <View style={{ marginHorizontal: 16 }}>
+            <HTMLRender html={code.htmlMsg || "<b></b>"} baseFontStyle={{ fontWeight: "300" }} />
+            <Text style={{ marginTop: 30, fontWeight: "300" }}>
               Referral Valid upto {code.refer_earn_uses} friends.
             </Text>
           </View>
@@ -116,13 +118,13 @@ function ReferAndEarn({navigation}) {
               },
             ]}
             onPress={share}>
-            <Text style={{color: "#fff"}}>INVITE FRIENDS</Text>
+            <Text style={{ color: "#fff" }}>{t("INVITE_FRIENDS")}</Text>
           </Button>
         </>
       ) : (
-        <View></View>
-      )}
-      {loading && <ActivityIndicator style={{flex: 1}} />}
+          <View></View>
+        )}
+      {loading && <ActivityIndicator style={{ flex: 1 }} />}
     </View>
   );
 }

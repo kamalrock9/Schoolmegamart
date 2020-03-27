@@ -61,13 +61,13 @@ function Search({ navigation }) {
 
     const itemSeparatorComponentCate = () => {
         return (
-            <View style={{ backgroundColor: "#d2d2d2", height: 1.35, width: "100%" }}></View>
+            <View style={styles.seperator}></View>
         )
     }
 
     const itemSeparatorComponent = () => {
         return (
-            <View style={{ backgroundColor: "#d2d2d2", height: 1.35, width: "100%" }}></View>
+            <View style={styles.seperator}></View>
         )
     }
 
@@ -82,7 +82,7 @@ function Search({ navigation }) {
                 <Button onPress={goBack} style={styles.menuButton}>
                     <Icon color={primary_color_text} name="md-arrow-back" size={24} />
                 </Button>
-                <View style={{ flexDirection: "row", backgroundColor: "#fff", alignItems: "center", flex: 1, paddingStart: 10, borderRadius: 2 }}>
+                <View style={styles.textinputview}>
                     <Icon color={"grey"} name="md-search" size={20} />
                     <TextInput style={styles.input} placeholder="search" onChangeText={onChangeText} />
                 </View>
@@ -116,6 +116,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         color: '#424242',
     },
+    textinputview: { flexDirection: "row", backgroundColor: "#fff", alignItems: "center", flex: 1, paddingStart: 10, borderRadius: 2 },
+    seperator: { backgroundColor: "#d2d2d2", height: 1.35, width: "100%" }
 })
 
 export default Search;

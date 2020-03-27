@@ -1,20 +1,20 @@
-import React, {useState, useEffect, useCallback} from "react";
-import {View, StyleSheet, ScrollView, Switch} from "react-native";
-import {Text, Toolbar, FloatingTextinput, Button} from "components";
-import {useSelector, useDispatch} from "react-redux";
-import {useTranslation} from "react-i18next";
-import {CustomPicker} from "react-native-custom-picker";
-import {useNavigation} from "react-navigation-hooks";
+import React, { useState, useEffect, useCallback } from "react";
+import { View, StyleSheet, ScrollView, Switch } from "react-native";
+import { Text, Toolbar, FloatingTextinput, Button } from "components";
+import { useSelector, useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
+import { CustomPicker } from "react-native-custom-picker";
+import { useNavigation } from "react-navigation-hooks";
 
 function ShippingAddresss(props) {
   const navigation = useNavigation();
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const user = useSelector(state => state.user);
   const appSettings = useSelector(state => state.appSettings);
 
   useEffect(() => {
     let arr = [];
-    for (let i in appSettings.countries) arr.push({id: i, name: appSettings.countries[i]});
+    for (let i in appSettings.countries) arr.push({ id: i, name: appSettings.countries[i] });
     console.log(arr);
     setCountry(arr);
   }, []);
@@ -53,26 +53,26 @@ function ShippingAddresss(props) {
   });
 
   const renderOption = settings => {
-    const {item, getLabel} = settings;
+    const { item, getLabel } = settings;
     return (
       <View style={styles.optionContainer}>
         <View style={styles.innerContainer}>
-          <View style={[styles.box, {backgroundColor: item.color}]} />
-          <Text style={{color: item.color, alignSelf: "flex-start"}}>{getLabel(item)}</Text>
+          <View style={[styles.box, { backgroundColor: item.color }]} />
+          <Text style={{ color: item.color, alignSelf: "flex-start" }}>{getLabel(item)}</Text>
         </View>
       </View>
     );
   };
 
   const renderField = settings => {
-    const {selectedItem, defaultText, getLabel, clear} = settings;
+    const { selectedItem, defaultText, getLabel, clear } = settings;
     return (
       <View style={styles.container}>
         <View>
-          {!selectedItem && <Text style={[styles.text, {color: "#000000"}]}>{defaultText}</Text>}
+          {!selectedItem && <Text style={[styles.text, { color: "#000000" }]}>{defaultText}</Text>}
           {selectedItem && (
             <View style={{}}>
-              <Text style={[styles.text, {color: selectedItem.color}]}>
+              <Text style={[styles.text, { color: selectedItem.color }]}>
                 {getLabel(selectedItem)}
               </Text>
             </View>
@@ -87,7 +87,7 @@ function ShippingAddresss(props) {
 
     let arr = [];
     let obj = appSettings.county_states[text.id];
-    for (let i in obj) arr.push({id: i, name: obj[i]});
+    for (let i in obj) arr.push({ id: i, name: obj[i] });
     setStateData(arr);
   };
 
@@ -111,29 +111,29 @@ function ShippingAddresss(props) {
       address_2: address2,
       country: counrtyy,
     };
-    navigation.navigate("Review", {...props.navigation.state.params, shipping: shipping});
+    navigation.navigate("Review", { ...props.navigation.state.params, shipping: shipping });
   };
 
   return (
-    <View style={{flex: 1}}>
-      <ScrollView style={{paddingHorizontal: 16}}>
+    <View style={{ flex: 1 }}>
+      <ScrollView style={{ paddingHorizontal: 16 }}>
         <FloatingTextinput
           label={t("FIRST_NAME")}
           labelColor="#000000"
-          style={{color: "#000000"}}
+          style={{ color: "#000000" }}
           value={firstname}
           onChangeText={onChangeFirstname}
         />
         <FloatingTextinput
           label={t("LAST_NAME")}
           labelColor="#000000"
-          style={{color: "#000000"}}
+          style={{ color: "#000000" }}
           value={lastname}
           onChangeText={onChangeLastname}
         />
         <>
-          <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 10}}>
-            Counrty
+          <Text style={{ fontSize: 12, color: appSettings.accent_color, marginTop: 10 }}>
+            {t("COUNTRY")}
           </Text>
           <CustomPicker
             options={country}
@@ -145,7 +145,7 @@ function ShippingAddresss(props) {
           />
         </>
         <>
-          <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 10}}>State</Text>
+          <Text style={{ fontSize: 12, color: appSettings.accent_color, marginTop: 10 }}>{t("STATE")}</Text>
           <CustomPicker
             options={stateData}
             placeholder={state}
@@ -158,28 +158,28 @@ function ShippingAddresss(props) {
         <FloatingTextinput
           label={t("CITY")}
           labelColor="#000000"
-          style={{color: "#000000"}}
+          style={{ color: "#000000" }}
           value={city}
           onChangeText={onChangeCity}
         />
         <FloatingTextinput
           label={t("POSTCODE")}
           labelColor="#000000"
-          style={{color: "#000000"}}
+          style={{ color: "#000000" }}
           value={postcode}
           onChangeText={onChangePostcode}
         />
         <FloatingTextinput
           label={t("ADDRESS_1")}
           labelColor="#000000"
-          style={{color: "#000000"}}
+          style={{ color: "#000000" }}
           value={address1}
           onChangeText={onChangeAddress1}
         />
         <FloatingTextinput
           label={t("ADDRESS_2")}
           labelColor="#000000"
-          style={{color: "#000000"}}
+          style={{ color: "#000000" }}
           value={address2}
           onChangeText={onChangeAddress2}
         />
@@ -188,15 +188,15 @@ function ShippingAddresss(props) {
         <Button
           style={[
             styles.footerButton,
-            {backgroundColor: appSettings.primary_color, marginRight: -5},
+            { backgroundColor: appSettings.primary_color, marginRight: -5 },
           ]}
           onPress={gotoBack}>
-          <Text style={{color: "white"}}>PREVIOUS</Text>
+          <Text style={{ color: "white" }}>{t("PREVIOUS")}</Text>
         </Button>
         <Button
-          style={[styles.footerButton, {backgroundColor: appSettings.accent_color, marginLeft: -5}]}
+          style={[styles.footerButton, { backgroundColor: appSettings.accent_color, marginLeft: -5 }]}
           onPress={gotoReview}>
-          <Text style={{color: "white"}}>NEXT</Text>
+          <Text style={{ color: "white" }}>{t("NEXT")}</Text>
         </Button>
       </View>
     </View>

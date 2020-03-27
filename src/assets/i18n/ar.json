@@ -233,5 +233,7 @@
     "EXIT": "Exit",
     "SEARCH_MORE": "Search More for ",
     "PAYMENT_LOADING": "Please Wait While we are redirecting to payment gateway.",
-    "ORDER_FAILED": "Order Failed"
+    "ORDER_FAILED": "Order Failed",
+    "SEE_MORE": "شاهد المزيد",
+    "CALL":"CALL"
 }

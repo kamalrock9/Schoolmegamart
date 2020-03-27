@@ -64,7 +64,7 @@ class Drawer extends React.PureComponent {
     this.setState({ isContactModalOpen: !this.state.isContactModalOpen });
   };
 
-  navigateToScreen = (route, param={}) => () => {
+  navigateToScreen = (route, param = {}) => () => {
     const { navigation } = this.props;
     switch (route) {
       case "giveFeedback":
@@ -249,7 +249,7 @@ class Drawer extends React.PureComponent {
                   },
                 ]}
                 onPress={this._OpenEmail}>
-                <Text style={{ color: "#fff" }}>EMAIL</Text>
+                <Text style={{ color: "#fff" }}>{t("EMAIL").toUpperCase()}</Text>
               </Button>
               <Button
                 style={[
@@ -259,7 +259,7 @@ class Drawer extends React.PureComponent {
                   },
                 ]}
                 onPress={this._Call}>
-                <Text style={{ color: "#fff" }}>CALL</Text>
+                <Text style={{ color: "#fff" }}>{t("CALL")}</Text>
               </Button>
             </View>
           </View>

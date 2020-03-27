@@ -1,11 +1,11 @@
 import React from "react";
-import {View, Image, FlatList, StyleSheet} from "react-native";
-import {Text, Toolbar} from "components";
-import {isEmpty} from "lodash";
-import {useTranslation} from "react-i18next";
+import { View, Image, FlatList, StyleSheet } from "react-native";
+import { Text, Toolbar } from "components";
+import { isEmpty } from "lodash";
+import { useTranslation } from "react-i18next";
 
-function OrderDetails({navigation}) {
-  const {t} = useTranslation();
+function OrderDetails({ navigation }) {
+  const { t } = useTranslation();
   const item = navigation.getParam("item");
   console.log(item);
 
@@ -19,24 +19,24 @@ function OrderDetails({navigation}) {
           marginTop: 10,
           marginBottom: 25,
         }}>
-        <Text style={{fontWeight: "600"}}>PRODUCTS</Text>
+        <Text style={{ fontWeight: "600" }}>{t("PRODUCTS")}</Text>
         <Text>{item.line_items.length + "Item(S)"}</Text>
       </View>
     );
   };
 
-  const _renderItem = ({item, index}) => {
+  const _renderItem = ({ item, index }) => {
     return (
       <View
-        style={{flexDirection: "row", alignItems: "center", marginHorizontal: 16}}
+        style={{ flexDirection: "row", alignItems: "center", marginHorizontal: 16 }}
         key={"Sap" + item.id}>
         <Image
-          style={{height: 100, width: 100}}
-          source={{uri: "https://www.bigstockphoto.com/images/homepage/module-6.jpg"}}
+          style={{ height: 100, width: 100 }}
+          source={{ uri: "https://www.bigstockphoto.com/images/homepage/module-6.jpg" }}
         />
-        <View style={{marginStart: 10, flex: 1}}>
-          <Text style={{fontWeight: "600", fontSize: 16}}>{item.name}</Text>
-          <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+        <View style={{ marginStart: 10, flex: 1 }}>
+          <Text style={{ fontWeight: "600", fontSize: 16 }}>{item.name}</Text>
+          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
             <Text style={styles.txt}>{item.price}</Text>
             <Text style={styles.txt}>{"Qty:" + item.quantity}</Text>
             <Text style={styles.txt}>{item.subtotal}</Text>
@@ -50,33 +50,33 @@ function OrderDetails({navigation}) {
     return (
       <View>
         <View style={styles.line}></View>
-        <Text style={styles.heading}>ORDER SUMMARY</Text>
+        <Text style={styles.heading}>{t("ORDER_SUMMARY")}</Text>
         <View style={styles.footerSummaryView}>
           <Text style={styles.text}>Status</Text>
-          <Text style={[styles.text, {color: "#000000"}]}>{item.status}</Text>
+          <Text style={[styles.text, { color: "#000000" }]}>{item.status}</Text>
         </View>
         <View style={styles.footerSummaryView}>
-          <Text style={styles.text}>Payment Method</Text>
-          <Text style={[styles.text, {color: "#000000"}]}>{item.payment_method_title}</Text>
+          <Text style={styles.text}>{t("PAYMENT_METHODS")}</Text>
+          <Text style={[styles.text, { color: "#000000" }]}>{item.payment_method_title}</Text>
         </View>
         {!isEmpty(item.shipping_lines) && (
           <View style={styles.footerSummaryView}>
             <Text style={styles.text}>
-              {"Shipping (" + item.shipping_lines[0].method_title + ")"}
+              {t("SHIPPING") + " (" + item.shipping_lines[0].method_title + ")"}
             </Text>
-            <Text style={[styles.text, {color: "#000000"}]}>{item.shipping_lines[0].total}</Text>
+            <Text style={[styles.text, { color: "#000000" }]}>{item.shipping_lines[0].total}</Text>
           </View>
         )}
         <View style={styles.footerSummaryView}>
-          <Text style={styles.text}>Tax</Text>
-          <Text style={[styles.text, {color: "#000000"}]}>{item.total_tax}</Text>
+          <Text style={styles.text}>{t("TAX")}</Text>
+          <Text style={[styles.text, { color: "#000000" }]}>{item.total_tax}</Text>
         </View>
         {!isEmpty(item.coupon_lines) &&
           item.coupon_lines.map(item => {
             return (
               <View style={styles.footerSummaryView}>
-                <Text style={styles.text}>{"Coupon (" + item.code + ")"}</Text>
-                <Text style={[styles.text, {color: "#000000"}]}>{item.discount}</Text>
+                <Text style={styles.text}>{t("COUPON") + " (" + item.code + ")"}</Text>
+                <Text style={[styles.text, { color: "#000000" }]}>{item.discount}</Text>
               </View>
             );
           })}
@@ -89,17 +89,17 @@ function OrderDetails({navigation}) {
             paddingHorizontal: 16,
           }}></View>
         <View style={styles.footerSummaryView}>
-          <Text style={[styles.text, {fontWeight: "600"}]}>Total Amount</Text>
-          <Text style={[styles.text, {fontWeight: "600", color: "#000000"}]}>
+          <Text style={[styles.text, { fontWeight: "600" }]}>{t("TOTAL")}</Text>
+          <Text style={[styles.text, { fontWeight: "600", color: "#000000" }]}>
             {item.prices_include_tax
               ? item.total + "(Inc. Taxes)"
               : (Number(item.total) + Number(item.total_tax)).toFixed(2) + "(Inc. Taxes)"}
           </Text>
         </View>
         <View style={styles.line}></View>
-        <Text style={styles.heading}>ADDRESS INFORMATION</Text>
+        <Text style={styles.heading}>{t("ADDRESS_INFORMATION")}</Text>
         <View style={styles.card}>
-          <Text style={{fontSize: 18, fontWeight: "600", color: "#757575"}}>Billing Address</Text>
+          <Text style={{ fontSize: 18, fontWeight: "600", color: "#757575" }}>{t("BILLING") + t("ADDRESS")}</Text>
           <Text style={styles.billingtxt}>
             {item.billing.company != "" ? item.billing.company : null}
           </Text>
@@ -107,8 +107,8 @@ function OrderDetails({navigation}) {
             {item.billing.first_name && item.billing.last_name
               ? item.billing.first_name + " " + item.billing.last_name
               : item.billing.first_name
-              ? item.billing.first_name
-              : null}
+                ? item.billing.first_name
+                : null}
           </Text>
           <Text style={styles.billingtxt}>
             {item.billing.address_1 ? item.billing.address_1 : null}
@@ -123,8 +123,8 @@ function OrderDetails({navigation}) {
             {item.billing.state ? item.billing.state + " \u2022 " + item.billing.country : null}
           </Text>
         </View>
-        <View style={[styles.card, {marginTop: 16, marginBottom: 30}]}>
-          <Text style={{fontSize: 18, fontWeight: "600", color: "#757575"}}>Shipping Address</Text>
+        <View style={[styles.card, { marginTop: 16, marginBottom: 30 }]}>
+          <Text style={{ fontSize: 18, fontWeight: "600", color: "#757575" }}>{t("SHIPPING") + t("ADDRESS")}</Text>
           <Text style={styles.billingtxt}>
             {item.shipping.company != "" ? item.shipping.company : null}
           </Text>
@@ -132,8 +132,8 @@ function OrderDetails({navigation}) {
             {item.shipping.first_name && item.shipping.last_name
               ? item.shipping.first_name + " " + item.shipping.last_name
               : item.shipping.first_name
-              ? item.shipping.first_name
-              : null}
+                ? item.shipping.first_name
+                : null}
           </Text>
           <Text style={styles.billingtxt}>
             {item.shipping.address_1 ? item.shipping.address_1 : null}
@@ -168,7 +168,7 @@ function OrderDetails({navigation}) {
   const _keyExtractor = item => item.id;
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <Toolbar backButton title={t("ORDER") + " #" + item.id} />
       <FlatList
         data={item.line_items}
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 10,
   },
-  heading: {fontWeight: "600", marginBottom: 10, paddingHorizontal: 16},
+  heading: { fontWeight: "600", marginBottom: 10, paddingHorizontal: 16 },
   billingtxt: {
     color: "#757575",
   },
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginHorizontal: 16,
     shadowOpacity: 0.5,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     backgroundColor: "#fff",
   },
   txt: {

@@ -6,6 +6,7 @@ import { ApiClient } from "service";
 import CartPriceBreakup from "./CartPriceBreakup";
 import CartItem from "./CartItem";
 import { isArray, isEmpty } from "lodash";
+import { withTranslation } from "react-i18next";
 
 class Cart extends React.PureComponent {
   static navigationOptions = {
@@ -73,6 +74,7 @@ class Cart extends React.PureComponent {
   render() {
     const { cart_data, couponCode, loading } = this.state;
     const { accent_color } = this.props.appSettings;
+    const { t } = this.props;
     if (loading) {
       return (
         <View style={[styles.container, { alignItems: "center", justifyContent: "center" }]}>
@@ -163,4 +165,4 @@ const mapStateToProps = state => ({
   appSettings: state.appSettings,
 });
 
-export default connect(mapStateToProps)(Cart);
+export default connect(mapStateToProps)(withTranslation()(Cart));

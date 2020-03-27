@@ -62,18 +62,18 @@ class ProductScreen extends React.PureComponent {
   }
 
   closeFilter = () => {
-    this.setState({ showFilter: false });
+    this.setState({ showFilter: false }); 
   };
 
   closeFilterForSort = () => {
     this.setState({ showFilterSort: false });
   }
 
-  sortData = text => async () => {
+  sortData = text => () => {
     this.setState({ showFilterSort: false, products: [], filterProducts: [], flatListEndReached: false });
     this.params.sort = text;
     this.params.page = 0;
-    await this.loadProducts();
+    this.loadProducts();  
   }
 
   componentDidMount() {
