@@ -4,7 +4,9 @@ import Text from "./Text";
 import Icon from "./IconNB";
 import Button from "./Button";
 
-import {View} from "react-native";
+import { View, Image } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { withNavigation } from "react-navigation";
 
 const makeCollapsed = (data, childrenKey) => {
   return data.map(children => {
@@ -145,6 +147,10 @@ class TreeView extends React.PureComponent {
     });
   }
 
+  gotoPage = (id) => () => {
+    this.props.onpress && this.props.onpress(id);
+  }
+
   renderTree(data, level) {
     return data.map(children => {
       const hasChildren =
@@ -156,28 +162,32 @@ class TreeView extends React.PureComponent {
           style={{
             height: children.collapsed ? this.props.collapsedItemHeight : "auto",
             zIndex: 1,
+            marginVertical: 10,
             overflow: "hidden",
           }}>
           <View
             style={{
               flexDirection: "row",
-              //justifyContent: "space-between",
+              justifyContent: "space-between",
               alignItems: "center",
               marginStart: 25 * level,
               //height: 40
             }}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Image source={{ uri: children.image != null ? children.image.src : "https://user-images.githubusercontent.com/2351721/31314483-7611c488-ac0e-11e7-97d1-3cfc1c79610e.png" }} style={{ width: 40, height: 40 }} />
+              <TouchableOpacity onPress={this.gotoPage(children.id)}><Text style={{ fontSize: 14, paddingStart: 10, fontWeight: "400" }}>{children.name + " (" + children.count + ")"}</Text></TouchableOpacity>
+            </View>
             {children.collapsed !== null &&
-            children[this.props.childrenKey] &&
-            children[this.props.childrenKey].length > 0 ? (
-              <Button transparent onPress={() => this.handleNodePressed(children, level)}>
-                <Icon name={children.collapsed ? "ios-add" : "ios-remove"} />
-              </Button>
-            ) : (
-              <Button transparent>
-                <Icon name="ios-add" style={{color: "transparent"}} />
-              </Button>
-            )}
-            <Text style={{fontSize: 16}}>{children.name}</Text>
+              children[this.props.childrenKey] &&
+              children[this.props.childrenKey].length > 0 ? (
+                <Button transparent onPress={() => this.handleNodePressed(children, level)}>
+                  <Icon name={children.collapsed ? "ios-add" : "ios-remove"} size={24} />
+                </Button>
+              ) : (
+                <Button transparent>
+                  <Icon name="ios-add" style={{ color: "transparent" }} size={24} />
+                </Button>
+              )}
           </View>
           {hasChildren && this.renderTree(children[this.props.childrenKey], level + 1)}
         </View>
@@ -190,4 +200,4 @@ class TreeView extends React.PureComponent {
   }
 }
 
-export default TreeView;
+export default withNavigation(TreeView);
