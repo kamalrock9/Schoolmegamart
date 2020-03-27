@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import {View, StatusBar, TextInput, StyleSheet} from 'react-native';
-import {connect} from 'react-redux';
-import Animated, {Easing} from 'react-native-reanimated';
+import React, {Component} from "react";
+import PropTypes from "prop-types";
+import {View, StatusBar, TextInput, StyleSheet} from "react-native";
+import {connect} from "react-redux";
+import Animated, {Easing} from "react-native-reanimated";
 
 class FloatingTextInput extends Component {
   constructor(props) {
@@ -10,7 +10,7 @@ class FloatingTextInput extends Component {
     this.state = {
       isFocused: false,
     };
-    this._animatedIsFocused = new Animated.Value(props.value === '' ? 0 : 1);
+    this._animatedIsFocused = new Animated.Value(props.value === "" ? 0 : 1);
   }
 
   handleFocus = () => this.setState({isFocused: true});
@@ -18,7 +18,7 @@ class FloatingTextInput extends Component {
 
   componentDidUpdate() {
     Animated.timing(this._animatedIsFocused, {
-      toValue: this.state.isFocused || this.props.value !== '' ? 1 : 0,
+      toValue: this.state.isFocused || this.props.value !== "" ? 1 : 0,
       duration: 200,
       easing: Easing.inOut(Easing.ease),
     }).start();
@@ -43,9 +43,8 @@ class FloatingTextInput extends Component {
       : Animated.color(210, 210, 210);
 
     const labelStyle = {
-      position: 'absolute',
-      fontFamily: 'Muli-Regular',
-      left: 2,
+      position: "absolute",
+      fontFamily: "Muli-Regular",
       top: this._animatedIsFocused.interpolate({
         inputRange: [0, 1],
         outputRange: [27, 8],
@@ -82,11 +81,10 @@ const styles = StyleSheet.create({
   txtInput: {
     height: 35,
     fontSize: 14,
-    color: '#000',
+    color: "#000",
     borderBottomWidth: 1,
-    borderBottomColor: '#EDEBF2',
-    paddingBottom: 8,
-    width: '100%',
+    borderBottomColor: "#EDEBF2",
+    width: "100%",
   },
 });
 
@@ -98,6 +96,6 @@ FloatingTextInput.propTypes = {
 };
 FloatingTextInput.defaultProps = {
   containerStyle: {},
-  label: 'Placeholder',
+  label: "Placeholder",
   hideLabel: false,
 };

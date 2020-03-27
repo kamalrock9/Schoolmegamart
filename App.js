@@ -28,8 +28,6 @@ import Download from "./src/pages/Download";
 import Wallet from "./src/pages/Wallet";
 import ReferAndEarn from "./src/pages/ReferAndEarn";
 import CheckoutScreen from "./src/pages/checkout/CheckoutScreen";
-import BillingAddresss from "./src/pages/BillingAddress";
-import ShippingAddresss from "./src/pages/ShippingAddress";
 import Review from "./src/pages/Review";
 import Search from "./src/pages/Search";
 
@@ -53,11 +51,11 @@ const HomeStack = createStackNavigator({
   ProductDetailScreen,
   Cart,
   CheckoutScreen,
-  BillingAddresss,
-  ShippingAddresss,
+  BillingAddress,
+  ShippingAddress,
   Review,
   WishlistScreen,
-  Search
+  Search,
 });
 
 const CategoryStack = createStackNavigator({
@@ -65,7 +63,7 @@ const CategoryStack = createStackNavigator({
   Cart,
   CheckoutScreen,
   WishlistScreen,
-  Search
+  Search,
 });
 
 const ProductStack = createStackNavigator({
@@ -74,7 +72,7 @@ const ProductStack = createStackNavigator({
   CheckoutScreen,
   Cart,
   WishlistScreen,
-  Search
+  Search,
 });
 
 const OrderStack = createStackNavigator({
@@ -98,8 +96,6 @@ const DrawerNavigator = createDrawerNavigator(
     Notification,
     Wallet,
     ReferAndEarn,
-    BillingAddresss,
-    ShippingAddresss,
     Review,
   },
   {

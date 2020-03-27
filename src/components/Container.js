@@ -7,7 +7,7 @@ function Container({children}) {
 
   return (
     <>
-      <SafeAreaView style={{flex: 0, backgroundColor: primary_color_dark}} />
+      <SafeAreaView style={{flex: 0, backgroundColor: primary_color_dark || "#000"}} />
       <SafeAreaView style={{flex: 1}}>{children}</SafeAreaView>
     </>
   );

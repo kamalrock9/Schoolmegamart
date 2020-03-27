@@ -1,16 +1,16 @@
 import React from "react";
-import { View, StyleSheet, FlatList, ActivityIndicator } from "react-native";
-import { Toolbar, Button, Text, HTMLRender, Icon } from "components";
-import { connect } from "react-redux";
-import { ApiClient } from "service";
+import {View, StyleSheet, FlatList, ActivityIndicator} from "react-native";
+import {Toolbar, Button, Text, HTMLRender, Container} from "components";
+import {connect} from "react-redux";
+import {ApiClient} from "service";
 import CartPriceBreakup from "./CartPriceBreakup";
 import CartItem from "./CartItem";
-import { isArray, isEmpty } from "lodash";
-import { withTranslation } from "react-i18next";
+import {isArray, isEmpty} from "lodash";
+import {withTranslation} from "react-i18next";
 
 class Cart extends React.PureComponent {
   static navigationOptions = {
-    header: <Toolbar backButton title="Cart" />,
+    header: null,
   };
   constructor(props) {
     super(props);
@@ -22,7 +22,7 @@ class Cart extends React.PureComponent {
   }
 
   selectShipping = text => {
-    this.setState({ shipping_method: text });
+    this.setState({shipping_method: text});
     this.ApiCall(text);
   };
 
@@ -40,14 +40,14 @@ class Cart extends React.PureComponent {
       user_id: 17,
     };
 
-    this.setState({ loading: true });
+    this.setState({loading: true});
     ApiClient.get("/cart", param)
-      .then(({ data }) => {
+      .then(({data}) => {
         console.log(data);
-        this.setState({ loading: false, cart_data: data });
+        this.setState({loading: false, cart_data: data});
       })
       .catch(() => {
-        this.setState({ loading: false });
+        this.setState({loading: false});
       });
   };
 
@@ -55,7 +55,7 @@ class Cart extends React.PureComponent {
     this.ApiCall(null);
   };
 
-  renderItem = ({ item, index }) => (
+  renderItem = ({item, index}) => (
     <CartItem
       item={item}
       index={index}
@@ -72,51 +72,47 @@ class Cart extends React.PureComponent {
   );
 
   render() {
-    const { cart_data, couponCode, loading } = this.state;
-    const { accent_color } = this.props.appSettings;
-    const { t } = this.props;
-    if (loading) {
-      return (
-        <View style={[styles.container, { alignItems: "center", justifyContent: "center" }]}>
-          <ActivityIndicator size={"large"} />
-        </View>
-      );
-    } else if (isArray(cart_data.cart_data) && !isEmpty(cart_data.cart_data)) {
-      return (
-        <View style={styles.container}>
-          <FlatList
-            data={cart_data.cart_data}
-            renderItem={this.renderItem}
-            keyExtractor={keyExtractor}
-            ItemSeparatorComponent={ItemSeparatorComponent}
-            ListFooterComponent={this.renderFooter}
-          />
-          <View style={styles.footer}>
-            <Button
-              style={[styles.footerButton, { backgroundColor: accent_color }]}
-              onPress={this.gotoCheckout("CheckoutScreen", { cartData: this.state.cart_data })}>
-              <Text style={{ color: "white", marginEnd: 5 }}>CHECKOUT {" | "}</Text>
-              <HTMLRender html={cart_data.total} baseFontStyle={{ color: "#fff" }} />
-            </Button>
+    const {cart_data, couponCode, loading} = this.state;
+    const {appSettings} = this.props;
+    return (
+      <Container>
+        <Toolbar backButton title="Cart" />
+        {loading ? (
+          <View style={[styles.container, {alignItems: "center", justifyContent: "center"}]}>
+            <ActivityIndicator size={"large"} />
           </View>
-        </View>
-      );
-    } else {
-      return (
-        <View style={[styles.container, { alignItems: "center", justifyContent: "center" }]}>
-          <Icon name="md-cart" color={accent_color} size={28} />
-          <Text style={{ color: accent_color, fontWeight: "400", fontSize: 16, marginVertical: 10 }}>Cart is empty.</Text>
-          <Button style={{ backgroundColor: accent_color, borderRadius: 2, elevation: 2 }} onPress={this.gotoCheckout("ProductScreen", {})}><Text style={{ color: "#fff", fontSize: 12, paddingHorizontal: 12, paddingVertical: 7, }}>Start Shopping</Text></Button>
-        </View>
-      );
-    }
+        ) : isArray(cart_data.cart_data) && !isEmpty(cart_data.cart_data) ? (
+          <>
+            <FlatList
+              data={cart_data.cart_data}
+              renderItem={this.renderItem}
+              keyExtractor={keyExtractor}
+              ItemSeparatorComponent={ItemSeparatorComponent}
+              ListFooterComponent={this.renderFooter}
+            />
+            <View style={styles.footer}>
+              <Button
+                style={[styles.footerButton, {backgroundColor: appSettings.accent_color}]}
+                onPress={this.gotoCheckout}>
+                <Text style={{color: "white", marginEnd: 5}}>CHECKOUT {" | "}</Text>
+                <HTMLRender html={cart_data.total} baseFontStyle={{color: "#fff"}} />
+              </Button>
+            </View>
+          </>
+        ) : (
+          <View style={[styles.container, {alignItems: "center", justifyContent: "center"}]}>
+            <Text>Cart is empty</Text>
+          </View>
+        )}
+      </Container>
+    );
   }
 }
 
 const keyExtractor = (item, index) => item + "sap" + index;
 
 function ItemSeparatorComponent() {
-  return <View style={[styles.line, { margin: 16 }]} />;
+  return <View style={[styles.line, {margin: 16}]} />;
 }
 
 const styles = StyleSheet.create({
@@ -132,7 +128,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  heading: { fontWeight: "700" },
+  heading: {fontWeight: "700"},
   footer: {
     width: "100%",
     flexDirection: "row",

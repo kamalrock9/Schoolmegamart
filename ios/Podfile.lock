@@ -124,6 +124,7 @@ PODS:
     - nanopb/encode (= 0.3.9011)
   - nanopb/decode (0.3.9011)
   - nanopb/encode (0.3.9011)
+  - OneSignal (2.12.6)
   - RCTRequired (0.61.5)
   - RCTTypeSafety (0.61.5):
     - FBLazyVector (= 0.61.5)
@@ -301,6 +302,9 @@ PODS:
   - react-native-fbsdk/Share (1.1.2):
     - FBSDKShareKit (= 5.8)
     - React
+  - react-native-onesignal (3.6.5):
+    - OneSignal (= 2.12.6)
+    - React (< 1.0.0, >= 0.13.0)
   - react-native-simple-toast (1.0.0):
     - React
     - Toast (~> 4.0.0)
@@ -399,6 +403,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-fbsdk (from `../node_modules/react-native-fbsdk`)
+  - react-native-onesignal (from `../node_modules/react-native-onesignal`)
   - react-native-simple-toast (from `../node_modules/react-native-simple-toast`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -448,6 +453,7 @@ SPEC REPOS:
     - GTMSessionFetcher
     - libwebp
     - nanopb
+    - OneSignal
     - SDWebImage
     - SDWebImageWebPCoder
     - Toast
@@ -485,6 +491,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   react-native-fbsdk:
     :path: "../node_modules/react-native-fbsdk"
+  react-native-onesignal:
+    :path: "../node_modules/react-native-onesignal"
   react-native-simple-toast:
     :path: "../node_modules/react-native-simple-toast"
   react-native-webview:
@@ -563,6 +571,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: cea130bbfe5a7edc8d06d3f0d17288c32ffe9925
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
+  OneSignal: a6df91542d1cf133b9dd19d89f2b533d8f2d3163
   RCTRequired: b153add4da6e7dbc44aebf93f3cf4fcae392ddf1
   RCTTypeSafety: 9aa1b91d7f9310fc6eadc3cf95126ffe818af320
   React: b6a59ef847b2b40bb6e0180a97d0ca716969ac78
@@ -573,6 +582,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: d5525f9ed5f782fdbacb64b9b01a43a9323d2386
   React-jsinspector: fa0ecc501688c3c4c34f28834a76302233e29dc0
   react-native-fbsdk: c35d42169e64aaf66f01713c1e18d0674f7f6519
+  react-native-onesignal: f6e1f20292cba72076ddb97e52290b0d5cc0a51c
   react-native-simple-toast: 6c376bd79b1e255a4bee90a72ead6447f96ea10d
   react-native-webview: 57cdcf9981594a1a7de36ecfe7f079379543ef1f
   React-RCTActionSheet: 600b4d10e3aea0913b5a92256d2719c0cdd26d76
