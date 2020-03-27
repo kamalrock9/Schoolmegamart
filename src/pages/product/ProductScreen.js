@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, FlatList, ImageBackground, TouchableOpacity } from "react-native";
+import { StyleSheet, View, FlatList } from "react-native";
 import { FlatListLoading, Toolbar, Container, Text, Button, Icon } from "components";
 import Toast from "react-native-simple-toast";
 import ProductItem from "./ProductItem";
@@ -9,7 +9,6 @@ import Filter from "./Filter";
 import Modal from "react-native-modal";
 import { withTranslation } from "react-i18next";
 import { isEmpty } from "lodash";
-import LinearGradient from "react-native-linear-gradient";
 import CategoryItem from "./CategoryItem";
 
 
