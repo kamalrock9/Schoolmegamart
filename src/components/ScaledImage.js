@@ -1,6 +1,6 @@
-import React, {PureComponent} from 'react';
-import FastImage from 'react-native-fast-image';
-import PropTypes from 'prop-types';
+import React from "react";
+import FastImage from "react-native-fast-image";
+import PropTypes from "prop-types";
 
 class ScaledImage extends React.PureComponent {
   constructor(props) {

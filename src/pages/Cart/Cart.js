@@ -7,6 +7,7 @@ import CartPriceBreakup from "./CartPriceBreakup";
 import CartItem from "./CartItem";
 import {isArray, isEmpty} from "lodash";
 import {withTranslation} from "react-i18next";
+import CheckoutScreen from "../checkout/CheckoutScreen";
 
 class Cart extends React.PureComponent {
   static navigationOptions = {
@@ -31,7 +32,7 @@ class Cart extends React.PureComponent {
   }
 
   gotoCheckout = (route, param) => () => {
-    this.props.navigation.navigate(route, param);
+    this.props.navigation.navigate(route, {cartData: param});
   };
 
   ApiCall = params => {
@@ -93,7 +94,7 @@ class Cart extends React.PureComponent {
             <View style={styles.footer}>
               <Button
                 style={[styles.footerButton, {backgroundColor: appSettings.accent_color}]}
-                onPress={this.gotoCheckout}>
+                onPress={this.gotoCheckout("CheckoutScreen", this.state.cart_data)}>
                 <Text style={{color: "white", marginEnd: 5}}>CHECKOUT {" | "}</Text>
                 <HTMLRender html={cart_data.total} baseFontStyle={{color: "#fff"}} />
               </Button>

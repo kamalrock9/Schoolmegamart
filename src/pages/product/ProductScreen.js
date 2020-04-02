@@ -44,6 +44,8 @@ class ProductScreen extends React.PureComponent {
       featured,
       category_id,
     };
+
+    this.params.category = this.state.filterValues.categories;
   }
 
   openFilter = () => {
@@ -105,8 +107,9 @@ class ProductScreen extends React.PureComponent {
     if (filterValues.pa_size) {
       filterData.pa_size = filterValues.pa_size;
     }
-    console.log(JSON.stringify(filterData));
     console.log(this.state);
+    this.params.category = filterValues.categories[0];
+    console.log(this.params);
 
     ApiClient.post("custom-products", filterData, {params: this.params})
       .then(({data}) => {
@@ -146,14 +149,14 @@ class ProductScreen extends React.PureComponent {
 
   onChangeFilter = filterValues => {
     this.setState({filterValues});
-    if (filterValues.pa_size || filterValues.pa_color) {
+    if (filterValues.pa_size || filterValues.pa_color || filterValues.categories.length > 0) {
       this.setState({flatListEndReached: false});
     }
   };
   filter = () => {
     console.log("filter");
     const {filterValues, products, flatListEndReached} = this.state;
-    // this.setState({ filterProducts: [], products: [], flatListEndReached: false });
+    // this.setState({products: [], flatListEndReached: false});
     let filterProducts = [];
 
     if (!flatListEndReached) {

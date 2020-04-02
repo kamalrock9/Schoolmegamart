@@ -1,10 +1,11 @@
 import React, {useState, useEffect} from "react";
 import {View, StatusBar, StyleSheet, Platform} from "react-native";
 import {Text, Icon, Button, CheckBox} from "components";
-import {useSelector} from "react-redux";
+import {useSelector, useDispatch} from "react-redux";
 import {useTranslation} from "react-i18next";
 import {uniq, intersection, max, min} from "lodash";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
+import {getAllCategories} from "store/actions";
 
 function Filter({onBackPress, data, filterVal, onChangeFilter, filter}) {
   console.log(filterVal);
@@ -12,7 +13,11 @@ function Filter({onBackPress, data, filterVal, onChangeFilter, filter}) {
   const {primary_color_dark, primary_color, primary_color_text} = useSelector(
     state => state.appSettings,
   );
+
   const {t} = useTranslation();
+  const disptach = useDispatch();
+
+  const categories = useSelector(state => state.categories);
 
   const filterTabs = ["Price", "Categories", "Color", "Size"];
 
@@ -20,6 +25,7 @@ function Filter({onBackPress, data, filterVal, onChangeFilter, filter}) {
   const [priceFilter, setpriceFilter] = useState([]);
   const [colorFilter, setcolorFilter] = useState([]);
   const [sizeFilter, setsizeFilter] = useState([]);
+  const [catFilter, setCatFilter] = useState([]);
 
   useEffect(() => {
     let price = [];
@@ -28,6 +34,7 @@ function Filter({onBackPress, data, filterVal, onChangeFilter, filter}) {
     }
     price = [Math.floor(min(price)), Math.ceil(max(price))];
     setpriceFilter(price);
+    disptach(getAllCategories());
   }, []);
 
   const onChangeIndex = index => () => {
@@ -47,14 +54,25 @@ function Filter({onBackPress, data, filterVal, onChangeFilter, filter}) {
     } else {
       var newData = {...filterVal};
     }
-    if (newData[key].includes(item)) {
+    if (key == "categories") {
+      if (filterVal.categories.length == 0) {
+        var data = filterVal.categories.push(item);
+      } else if (filterVal.categories.length > 0) {
+        var rm = filterVal.categories.splice(0, 1);
+        let rmd = {...filterVal, [key]: rm};
+        var ndata = rmd.categories.push(item);
+      }
+      var newDataVal = {...filterVal, ...data, ...ndata};
+    } else if (newData[key].includes(item)) {
       let newdata = newData[key].filter(val => val !== item);
       //setcolorFilter(newdata);
       var newDataVal = {...filterVal, [key]: newdata};
       if (key == "pa_size") {
         setsizeFilter(newDataVal[key]);
-      } else {
+      } else if (key == "pa_color") {
         setcolorFilter(newDataVal[key]);
+      } else {
+        setCatFilter(newDataVal[key]);
       }
     } else {
       let newVal = newData[key];
@@ -63,8 +81,10 @@ function Filter({onBackPress, data, filterVal, onChangeFilter, filter}) {
       var newDataVal = {...filterVal, [key]: newVal};
       if (key == "pa_size") {
         setsizeFilter(newDataVal[key]);
-      } else {
+      } else if (key == "pa_color") {
         setcolorFilter(newDataVal[key]);
+      } else {
+        setCatFilter(newDataVal[key]);
       }
     }
     //return;
@@ -89,7 +109,14 @@ function Filter({onBackPress, data, filterVal, onChangeFilter, filter}) {
               style={[styles.filterTabs, {backgroundColor: i === index ? "#FFFFFF" : null}]}
               key={"filter_" + item + index}
               onPress={onChangeIndex(i)}>
-              <Text>{item}</Text>
+              <Text>
+                {item}
+                {filterVal.hasOwnProperty("pa_size") && i == 3 && filterVal.pa_size.length > 0
+                  ? "(" + filterVal.pa_size.length + ")"
+                  : filterVal.hasOwnProperty("pa_color") && i == 2 && filterVal.pa_color.length > 0
+                  ? "(" + filterVal.pa_color.length + ")"
+                  : ""}
+              </Text>
             </Button>
           ))}
         </View>
@@ -99,7 +126,7 @@ function Filter({onBackPress, data, filterVal, onChangeFilter, filter}) {
               style={{
                 marginHorizontal: Platform.OS == "ios" ? 10 : 0,
                 alignItems: "center",
-                padding: 8,
+                paddingHorizontal: 8,
               }}>
               <MultiSlider
                 containerStyle={{marginHorizontal: Platform.OS == "ios" ? 10 : 0}}
@@ -111,7 +138,7 @@ function Filter({onBackPress, data, filterVal, onChangeFilter, filter}) {
                   height: 20,
                   width: 20,
                 }}
-                sliderLength={148}
+                sliderLength={170}
                 min={priceFilter[0]}
                 max={priceFilter[1]}
                 values={
@@ -125,6 +152,7 @@ function Filter({onBackPress, data, filterVal, onChangeFilter, filter}) {
                   width: "100%",
                   justifyContent: "space-between",
                   flexDirection: "row",
+                  marginTop: -10,
                 }}>
                 <Text style={{fontWeight: "700"}}>{filterVal.price[0] || priceFilter[0]}</Text>
                 <Text style={{fontWeight: "700"}}>{filterVal.price[1] || priceFilter[1]}</Text>
@@ -138,7 +166,14 @@ function Filter({onBackPress, data, filterVal, onChangeFilter, filter}) {
                 alignItems: "center",
                 padding: 8,
               }}>
-              <Text>categories</Text>
+              {categories.data.map((item, index) => (
+                <CheckBox
+                  label={item.name}
+                  key={"categories" + item + index}
+                  checked={filterVal["categories"].includes(item.id)}
+                  onPress={updateFilter("categories", item.id, index)}
+                />
+              ))}
             </View>
           )}
           {index == 2 && (

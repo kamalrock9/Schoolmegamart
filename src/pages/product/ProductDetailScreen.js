@@ -1,20 +1,20 @@
-import React, { Component, Fragment } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
-import { connect } from "react-redux";
+import React, {Component, Fragment} from "react";
+import {View, StyleSheet, ScrollView} from "react-native";
+import {connect} from "react-redux";
 import StarRating from "react-native-star-rating";
 import RNFetchBlob from "rn-fetch-blob";
 import Share from "react-native-share";
 import RBSheet from "react-native-raw-bottom-sheet";
 import Modal from "react-native-modal";
-import { Slider, Toolbar, HTMLRender, QuantitySelector, Text, Button, Icon } from "components";
+import {Slider, Toolbar, HTMLRender, QuantitySelector, Text, Button, Icon} from "components";
 import SpecificationRow from "./SpecificationRow";
 import MiniCart from "./MiniCart";
 import ProductsRow from "./ProductsRow";
-import { ApiClient } from "service";
-import { getCartCount } from "store/actions";
+import {ApiClient} from "service";
+import {getCartCount} from "store/actions";
 
 class ProductDetailScreen extends Component {
-  static navigationOptions = ({ navigation }) => ({
+  static navigationOptions = ({navigation}) => ({
     header: <Toolbar backButton title={navigation.state.params.name} cartButton />,
   });
 
@@ -32,22 +32,22 @@ class ProductDetailScreen extends Component {
 
   setup = () => {
     if (this.state.product.upsell_ids.length > 0) {
-      ApiClient.get("/get-products-by-id", { include: this.state.product.upsell_ids.join() })
-        .then(({ data }) => {
+      ApiClient.get("/get-products-by-id", {include: this.state.product.upsell_ids.join()})
+        .then(({data}) => {
           this.setState(prevState => ({
-            product: { ...prevState.product, upsell: data },
+            product: {...prevState.product, upsell: data},
           }));
         })
-        .catch(error => { });
+        .catch(error => {});
     }
     if (this.state.product.related_ids.length > 0) {
-      ApiClient.get("/get-products-by-id", { include: this.state.product.related_ids.join() })
-        .then(({ data }) => {
+      ApiClient.get("/get-products-by-id", {include: this.state.product.related_ids.join()})
+        .then(({data}) => {
           this.setState(prevState => ({
-            product: { ...prevState.product, related: data },
+            product: {...prevState.product, related: data},
           }));
         })
-        .catch(error => { });
+        .catch(error => {});
     }
   };
 
@@ -97,7 +97,7 @@ class ProductDetailScreen extends Component {
     };
 
     ApiClient.post("/cart/add", data)
-      .then(({ data }) => {
+      .then(({data}) => {
         this.setState({
           cartMsg: Array.isArray(data) ? data.map(e => e.message).join(", ") : data.message,
         });
@@ -108,7 +108,7 @@ class ProductDetailScreen extends Component {
           if (isBuyNow) {
             this.props.navigation.navigate("Cart", this.state);
           } else {
-            this.setState({ modalVisible: true });
+            this.setState({modalVisible: true});
           }
         }
       })
@@ -126,23 +126,23 @@ class ProductDetailScreen extends Component {
   }
 
   _closeModal = () => {
-    this.setState({ modalVisible: false });
+    this.setState({modalVisible: false});
   };
 
   render() {
     const {
-      appSettings: { accent_color },
+      appSettings: {accent_color},
     } = this.props;
-    const { product, modalVisible } = this.state;
+    const {product, modalVisible} = this.state;
     return (
       <View style={styles.container}>
         <ScrollView>
           <View>
             <Slider data={product.images} />
           </View>
-          <View style={[styles.card, { marginTop: 0 }]}>
+          <View style={[styles.card, {marginTop: 0}]}>
             <View style={[styles.rowCenterSpaced, styles.cardItem]}>
-              <Text style={{ fontSize: 16, color: "#000000", fontWeight: "700" }}>
+              <Text style={{fontSize: 16, color: "#000000", fontWeight: "700"}}>
                 {product.name}
               </Text>
               <Button transparent onPress={this.shareProduct}>
@@ -157,10 +157,10 @@ class ProductDetailScreen extends Component {
             <View style={[styles.rowCenterSpaced, styles.cardItem]}>
               <HTMLRender
                 html={product.price_html}
-                baseFontStyle={{ fontSize: 16, fontWeight: "500" }}
-                containerStyle={{ paddingTop: 8 }}
+                baseFontStyle={{fontSize: 16, fontWeight: "500"}}
+                containerStyle={{paddingTop: 8}}
               />
-              <Text style={product.in_stock ? { color: "green" } : { color: "gray" }}>
+              <Text style={product.in_stock ? {color: "green"} : {color: "gray"}}>
                 {product.in_stock ? "In stock" : "Out of stock"}
               </Text>
             </View>
@@ -178,14 +178,14 @@ class ProductDetailScreen extends Component {
             style={[
               styles.card,
               styles.cardItem,
-              { marginTop: 10, flexDirection: "row", alignItems: "center" },
+              {marginTop: 10, flexDirection: "row", alignItems: "center"},
             ]}>
             <StarRating
               disabled
               maxStars={5}
               rating={parseInt(product.average_rating)}
-              containerStyle={{ justifyContent: "flex-start" }}
-              starStyle={{ marginEnd: 5 }}
+              containerStyle={{justifyContent: "flex-start"}}
+              starStyle={{marginEnd: 5}}
               starSize={14}
               halfStarEnabled
               emptyStarColor={accent_color}
@@ -196,11 +196,11 @@ class ProductDetailScreen extends Component {
             <Text> See all reviews</Text>
           </View>
           {product.variations.length > 0 && product.attributes.length > 0 && (
-            <View style={[styles.card, { marginTop: 10 }]}>
+            <View style={[styles.card, {marginTop: 10}]}>
               <Text style={styles.cardItemHeader}>Variations</Text>
             </View>
           )}
-          <View style={[styles.card, { marginTop: 10 }]}>
+          <View style={[styles.card, {marginTop: 10}]}>
             <Text style={styles.cardItemHeader}>Specification</Text>
             <View style={styles.cardItem}>
               <SpecificationRow
@@ -236,19 +236,19 @@ class ProductDetailScreen extends Component {
             </View>
           </View>
           {product.description != "" && (
-            <View style={[styles.card, { marginTop: 10 }]}>
+            <View style={[styles.card, {marginTop: 10}]}>
               <Text style={styles.cardItemHeader}>Description</Text>
               <HTMLRender html={product.short_description} containerStyle={styles.cardItem} />
             </View>
           )}
           {product.upsell && product.upsell.length > 0 && (
-            <View style={[styles.card, { marginTop: 10 }]}>
+            <View style={[styles.card, {marginTop: 10}]}>
               <Text style={styles.cardItemHeader}>Products you may like</Text>
               <ProductsRow keyPrefix="product" products={product.upsell} />
             </View>
           )}
           {product.related && product.related.length > 0 && (
-            <View style={[styles.card, { marginTop: 10 }]}>
+            <View style={[styles.card, {marginTop: 10}]}>
               <Text style={styles.cardItemHeader}>Related Products</Text>
               <ProductsRow keyPrefix="product" products={product.related} />
             </View>
@@ -262,31 +262,31 @@ class ProductDetailScreen extends Component {
           backdropOpacity={0.3}
           useNativeDriver
           hideModalContentWhileAnimating
-          style={{ marginHorizontal: 0, marginBottom: 0, justifyContent: "flex-end" }}>
+          style={{marginHorizontal: 0, marginBottom: 0, justifyContent: "flex-end"}}>
           <MiniCart data={this.state} close={this._closeModal} message={this.state.cartMsg} />
         </Modal>
 
         {/* Footer Content */}
         {product.purchasable ||
-          (product.type === "external" && product.external_url) ||
-          product.type === "grouped" ? (
-            <View style={styles.footer}>
-              {product.in_stock ? (
-                <Fragment>
-                  <Button
-                    onPress={() => this._handleAddToCart(true)}
-                    style={[styles.footerButton, { backgroundColor: "#f7f7f7" }]}>
-                    <Text>Buy Now</Text>
-                  </Button>
-                  <Button
-                    style={[styles.footerButton, { backgroundColor: accent_color }]}
-                    onPress={() => this._handleAddToCart(false)}>
-                    <Text style={{ color: "white" }}>Add to Cart</Text>
-                  </Button>
-                </Fragment>
-              ) : null}
-            </View>
-          ) : null}
+        (product.type === "external" && product.external_url) ||
+        product.type === "grouped" ? (
+          <View style={styles.footer}>
+            {product.in_stock ? (
+              <Fragment>
+                <Button
+                  onPress={() => this._handleAddToCart(true)}
+                  style={[styles.footerButton, {backgroundColor: "#f7f7f7"}]}>
+                  <Text>Buy Now</Text>
+                </Button>
+                <Button
+                  style={[styles.footerButton, {backgroundColor: accent_color}]}
+                  onPress={() => this._handleAddToCart(false)}>
+                  <Text style={{color: "white"}}>Add to Cart</Text>
+                </Button>
+              </Fragment>
+            ) : null}
+          </View>
+        ) : null}
       </View>
     );
   }

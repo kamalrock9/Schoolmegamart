@@ -1,15 +1,17 @@
 import React, {useState} from "react";
-import {View, StyleSheet, TouchableWithoutFeedback, Alert, Dimensions} from "react-native";
+import {View, StyleSheet, TouchableOpacity, Alert, Dimensions} from "react-native";
 import {useSelector, useDispatch} from "react-redux";
 import {HTMLRender, Text, Icon, Button} from "components";
 import StarRating from "react-native-star-rating";
 import FitImage from "react-native-fit-image";
 import {deleteWishlist} from "../store/actions";
+import {useNavigation} from "react-navigation-hooks";
 
 function WishListItem({item, index}) {
   const {accent_color} = useSelector(state => state.appSettings);
   const dispatch = useDispatch();
   const {width} = Dimensions.get("window");
+  const navigation = useNavigation();
 
   const removeItem = item => () => {
     console.log(item);
@@ -24,47 +26,50 @@ function WishListItem({item, index}) {
     );
   };
 
+  const gotoPage = item => () => {
+    navigation.navigate("ProductDetailScreen", item);
+  };
+
   return (
-    <TouchableWithoutFeedback>
-      <View
-        style={[
-          index % 2 == 0 ? {marginStart: 12, marginEnd: 10} : {marginEnd: 10},
-          styles.container,
-          {width: width / 2 - 18},
-          {marginTop: index == 0 ? 12 : 6, marginBottom: 6},
-        ]}>
-        {item.images.length > 0 && <FitImage source={{uri: item.images[0].src}} />}
-        <View>
-          <View style={{flexDirection: "row", justifyContent: "space-between", flex: 1}}>
-            <Text style={[styles.itemMargin, {fontWeight: "600", flex: 1}]} numberOfLines={1}>
-              {item.name}
-            </Text>
-            <Button onPress={removeItem(item)}>
-              <Icon name="delete" type="MaterialCommunityIcons" size={28} color={accent_color} />
-            </Button>
-          </View>
-          {item.price_html != "" && (
-            <HTMLRender
-              html={item.price_html}
-              containerStyle={styles.itemMargin}
-              baseFontStyle={{fontSize: 13}}
-            />
-          )}
-          <StarRating
-            disabled
-            maxStars={5}
-            rating={parseInt(item.average_rating)}
-            containerStyle={[styles.itemMargin, styles.star]}
-            starStyle={{marginEnd: 5}}
-            starSize={14}
-            halfStarEnabled
-            emptyStarColor={accent_color}
-            fullStarColor={accent_color}
-            halfStarColor={accent_color}
-          />
+    <TouchableOpacity
+      style={[
+        index % 2 == 0 ? {marginStart: 12, marginEnd: 10} : {marginEnd: 10},
+        styles.container,
+        {width: width / 2 - 18},
+        {marginTop: index == 0 ? 12 : 6, marginBottom: 6},
+      ]}
+      onPress={gotoPage(item)}>
+      {item.images.length > 0 && <FitImage source={{uri: item.images[0].src}} />}
+      <View>
+        <View style={{flexDirection: "row", justifyContent: "space-between", flex: 1}}>
+          <Text style={[styles.itemMargin, {fontWeight: "600", flex: 1}]} numberOfLines={1}>
+            {item.name}
+          </Text>
+          <Button onPress={removeItem(item)}>
+            <Icon name="delete" type="MaterialCommunityIcons" size={28} color={accent_color} />
+          </Button>
         </View>
+        {item.price_html != "" && (
+          <HTMLRender
+            html={item.price_html}
+            containerStyle={styles.itemMargin}
+            baseFontStyle={{fontSize: 13}}
+          />
+        )}
+        <StarRating
+          disabled
+          maxStars={5}
+          rating={parseInt(item.average_rating)}
+          containerStyle={[styles.itemMargin, styles.star]}
+          starStyle={{marginEnd: 5}}
+          starSize={14}
+          halfStarEnabled
+          emptyStarColor={accent_color}
+          fullStarColor={accent_color}
+          halfStarColor={accent_color}
+        />
       </View>
-    </TouchableWithoutFeedback>
+    </TouchableOpacity>
   );
 }
 
