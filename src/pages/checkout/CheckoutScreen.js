@@ -116,7 +116,7 @@ function CheckoutScreen({navigation}) {
                 console.log(error);
               });
             if (resp.status == 200) {
-              navigation.navigate("PaymentPage", {data: resp.data});
+              navigation.navigate("PaymentPage", {Orderdata: resp.data});
             } else {
             }
           })

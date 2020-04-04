@@ -1,8 +1,8 @@
-import React from 'react';
-import axios from 'axios';
-import axiosRetry from 'axios-retry';
-import Toast from 'react-native-simple-toast';
-import Constants from './Config';
+import React from "react";
+import axios from "axios";
+import axiosRetry from "axios-retry";
+import Toast from "react-native-simple-toast";
+import Constants from "./Config";
 
 class Service {
   constructor() {
@@ -42,18 +42,28 @@ class Service {
 
   patch(path, payload) {
     return this.service.request({
-      method: 'PATCH',
+      method: "PATCH",
       url: path,
-      responseType: 'json',
+      responseType: "json",
       data: payload,
     });
   }
 
   post(path, payload, extra = {}) {
     return this.service.request({
-      method: 'POST',
+      method: "POST",
       url: path,
-      responseType: 'json',
+      responseType: "json",
+      data: payload,
+      ...extra,
+    });
+  }
+
+  put(path, payload, extra = {}) {
+    return this.service.request({
+      method: "PUT",
+      url: path,
+      responseType: "json",
       data: payload,
       ...extra,
     });

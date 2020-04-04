@@ -1,14 +1,14 @@
-import React, { useState, useCallback } from "react";
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView } from "react-native";
-import { Text, Toolbar, FloatingTextinput, Button } from "components";
-import { useTranslation } from "react-i18next";
-import { useSelector, useDispatch } from "react-redux";
+import React, {useState, useCallback} from "react";
+import {View, StyleSheet, KeyboardAvoidingView, ScrollView} from "react-native";
+import {Text, Toolbar, FloatingTextinput, Button} from "components";
+import {useTranslation} from "react-i18next";
+import {useSelector, useDispatch} from "react-redux";
 import Toast from "react-native-simple-toast";
-import { WooCommerce } from "service";
-import { updateUser } from "../store/actions";
+import {WooCommerce} from "service";
+import {updateUser} from "../store/actions";
 
 function AccountSetting() {
-  const { t } = useTranslation();
+  const {t} = useTranslation();
 
   const appSettings = useSelector(state => state.appSettings);
   const dispatch = useDispatch();
@@ -87,40 +87,41 @@ function AccountSetting() {
 
   return (
     <>
-      <Toolbar backButton title={t("ACCOUNT") + t("SETTING")} />
+      <Toolbar backButton title={t("ACCOUNT") + " " + t("SETTING")} />
       <ScrollView>
         <View style={styles.card}>
-          <Text style={{ fontWeight: "600" }}>{t("INFORMATION")}</Text>
+          <Text style={{fontWeight: "600"}}>{t("INFORMATION")}</Text>
 
           <FloatingTextinput
             label={t("FIRST_NAME")}
             labelColor="#000000"
-            style={{ color: "#000000" }}
+            style={{color: "#000000"}}
             value={firstname}
             onChangeText={onChangeFirstname}
           />
           <FloatingTextinput
             label={t("LAST_NAME")}
             labelColor="#000000"
-            style={{ color: "#000000" }}
+            style={{color: "#000000"}}
             value={lastname}
             onChangeText={onChangeLastname}
           />
           <FloatingTextinput
+            editable={false}
             label={t("EMAIL")}
             labelColor="#000000"
-            style={{ color: "#000000" }}
+            style={{color: "#000000"}}
             value={email}
             onChangeText={onChangeEmail}
           />
         </View>
         <View style={styles.card}>
-          <Text style={{ fontWeight: "600" }}>Leave Blank To Leave Unchanged</Text>
+          <Text style={{fontWeight: "600"}}>Leave Blank To Leave Unchanged</Text>
           <FloatingTextinput
             secureTextEntry={true}
             label={t("OLD") + " " + t("PASSWORD")}
             labelColor="#000000"
-            style={{ color: "#000000" }}
+            style={{color: "#000000"}}
             value={old}
             onChangeText={onChangeOld}
           />
@@ -128,7 +129,7 @@ function AccountSetting() {
             secureTextEntry={true}
             label={t("NEW") + " " + t("PASSWORD")}
             labelColor="#000000"
-            style={{ color: "#000000" }}
+            style={{color: "#000000"}}
             value={newP}
             onChangeText={onChangeNewp}
           />
@@ -136,7 +137,7 @@ function AccountSetting() {
             secureTextEntry={true}
             label={t("CONFIRM_PASSWORD")}
             labelColor="#000000"
-            style={{ color: "#000000" }}
+            style={{color: "#000000"}}
             value={confirm}
             onChangeText={onChangeConfirm}
           />
@@ -144,9 +145,9 @@ function AccountSetting() {
       </ScrollView>
       <View style={styles.footer}>
         <Button
-          style={[styles.footerButton, { backgroundColor: appSettings.accent_color }]}
+          style={[styles.footerButton, {backgroundColor: appSettings.accent_color}]}
           onPress={_UpdateProfile}>
-          <Text style={{ color: "white", marginEnd: 5 }}>{t("SAVE")}</Text>
+          <Text style={{color: "white", marginEnd: 5}}>{t("SAVE")}</Text>
         </Button>
       </View>
     </>
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     marginHorizontal: 16,
     shadowOpacity: 0.5,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     backgroundColor: "#fff",
   },
   footer: {

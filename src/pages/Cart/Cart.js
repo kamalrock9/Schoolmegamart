@@ -7,7 +7,7 @@ import CartPriceBreakup from "./CartPriceBreakup";
 import CartItem from "./CartItem";
 import {isArray, isEmpty} from "lodash";
 import {withTranslation} from "react-i18next";
-import CheckoutScreen from "../checkout/CheckoutScreen";
+import Modal from "react-native-modal";
 
 class Cart extends React.PureComponent {
   static navigationOptions = {
@@ -18,6 +18,7 @@ class Cart extends React.PureComponent {
     this.state = {
       cart_data: [],
       loading: false,
+      isContactModalOpen: false,
       shipping_method: "",
     };
   }
@@ -32,7 +33,20 @@ class Cart extends React.PureComponent {
   }
 
   gotoCheckout = (route, param) => () => {
-    this.props.navigation.navigate(route, {cartData: param});
+    if (isEmpty(this.props.user)) {
+      this.toggleContactModal();
+    } else {
+      this.props.navigation.navigate(route, {cartData: param});
+    }
+  };
+
+  gotoAuth = (login, register) => () => {
+    this.setState({isContactModalOpen: !this.state.isContactModalOpen});
+    this.props.navigation.navigate("Auth", {NeedLogin: login, NeedRegister: register});
+  };
+
+  toggleContactModal = () => {
+    this.setState({isContactModalOpen: !this.state.isContactModalOpen});
   };
 
   ApiCall = params => {
@@ -73,8 +87,8 @@ class Cart extends React.PureComponent {
   );
 
   render() {
-    const {cart_data, couponCode, loading} = this.state;
-    const {appSettings} = this.props;
+    const {cart_data, isContactModalOpen, loading} = this.state;
+    const {appSettings, user} = this.props;
     return (
       <Container>
         <Toolbar backButton title="Cart" />
@@ -105,6 +119,48 @@ class Cart extends React.PureComponent {
             <Text>Cart is empty</Text>
           </View>
         )}
+        <Modal
+          isVisible={isContactModalOpen}
+          style={{justifyContent: "flex-end", margin: 0, marginTop: "auto"}}
+          onBackButtonPress={this.toggleContactModal}
+          onBackdropPress={this.toggleContactModal}
+          hasBackdrop
+          useNativeDriver
+          hideModalContentWhileAnimating>
+          <View style={{backgroundColor: "#FFF", padding: 10}}>
+            <Text style={{fontSize: 18, fontWeight: "400"}}>LOGIN</Text>
+            <Text style={{marginVertical: 5}}>You need to login/register first.</Text>
+            <View
+              style={{
+                height: 1.35,
+                backgroundColor: "#d2d2d2",
+                width: "100%",
+                marginVertical: 10,
+              }}></View>
+            <View style={{flexDirection: "row"}}>
+              <Button
+                style={[
+                  styles.contact_btn,
+                  {
+                    backgroundColor: appSettings.primary_color,
+                  },
+                ]}
+                onPress={this.gotoAuth(true, false)}>
+                <Text style={{color: "#fff"}}>LOGIN</Text>
+              </Button>
+              <Button
+                style={[
+                  styles.contact_btn,
+                  {
+                    backgroundColor: appSettings.accent_color,
+                  },
+                ]}
+                onPress={this.gotoAuth(true, true)}>
+                <Text style={{color: "#fff"}}>REGISTER</Text>
+              </Button>
+            </View>
+          </View>
+        </Modal>
       </Container>
     );
   }
@@ -156,10 +212,18 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 5,
   },
+  contact_btn: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    borderRadius: 2,
+  },
 });
 
 const mapStateToProps = state => ({
   appSettings: state.appSettings,
+  user: state.user,
 });
 
 export default connect(mapStateToProps)(withTranslation()(Cart));

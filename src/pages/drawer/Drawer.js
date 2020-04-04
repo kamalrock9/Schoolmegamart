@@ -51,7 +51,8 @@ class Drawer extends React.PureComponent {
   };
 
   openModal = () => {
-    this.setState({isOpenModal: true});
+    //this.setState({isOpenModal: true});
+    this.props.navigation.navigate("Auth", {NeedLogin: true, NeedRegister: false});
   };
 
   closeModal = () => {
@@ -218,7 +219,7 @@ class Drawer extends React.PureComponent {
           onBackButtonPress={this.closeModal}
           useNativeDriver
           hideModalContentWhileAnimating>
-          <Login onClose={this.closeModal} navigation={this.props.navigation} />
+          <Login onClose={this.closeModal} navigation={this.props.navigation.state.params} />
         </Modal>
 
         <Modal

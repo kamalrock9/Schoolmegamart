@@ -18,6 +18,7 @@ function Review({cartData, orderData}) {
   const [paymentMethods, setPaymentMethds] = useState([]);
   const [shipping_method, setShipping_method] = useState("");
   const [chosen_payment_method, setChosen] = useState("");
+  const [pay_via_wallet, set_pay_via_wallet] = useState("");
 
   useEffect(() => {
     Apicall(null);
@@ -28,6 +29,7 @@ function Review({cartData, orderData}) {
     let param = {
       shipping_method: shipping_method != "" ? shipping_method : "",
       chosen_payment_method: chosen_payment_method != "" ? item : "",
+      pay_via_wallet: pay_via_wallet != "" ? pay_via_wallet : "",
     };
     setloading(true);
     ApiClient.get("/checkout/review-order", param)
