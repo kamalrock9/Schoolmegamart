@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>303250729052-1u11sp9liidpo0rqa4vi1ps01jenqc8q.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.303250729052-1u11sp9liidpo0rqa4vi1ps01jenqc8q</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>303250729052-6kq6uf8kinigigakccpj1481dicjamcb.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAxTxbhiBvg0CHIvsyu6Pz47Eg3H8wdNgI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>303250729052</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.phoeniixx.wooapp</string>
+	<key>PROJECT_ID</key>
+	<string>wooapp-1f1a6</string>
+	<key>STORAGE_BUCKET</key>
+	<string>wooapp-1f1a6.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:303250729052:ios:f71c4549d1bb7abe</string>
+	<key>DATABASE_URL</key>
+	<string>https://wooapp-1f1a6.firebaseio.com</string>
+</dict>
+</plist>

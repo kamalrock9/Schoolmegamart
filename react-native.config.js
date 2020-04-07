@@ -1,3 +1,3 @@
 module.exports = {
-  assets: ['react-native-vector-icons', './src/assets/fonts'],
+  assets: ["react-native-vector-icons", "./src/assets/fonts"],
 };

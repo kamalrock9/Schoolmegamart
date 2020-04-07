@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* wooappTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* wooappTests.m */; };
 		03BFEC5833A6455B9B78C6C5 /* Muli-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 61070BB9555E46279765B634 /* Muli-Black.ttf */; };
@@ -26,6 +27,9 @@
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* wooappTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* wooappTests.m */; };
+		2F21B658243C4B3C002CD5EF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2F21B657243C4B3B002CD5EF /* GoogleService-Info.plist */; };
+		2F3A4EDB243C61B7002D5BB2 /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F3A4EDA243C61B7002D5BB2 /* NotificationService.m */; };
+		2F3A4EDF243C61B7002D5BB2 /* OneSignalNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2F3A4ED7243C61B7002D5BB2 /* OneSignalNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		3540F3F6CF174E46A9AFB678 /* Montserrat-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E325EC2F0B634D9FA7000356 /* Montserrat-Black.ttf */; };
 		35B3F2FC1FE4399E0768B881 /* libPods-wooapp-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A6433AAE91C37E3AD560CAF7 /* libPods-wooapp-tvOS.a */; };
 		37088E98F4534F8DAA83653B /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8A4136C89E6F47FFA42CE738 /* Inter-Regular.ttf */; };
@@ -62,6 +66,7 @@
 		CB08C7A915C24A3F87159044 /* Montserrat-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E52FA6C876D64523BEFB6614 /* Montserrat-ExtraBold.ttf */; };
 		CFC3743FB9234CD6BE5417FE /* Muli-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 092B14824ED946E69A8B1624 /* Muli-Regular.ttf */; };
 		D177C1FAD8104F52A323B2EC /* Muli-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 47D618801D4C4FECA8EAD7ED /* Muli-ExtraLightItalic.ttf */; };
+		D40E1F3FF42FAA88B6AD33F8 /* libPods-OneSignalNotificationServiceExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19D793D5A794D02F011EC5E5 /* libPods-OneSignalNotificationServiceExtension.a */; };
 		D5E6953BAF5C4FA39A8571D3 /* Inter-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B198F03BDC47474DA5CD29E1 /* Inter-BoldItalic.ttf */; };
 		DBAAB67516214E6AA7EDAD57 /* Montserrat-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 134163918583409CB80001B8 /* Montserrat-Italic.ttf */; };
 		DD0F684C618542EEAB5217BA /* Inter-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 69B9720030934EC6980CFDEF /* Inter-ExtraLightItalic.ttf */; };
@@ -88,7 +93,28 @@
 			remoteGlobalIDString = 2D02E47A1E0B4A5D006451C7;
 			remoteInfo = "wooapp-tvOS";
 		};
+		2F3A4EDD243C61B7002D5BB2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F3A4ED6243C61B7002D5BB2;
+			remoteInfo = OneSignalNotificationServiceExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2F3A4EE3243C61B7002D5BB2 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				2F3A4EDF243C61B7002D5BB2 /* OneSignalNotificationServiceExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
@@ -103,7 +129,7 @@
 		0FE96FC1FB3246C299310D16 /* Muli-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Muli-ExtraBold.ttf"; path = "../src/assets/fonts/Muli-ExtraBold.ttf"; sourceTree = "<group>"; };
 		134163918583409CB80001B8 /* Montserrat-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Italic.ttf"; path = "../src/assets/fonts/Montserrat-Italic.ttf"; sourceTree = "<group>"; };
 		135D935E5907241DE38FD70B /* libPods-wooappTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-wooappTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07F961A680F5B00A75B9A /* wooapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = wooapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* WooApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WooApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = wooapp/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = wooapp/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -113,6 +139,7 @@
 		1890B4F55CE74DC31DE306F1 /* Pods-wooapp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wooapp.debug.xcconfig"; path = "Target Support Files/Pods-wooapp/Pods-wooapp.debug.xcconfig"; sourceTree = "<group>"; };
 		18A34951CBDA435E853B9460 /* Inter-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-MediumItalic.ttf"; path = "../src/assets/fonts/Inter-MediumItalic.ttf"; sourceTree = "<group>"; };
 		19CCD46785DA4E5F81ABAF82 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/native-base/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
+		19D793D5A794D02F011EC5E5 /* libPods-OneSignalNotificationServiceExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OneSignalNotificationServiceExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A28E35F0D2D469EA9F37CD7 /* Muli-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Muli-ExtraLight.ttf"; path = "../src/assets/fonts/Muli-ExtraLight.ttf"; sourceTree = "<group>"; };
 		1AA2E64248AB4EFA823C2906 /* Inter-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.ttf"; path = "../src/assets/fonts/Inter-Bold.ttf"; sourceTree = "<group>"; };
 		1B3073C825E241A596416817 /* Inter-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Medium.ttf"; path = "../src/assets/fonts/Inter-Medium.ttf"; sourceTree = "<group>"; };
@@ -124,6 +151,12 @@
 		295DAA8D3DDD4D6F8367775A /* Montserrat-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Thin.ttf"; path = "../src/assets/fonts/Montserrat-Thin.ttf"; sourceTree = "<group>"; };
 		2D02E47B1E0B4A5D006451C7 /* wooapp-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "wooapp-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* wooapp-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "wooapp-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F21B657243C4B3B002CD5EF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "wooapp/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		2F3A4ED2243C6151002D5BB2 /* wooapp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = wooapp.entitlements; path = wooapp/wooapp.entitlements; sourceTree = "<group>"; };
+		2F3A4ED7243C61B7002D5BB2 /* OneSignalNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = OneSignalNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F3A4ED9243C61B7002D5BB2 /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
+		2F3A4EDA243C61B7002D5BB2 /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
+		2F3A4EDC243C61B7002D5BB2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		31BDEEB9AE0F426DB990C04C /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/native-base/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		361ACDEF6A04404FBC0C6192 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/native-base/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		3890319DC5EA41258AE73777 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/native-base/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
@@ -153,6 +186,7 @@
 		6A708CF062C9419EB080218E /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		6B0EF9B50D044E4A9AD55908 /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/native-base/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
 		6F2ED08FB55E4D18EBCFFF43 /* libPods-wooapp-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-wooapp-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6F602E612BE143E7A64E0A72 /* Pods-OneSignalNotificationServiceExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OneSignalNotificationServiceExtension.release.xcconfig"; path = "Target Support Files/Pods-OneSignalNotificationServiceExtension/Pods-OneSignalNotificationServiceExtension.release.xcconfig"; sourceTree = "<group>"; };
 		74E294A41A01465FA08CF8F9 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		784894B766BA441CAA6A60EA /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/native-base/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		78F953B6465242C4AB057A73 /* Montserrat-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-SemiBoldItalic.ttf"; path = "../src/assets/fonts/Montserrat-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
@@ -174,6 +208,7 @@
 		A6433AAE91C37E3AD560CAF7 /* libPods-wooapp-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-wooapp-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9432C7EFAFC4AA291ED875D /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = "../node_modules/native-base/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
 		AB22AA1DDEBD44D0D4E23FCF /* Pods-wooappTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wooappTests.release.xcconfig"; path = "Target Support Files/Pods-wooappTests/Pods-wooappTests.release.xcconfig"; sourceTree = "<group>"; };
+		ABF8A56F092241EFDB05A6B2 /* Pods-OneSignalNotificationServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OneSignalNotificationServiceExtension.debug.xcconfig"; path = "Target Support Files/Pods-OneSignalNotificationServiceExtension/Pods-OneSignalNotificationServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		AD79E72BDF3D46468BE2EDD3 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/native-base/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
 		ADCEB1BC2A334E22B9BB9221 /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
 		B066C07F0DBB44CAB1828F55 /* Montserrat-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-ThinItalic.ttf"; path = "../src/assets/fonts/Montserrat-ThinItalic.ttf"; sourceTree = "<group>"; };
@@ -240,6 +275,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2F3A4ED4243C61B7002D5BB2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D40E1F3FF42FAA88B6AD33F8 /* libPods-OneSignalNotificationServiceExtension.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -263,6 +306,8 @@
 		13B07FAE1A68108700A75B9A /* wooapp */ = {
 			isa = PBXGroup;
 			children = (
+				2F3A4ED2243C6151002D5BB2 /* wooapp.entitlements */,
+				2F21B657243C4B3B002CD5EF /* GoogleService-Info.plist */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -283,8 +328,19 @@
 				A6433AAE91C37E3AD560CAF7 /* libPods-wooapp-tvOS.a */,
 				6F2ED08FB55E4D18EBCFFF43 /* libPods-wooapp-tvOSTests.a */,
 				135D935E5907241DE38FD70B /* libPods-wooappTests.a */,
+				19D793D5A794D02F011EC5E5 /* libPods-OneSignalNotificationServiceExtension.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2F3A4ED8243C61B7002D5BB2 /* OneSignalNotificationServiceExtension */ = {
+			isa = PBXGroup;
+			children = (
+				2F3A4ED9243C61B7002D5BB2 /* NotificationService.h */,
+				2F3A4EDA243C61B7002D5BB2 /* NotificationService.m */,
+				2F3A4EDC243C61B7002D5BB2 /* Info.plist */,
+			);
+			path = OneSignalNotificationServiceExtension;
 			sourceTree = "<group>";
 		};
 		6F54C46495CC3C998BAD59D8 /* Pods */ = {
@@ -298,6 +354,8 @@
 				3ADD9CA35D9906F5D1B4633D /* Pods-wooapp-tvOSTests.release.xcconfig */,
 				0821BBF415B574D15A703FFD /* Pods-wooappTests.debug.xcconfig */,
 				AB22AA1DDEBD44D0D4E23FCF /* Pods-wooappTests.release.xcconfig */,
+				ABF8A56F092241EFDB05A6B2 /* Pods-OneSignalNotificationServiceExtension.debug.xcconfig */,
+				6F602E612BE143E7A64E0A72 /* Pods-OneSignalNotificationServiceExtension.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -315,6 +373,7 @@
 				13B07FAE1A68108700A75B9A /* wooapp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* wooappTests */,
+				2F3A4ED8243C61B7002D5BB2 /* OneSignalNotificationServiceExtension */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				E5F492BA0891487BBFC799F9 /* Resources */,
@@ -328,10 +387,11 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* wooapp.app */,
+				13B07F961A680F5B00A75B9A /* WooApp.app */,
 				00E356EE1AD99517003FC87E /* wooappTests.xctest */,
 				2D02E47B1E0B4A5D006451C7 /* wooapp-tvOS.app */,
 				2D02E4901E0B4A5D006451C7 /* wooapp-tvOSTests.xctest */,
+				2F3A4ED7243C61B7002D5BB2 /* OneSignalNotificationServiceExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -464,14 +524,17 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				3E1352C200AA84AE3407EEAE /* [CP] Copy Pods Resources */,
 				FA93E3FC29409B00EBEF9E52 /* [CP-User] [RNFB] Core Configuration */,
+				959D9351700EE53BB1CB7541 /* [CP] Embed Pods Frameworks */,
+				2F3A4EE3243C61B7002D5BB2 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				2F3A4EDE243C61B7002D5BB2 /* PBXTargetDependency */,
 			);
 			name = wooapp;
 			productName = wooapp;
-			productReference = 13B07F961A680F5B00A75B9A /* wooapp.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* WooApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 		2D02E47A1E0B4A5D006451C7 /* wooapp-tvOS */ = {
@@ -513,6 +576,24 @@
 			productReference = 2D02E4901E0B4A5D006451C7 /* wooapp-tvOSTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		2F3A4ED6243C61B7002D5BB2 /* OneSignalNotificationServiceExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2F3A4EE0243C61B7002D5BB2 /* Build configuration list for PBXNativeTarget "OneSignalNotificationServiceExtension" */;
+			buildPhases = (
+				B2113C049A27BD347FF19C75 /* [CP] Check Pods Manifest.lock */,
+				2F3A4ED3243C61B7002D5BB2 /* Sources */,
+				2F3A4ED4243C61B7002D5BB2 /* Frameworks */,
+				2F3A4ED5243C61B7002D5BB2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OneSignalNotificationServiceExtension;
+			productName = OneSignalNotificationServiceExtension;
+			productReference = 2F3A4ED7243C61B7002D5BB2 /* OneSignalNotificationServiceExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -538,6 +619,11 @@
 						ProvisioningStyle = Automatic;
 						TestTargetID = 2D02E47A1E0B4A5D006451C7;
 					};
+					2F3A4ED6243C61B7002D5BB2 = {
+						CreatedOnToolsVersion = 11.4;
+						DevelopmentTeam = 4C8645RC2R;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "wooapp" */;
@@ -558,6 +644,7 @@
 				00E356ED1AD99517003FC87E /* wooappTests */,
 				2D02E47A1E0B4A5D006451C7 /* wooapp-tvOS */,
 				2D02E48F1E0B4A5D006451C7 /* wooapp-tvOSTests */,
+				2F3A4ED6243C61B7002D5BB2 /* OneSignalNotificationServiceExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -626,6 +713,7 @@
 				37088E98F4534F8DAA83653B /* Inter-Regular.ttf in Resources */,
 				8E26FA38527B43EEA7022BE4 /* Inter-SemiBold.ttf in Resources */,
 				49C45AB0CE014C1F8749E20D /* Inter-SemiBoldItalic.ttf in Resources */,
+				2F21B658243C4B3C002CD5EF /* GoogleService-Info.plist in Resources */,
 				1CEF364D4E81417E823CD41B /* Inter-Thin.ttf in Resources */,
 				18B5DAA13D604218904F9D55 /* Inter-ThinItalic.ttf in Resources */,
 			);
@@ -640,6 +728,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		2D02E48E1E0B4A5D006451C7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2F3A4ED5243C61B7002D5BB2 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -817,6 +912,46 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		959D9351700EE53BB1CB7541 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-wooapp/Pods-wooapp-frameworks.sh",
+				"${PODS_ROOT}/razorpay-pod/Pod/Razorpay.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Razorpay.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-wooapp/Pods-wooapp-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B2113C049A27BD347FF19C75 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-OneSignalNotificationServiceExtension-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		FA93E3FC29409B00EBEF9E52 /* [CP-User] [RNFB] Core Configuration */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -902,6 +1037,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2F3A4ED3243C61B7002D5BB2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2F3A4EDB243C61B7002D5BB2 /* NotificationService.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -914,6 +1057,11 @@
 			isa = PBXTargetDependency;
 			target = 2D02E47A1E0B4A5D006451C7 /* wooapp-tvOS */;
 			targetProxy = 2D02E4911E0B4A5D006451C7 /* PBXContainerItemProxy */;
+		};
+		2F3A4EDE243C61B7002D5BB2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F3A4ED6243C61B7002D5BB2 /* OneSignalNotificationServiceExtension */;
+			targetProxy = 2F3A4EDD243C61B7002D5BB2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -978,19 +1126,21 @@
 			baseConfigurationReference = 1890B4F55CE74DC31DE306F1 /* Pods-wooapp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 41;
+				CODE_SIGN_ENTITLEMENTS = wooapp/wooapp.entitlements;
+				CURRENT_PROJECT_VERSION = 43;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 4C8645RC2R;
 				INFOPLIST_FILE = wooapp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.4.1;
+				MARKETING_VERSION = 0.4.3;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.phoeniixx.wooapp;
-				PRODUCT_NAME = wooapp;
+				PRODUCT_NAME = WooApp;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1000,18 +1150,20 @@
 			baseConfigurationReference = 3DC33A25636CB545D57A9726 /* Pods-wooapp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 41;
+				CODE_SIGN_ENTITLEMENTS = wooapp/wooapp.entitlements;
+				CURRENT_PROJECT_VERSION = 43;
 				DEVELOPMENT_TEAM = 4C8645RC2R;
 				INFOPLIST_FILE = wooapp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.4.1;
+				MARKETING_VERSION = 0.4.3;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.phoeniixx.wooapp;
-				PRODUCT_NAME = wooapp;
+				PRODUCT_NAME = WooApp;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
@@ -1123,6 +1275,62 @@
 				SDKROOT = appletvos;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/wooapp-tvOS.app/wooapp-tvOS";
 				TVOS_DEPLOYMENT_TARGET = 10.1;
+			};
+			name = Release;
+		};
+		2F3A4EE1243C61B7002D5BB2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = ABF8A56F092241EFDB05A6B2 /* Pods-OneSignalNotificationServiceExtension.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 43;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 4C8645RC2R;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MARKETING_VERSION = 0.4.3;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.phoeniixx.wooapp.OneSignalNotificationServiceExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		2F3A4EE2243C61B7002D5BB2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6F602E612BE143E7A64E0A72 /* Pods-OneSignalNotificationServiceExtension.release.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 43;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 4C8645RC2R;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = OneSignalNotificationServiceExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MARKETING_VERSION = 0.4.3;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.phoeniixx.wooapp.OneSignalNotificationServiceExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -1260,6 +1468,15 @@
 			buildConfigurations = (
 				2D02E4991E0B4A5E006451C7 /* Debug */,
 				2D02E49A1E0B4A5E006451C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2F3A4EE0243C61B7002D5BB2 /* Build configuration list for PBXNativeTarget "OneSignalNotificationServiceExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2F3A4EE1243C61B7002D5BB2 /* Debug */,
+				2F3A4EE2243C61B7002D5BB2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
