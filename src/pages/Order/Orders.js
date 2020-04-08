@@ -85,7 +85,7 @@ function Orders({navigation}) {
               moment(item.date_created).format("hh:mm A")}
           </Text>
           <Text style={[styles.text, styles.font, {color: "#757575"}]}>
-            {item.billing.first_name + " " + item.billing.last_name}
+            {item.billing.first_name + " + " + item.billing.last_name}
           </Text>
         </View>
       </TouchableOpacity>
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     padding: 10,
-    borderRadius: 4,
+    borderRadius: 8,
     marginHorizontal: 8,
     elevation: 2,
     shadowRadius: 2,
