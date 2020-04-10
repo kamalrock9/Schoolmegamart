@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build": "npx jetify && cd android && ./gradlew clean && ./gradlew assembleRelease && ./gradlew bundleRelease && cd .."
   },
   "dependencies": {
     "@ptomasroos/react-native-multi-slider": "^2.2.0",
