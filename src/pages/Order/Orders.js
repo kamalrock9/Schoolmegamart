@@ -11,27 +11,39 @@ function Orders({navigation}) {
   const user = useSelector(state => state.user);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(true);
+  const [flatlistEndReach, setFlatlistEdnReach] = useState(false);
+  const [page, setpage] = useState(1);
 
   useEffect(() => {
+    loadOrder();
+  }, []);
+
+  const loadOrder = () => {
+    console.log("order");
+    setpage(page + 1);
     let params = {
-      page: 1,
+      page: page,
       per_page: 10,
     };
 
+    console.log(params);
     setLoading(true);
     WooCommerce.get("orders?customer=" + user.id, params)
       .then(res => {
-        console.log(res);
+        console.log(orders.concat(res.data));
         setLoading(false);
         if (res.status == 200) {
-          setOrders(res.data);
+          setOrders(orders.concat(res.data));
+          setFlatlistEdnReach(res.data.length < params.per_page);
+          setRefreshing(false);
         }
       })
       .catch(error => {
         setLoading(false);
         console.log(error);
       });
-  }, []);
+  };
 
   const gotoOrderDetailsPage = item => () => {
     navigation.navigate("OrderDetails", {item: item});
@@ -85,7 +97,7 @@ function Orders({navigation}) {
               moment(item.date_created).format("hh:mm A")}
           </Text>
           <Text style={[styles.text, styles.font, {color: "#757575"}]}>
-            {item.billing.first_name + " + " + item.billing.last_name}
+            {item.billing.first_name + " " + item.billing.last_name}
           </Text>
         </View>
       </TouchableOpacity>
@@ -97,7 +109,13 @@ function Orders({navigation}) {
   return (
     <View>
       <Toolbar backButton title={t("ORDERS")} />
-      <FlatList data={orders} renderItem={_renderItem} keyExtractor={_keyExtractor} />
+      <FlatList
+        data={orders}
+        onEndReached={() => loadOrder()}
+        onEndReachedThreshold={0.33}
+        renderItem={_renderItem}
+        keyExtractor={_keyExtractor}
+      />
       {loading && <ActivityIndicator style={{alignItems: "center", justifyContent: "center"}} />}
     </View>
   );

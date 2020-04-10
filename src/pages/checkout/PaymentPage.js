@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {View, StyleSheet, ScrollView} from "react-native";
+import {View, StyleSheet, ScrollView, Linking} from "react-native";
 import {Text, Toolbar, Button} from "components";
 import {useTranslation} from "react-i18next";
 import moment from "moment";
@@ -8,10 +8,13 @@ import Constants from "../../service/Config";
 import RazorpayCheckout from "react-native-razorpay";
 import {ApiClient} from "service";
 import axios from "axios";
+import InAppBrowser from "react-native-inappbrowser-reborn";
+import Paytm from "react-native-paytm";
 
 function PaymentPage({navigation}) {
   console.log(navigation.state.params);
 
+  const user = useSelector(state => state.user);
   const {accent_color, primary_color} = useSelector(state => state.appSettings);
   const {t} = useTranslation();
 
@@ -44,7 +47,95 @@ function PaymentPage({navigation}) {
     if (data.payment_method == "razorpay") {
       razorpayCheckout();
       return;
+    } else if (data.payment_method == "paytm") {
+      paytmCheckout();
+      return;
+    } else if (data.payment_method == "paypal") {
+      var url = Constants.baseURL + "/wp-json/wc/v2/payment" + payment_method + order_id + cus_id;
     }
+    switch (data.payment_method) {
+      case "paypal":
+        try {
+          const isAvailable = InAppBrowser.isAvailable();
+          if (isAvailable) {
+            InAppBrowser.open(url, {
+              // iOS Properties
+              dismissButtonStyle: "cancel",
+              preferredBarTintColor: "gray",
+              preferredControlTintColor: "white",
+              // Android Properties
+              showTitle: true,
+              toolbarColor: "#6200EE",
+              secondaryToolbarColor: "black",
+              enableUrlBarHiding: true,
+              enableDefaultShare: true,
+              forceCloseOnRedirection: true,
+            }).then(result => {
+              Alert.alert(JSON.stringify(result));
+            });
+          } else {
+            Linking.openURL(url);
+          }
+        } catch (error) {
+          Alert.alert(error.message);
+        }
+    }
+  };
+
+  const paytmCheckout = () => {
+    let txnRequest = {
+      mode: "Staging",
+      EMAIL: user.billing.email, // String
+      MOBILE_NO: user.billing.phone, //Mobile
+      MID: "WzcSRv11587918800886", // PayTM Credentials
+      ORDER_ID: data.id.toString(), //Should be unique for every order.
+      CUST_ID: data.customer_id.toString(),
+      INDUSTRY_TYPE_ID: "Retail", // PayTM Credentials
+      CHANNEL_ID: "WAP", // PayTM Credentials
+      TXN_AMOUNT: data.total.toString(), // Transaction Amount should be a String
+      WEBSITE: "WEBSTAGING", // PayTM Credentials
+      CALLBACK_URL: "https://securegw.paytm.in/theia/paytmCallback?ORDER_ID=" + data.id,
+      CHECKSUMHASH: "",
+    };
+
+    let formData = new FormData();
+    Object.keys(txnRequest).forEach(k => {
+      formData.append(k, txnRequest[k]);
+    });
+
+    ApiClient.post("checkout/paytm-checksum", formData)
+      .then(res => {
+        console.log(res);
+        txnRequest.CHECKSUMHASH = res.data.CHECKSUMHASH;
+        //txnRequest["ENVIRONMENT"] = "production";
+        console.log(txnRequest);
+        Paytm.startPayment(
+          txnRequest,
+          // response => {
+          //   console.log(response);
+          //   // if (response.STATUS == "TXN_SUCCESS") {
+          //   //   refreshPage(response.TXNID);
+          //   // } else {
+          //   //   alert(
+          //   //     "Transaction Failed for reason: - " +
+          //   //       response.RESPMSG +
+          //   //       " (" +
+          //   //       response.RESPCODE +
+          //   //       ")",
+          //   //   );
+          //   // }
+          // },
+          // error => {
+          //   alert(
+          //     "Transaction Failed for reason: - " + error.RESPMSG + " (" + error.RESPCODE + ")",
+          //   );
+          //   console.log(error);
+          // },
+        );
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   const razorpayCheckout = () => {
