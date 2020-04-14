@@ -3,7 +3,6 @@ import * as types from "../actions/actionTypes";
 const initialState = [];
 
 export const saveNotification = (state = initialState, action) => {
-  console.log(action);
   switch (action.type) {
     case types.SAVE_NOTIFICATION:
       return [...state, action.payload];

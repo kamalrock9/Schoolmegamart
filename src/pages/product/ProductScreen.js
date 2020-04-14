@@ -239,12 +239,10 @@ class ProductScreen extends React.PureComponent {
         </View>
         <FlatGrid
           items={filterProducts}
-          //keyExtractor={this._keyExtractor}
+          keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
           itemDimension={160}
           spacing={8}
-          //numColumns={2}
-          // style={{margin: 2}}
           onEndReached={this.loadProducts}
           onEndReachedThreshold={0.33}
           showsVerticalScrollIndicator={!refreshing}

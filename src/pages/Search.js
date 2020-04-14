@@ -5,6 +5,7 @@ import {useSelector} from "react-redux";
 import {ApiClient} from "service";
 import {isEmpty} from "lodash";
 import FitImage from "react-native-fit-image";
+import {debounce} from "lodash";
 
 function Search({navigation}) {
   const {primary_color, primary_color_dark, primary_color_text} = useSelector(
@@ -23,18 +24,21 @@ function Search({navigation}) {
     navigation.push(route, params);
   };
 
-  const onChangeText = useCallback(text => {
-    setTextInput(text);
-    let param = {
-      search: text,
-      per_page: 4,
-    };
-    ApiClient.get("custom-search", param).then(({data}) => {
-      console.log(data);
-      setCate(data.categories);
-      setResults(data.products);
-    });
-  });
+  const onChangeText = useCallback(
+    debounce(text => {
+      setTextInput(text);
+      let param = {
+        search: text,
+        per_page: 4,
+      };
+      ApiClient.get("custom-search", param).then(({data}) => {
+        console.log(data);
+        setCate(data.categories);
+        setResults(data.products);
+      });
+    }, 1000),
+    [],
+  );
 
   const renderItem = ({item}) => {
     return (
@@ -66,16 +70,16 @@ function Search({navigation}) {
   };
 
   const itemSeparatorComponentCate = () => {
-    return <View style={styles.seperator}></View>;
+    return <View style={styles.seperator} />;
   };
 
   const itemSeparatorComponent = () => {
-    return <View style={styles.seperator}></View>;
+    return <View style={styles.seperator} />;
   };
 
-  const keyExtractor = item => item.id;
+  const keyExtractor = item => "category_" + item.id;
 
-  const keyExtractorResult = item => item.id;
+  const keyExtractorResult = item => "products_" + item.id;
 
   return (
     <View>
@@ -107,8 +111,8 @@ function Search({navigation}) {
           />
         )}
         {textinput != "" && (
-          <Text style={{alignSelf: "center", fontWeight: "300"}}>
-            {"Search Mode for " + textinput}
+          <Text style={{alignSelf: "center", fontWeight: "300", marginTop: 16}}>
+            {"Search More for " + textinput}
           </Text>
         )}
       </View>

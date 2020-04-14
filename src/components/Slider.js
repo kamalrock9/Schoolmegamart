@@ -14,8 +14,6 @@ const renderItem = ({item, index}) => (
 const keyExtractor = item => item.id.toString();
 
 function Slider({data, ...props}) {
-  console.log(data);
-
   return (
     <SwiperFlatList
       {...props}
