@@ -32,6 +32,7 @@ import Review from "./src/pages/Review";
 import Search from "./src/pages/Search";
 import PaymentPage from "./src/pages/checkout/PaymentPage";
 import Auth from "./src/pages/auth/Login";
+import Reviews from "./src/pages/product/Reviews";
 
 //Redux
 import {persistor, store} from "./src/store";
@@ -61,6 +62,7 @@ const HomeStack = createStackNavigator(
     Search,
     PaymentPage,
     Auth,
+    Reviews,
   },
   {
     defaultNavigationOptions: {
@@ -95,6 +97,7 @@ const ProductStack = createStackNavigator(
     WishlistScreen,
     Search,
     Auth,
+    Reviews,
   },
   {
     defaultNavigationOptions: {

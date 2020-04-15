@@ -201,6 +201,10 @@ class ProductDetailScreen extends Component {
     this.setState({modalVisible: false});
   };
 
+  gotoReviews = product => () => {
+    this.props.navigation.navigate("Reviews", product);
+  };
+
   onVariationChange = item => async option => {
     await this.setState(prevState => ({
       selectedAttrs: {
@@ -303,7 +307,9 @@ class ProductDetailScreen extends Component {
                 halfStarColor={accent_color}
               />
               <Text>({product.rating_count || 0})</Text>
-              <Text> See all reviews</Text>
+              <Button onPress={this.gotoReviews(product)}>
+                <Text> See all reviews</Text>
+              </Button>
             </View>
             {product.variations.length > 0 && attributes.length > 0 && (
               <View style={[styles.card, {paddingBottom: 0, paddingHorizontal: 8}]}>
