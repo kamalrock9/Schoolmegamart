@@ -1,7 +1,7 @@
 import Text from "./Text";
 import ScaledImage from "./ScaledImage";
 import TreeView from "./TreeView";
-import FlatListLoading from "./FlatListLoading";
+import EmptyList from "./EmptyList";
 import HTMLRender from "./HTMLRender";
 import Slider from "./Slider";
 import Toolbar from "./Toolbar";
@@ -11,13 +11,13 @@ import Icon from "./IconNB";
 import WishlistIcon from "./WishlistIcon";
 import FloatingTextinput from "./FloatingTextinput";
 import Container from "./Container";
-import CheckBox from "./CheckBox"
+import CheckBox from "./CheckBox";
 
 export {
   Text,
   ScaledImage,
   TreeView,
-  FlatListLoading,
+  EmptyList,
   HTMLRender,
   Slider,
   Toolbar,
@@ -27,5 +27,5 @@ export {
   WishlistIcon,
   FloatingTextinput,
   Container,
-  CheckBox
+  CheckBox,
 };

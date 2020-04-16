@@ -1,6 +1,7 @@
 import React from "react";
-import {StyleSheet, View, FlatList} from "react-native";
-import {FlatListLoading, Toolbar, Container, Text, Button, Icon} from "components";
+import {StyleSheet, View, FlatList, ActivityIndicator} from "react-native";
+import {Toolbar, Container, Text, Button, Icon, EmptyList} from "components";
+import {connect} from "react-redux";
 import Toast from "react-native-simple-toast";
 import ProductItem from "./ProductItem";
 import {ApiClient} from "service";
@@ -10,6 +11,7 @@ import Modal from "react-native-modal";
 import {withTranslation} from "react-i18next";
 import {isEmpty} from "lodash";
 import CategoryItem from "../home/CategoryItem";
+import SortOptions from "./SortOptions";
 
 class ProductScreen extends React.PureComponent {
   static navigationOptions = {
@@ -19,33 +21,29 @@ class ProductScreen extends React.PureComponent {
   constructor(props) {
     super(props);
 
-    console.log(props.navigation.state);
-
     const {category_id, featured, sortby, on_sale} = props.navigation.state.params;
+    const {price} = this.props.appSettings;
 
     this.state = {
       products: [],
-      refreshing: true,
-      flatListEndReached: false,
+      loading: true,
+      hasMore: false,
       showFilter: false,
       showFilterSort: false,
-      filterValues: {
-        price: [],
-        categories: [],
-      },
-      filterProducts: [],
       categories: [],
+      attributes: [],
     };
     this.params = {
-      page: 0,
-      per_page: 10,
-      on_sale: on_sale || "",
+      page: 1,
+      per_page: 20,
+      on_sale,
       sort: sortby || "popularity",
       featured,
-      category_id,
+      category: category_id,
+      min_price: price.min || 0,
+      max_price: price.max || "",
     };
-
-    this.params.category = this.state.filterValues.categories;
+    this.attr = {};
   }
 
   openFilter = () => {
@@ -53,7 +51,7 @@ class ProductScreen extends React.PureComponent {
   };
 
   openSort = () => {
-    this.setState({showFilterSort: true, flatListEndReached: false});
+    this.setState({showFilterSort: true, hasMore: false});
   };
 
   closeFilter = () => {
@@ -64,15 +62,16 @@ class ProductScreen extends React.PureComponent {
     this.setState({showFilterSort: false});
   };
 
-  sortData = text => () => {
+  sortData = text => {
     this.setState({
       showFilterSort: false,
       products: [],
-      filterProducts: [],
-      flatListEndReached: false,
+      hasMore: false,
+      loading: true,
     });
+    console.log(text);
     this.params.sort = text;
-    this.params.page = 0;
+    this.params.page = 1;
     this.loadProducts();
   };
 
@@ -80,113 +79,74 @@ class ProductScreen extends React.PureComponent {
     this.loadProducts();
     // this.props.navigation.addListener('focus',
     //   () => { this.loadProducts })
-    if (this.params.category_id) {
-      ApiClient.get("products/all-categories", {parent: this.params.category_id}).then(({data}) => {
+    if (this.params.category) {
+      ApiClient.get("products/all-categories", {parent: this.params.category}).then(({data}) => {
         console.log(data);
         this.setState({categories: data});
       });
     }
+
+    const params = {
+      // product: this.state.products.map(item => item.id).join(),
+      hide_empty: true,
+      show_all: true,
+    };
+    ApiClient.get("products/custom-attributes", params).then(({data}) => {
+      this.setState({attributes: data});
+    });
   }
 
   loadProducts = () => {
-    if (this.state.flatListEndReached) {
-      this.filter();
-    }
-    if (this.state.flatListEndReached) {
-      return;
-    }
-
-    this.params.page++;
-
-    console.log("load product");
-    const {filterValues} = this.state;
-    let filterData = {};
-    if (filterValues.pa_color) {
-      filterData.pa_color = filterValues.pa_color;
-    }
-    if (filterValues.pa_size) {
-      filterData.pa_size = filterValues.pa_size;
-    }
-    console.log(this.state);
-    this.params.category = filterValues.categories[0];
     console.log(this.params);
-
-    ApiClient.post("custom-products", filterData, {params: this.params})
+    ApiClient.post("custom-products", this.attr, {params: this.params})
       .then(({data}) => {
-        this.setState({
-          products: this.state.products.concat(data),
-          filterProducts: this.state.products.concat(data),
-          flatListEndReached: data.length < this.params.per_page,
-          refreshing: false,
-        });
+        this.fetchAttributes(data);
       })
       .catch(e => {
         Toast.show(e.toString(), Toast.LONG);
+        this.setState({
+          loading: false,
+        });
       });
+  };
 
-    let p = this.joinProductIds(this.state.filterProducts);
-    let param = {
-      product: p,
+  fetchAttributes = async data => {
+    await this.setState(prevState => ({
+      products: [...prevState.products, ...data],
+      hasMore: data.length == this.params.per_page,
+      loading: false,
+    }));
+    //will use global attrributes
+    /*const params = {
+      product: this.state.products.map(item => item.id).join(),
+      hide_empty: true,
     };
-    ApiClient.get("products/custom-attributes?hide_empty=true", param).then(({data}) => {
-      for (var i = 0; i < data.length; i++) {
-        let name = data[i].name;
-        let newdata = {...this.state.filterValues, [name]: data[i]};
-        this.setState({filterValues: newdata});
-      }
-    });
+    ApiClient.get("products/custom-attributes", params).then(({data}) => {
+      this.setState({attributes: data});
+    });*/
   };
 
-  joinProductIds(p) {
-    let arr = [];
-    for (let i of p) {
-      if (i.attributes.length > 0) {
-        arr.push(i.id);
-      }
-    }
-    return arr.join(",");
-  }
-
-  onChangeFilter = filterValues => {
-    this.setState({filterValues});
-    if (filterValues.pa_size || filterValues.pa_color || filterValues.categories.length > 0) {
-      this.setState({flatListEndReached: false});
-    }
-  };
-  filter = () => {
-    console.log("filter");
-    const {filterValues, products, flatListEndReached} = this.state;
-    // this.setState({products: [], flatListEndReached: false});
-    let filterProducts = [];
-
-    if (!flatListEndReached) {
-      this.loadProducts();
-    }
-
-    /******FILTER*****/
-    console.log("after load");
-    filterProducts = products.filter(item => {
-      return (
-        filterValues.price.length == 0 ||
-        (filterValues.price[0] <= item.price && filterValues.price[1] >= item.price)
-      );
-    });
-
-    this.setState({filterProducts, showFilter: false});
+  onEndReached = () => {
+    if (!this.state.hasMore) return;
+    this.params.page++;
+    this.setState({loading: true, hasMore: false}, () => this.loadProducts());
   };
 
-  _renderItem = ({item, index}) => {
-    return (
-      /***** For providing dynamic width to scaledimages 
-      {width - (MarginVertical of Container + borderWidth)}/2] ****/
-      <ProductItem item={item} />
+  onFilter = (params, attr) => {
+    this.params = params;
+    this.attr = attr;
+    console.log(this.attr);
+    this.setState({showFilter: false, products: [], loading: true, hasMore: false}, () =>
+      this.loadProducts(),
     );
   };
 
+  _renderItem = ({item, index}) => <ProductItem item={item} />;
+
   getToProductPage = param => {
     this.params.category = param;
-    this.params.page = 0;
-    this.setState({flatListEndReached: false, products: []});
+    this.params.page = 1;
+    this.setState({hasMore: false, products: []});
     this.loadProducts();
   };
 
@@ -209,27 +169,21 @@ class ProductScreen extends React.PureComponent {
   _keyExtractor = item => "products_" + item.id;
 
   render() {
+    const {products, loading, showFilter, showFilterSort, attributes} = this.state;
     const {
-      products,
-      flatListEndReached,
-      refreshing,
-      showFilter,
-      showFilterSort,
-      filterValues,
-      filterProducts,
-      categories,
-    } = this.state;
-    const {t} = this.props;
+      appSettings: {accent_color},
+    } = this.props;
+
     return (
       <Container>
         <Toolbar backButton title="PRODUCTS" />
-        <View style={styles.filterView}>
+        <View style={styles.filterContainer}>
           <Button style={styles.button} onPress={this.openFilter}>
-            <Icon name="md-menu" size={20} />
+            <Icon name="menu-unfold" type="AntDesign" size={20} />
             <Text style={styles.btntext}>Categories</Text>
           </Button>
           <Button style={styles.button} onPress={this.openSort}>
-            <Icon name="exchange" type="FontAwesome" size={20} />
+            <Icon name="swap" type="AntDesign" size={20} />
             <Text style={styles.btntext}>Sort By</Text>
           </Button>
           <Button style={styles.button} onPress={this.openFilter}>
@@ -238,31 +192,37 @@ class ProductScreen extends React.PureComponent {
           </Button>
         </View>
         <FlatGrid
-          items={filterProducts}
+          items={products}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
           itemDimension={160}
           spacing={8}
-          onEndReached={this.loadProducts}
+          onEndReached={this.onEndReached}
           onEndReachedThreshold={0.33}
-          showsVerticalScrollIndicator={!refreshing}
+          contentContainerStyle={{flexGrow: 1}}
+          showsVerticalScrollIndicator={!loading}
           itemContainerStyle={{justifyContent: "flex-start"}}
           ListHeaderComponent={this.listHeaderComponent}
+          ListEmptyComponent={<EmptyList loading={loading} label="Products not available" />}
           ListFooterComponent={
-            <FlatListLoading bottomIndicator={!flatListEndReached} centerIndicator={refreshing} />
+            products.length > 0 && loading ? (
+              <ActivityIndicator color={accent_color} size="large" style={{padding: 16}} />
+            ) : null
           }
         />
         <Modal
           animationType="slide"
-          transparent={false}
-          visible={showFilter}
-          onRequestClose={this.closeFilter}>
+          isVisible={showFilter}
+          useNativeDriver
+          hideModalContentWhileAnimating
+          style={{margin: 0}}
+          onBackdropPress={this.closeFilter}>
           <Filter
-            data={products}
             onBackPress={this.closeFilter}
-            filterVal={filterValues}
-            onChangeFilter={this.onChangeFilter}
-            filter={this.filter}
+            onFilter={this.onFilter}
+            filterData={this.params}
+            attributes={attributes}
+            seletedAttr={this.attr}
           />
         </Modal>
         <Modal
@@ -271,80 +231,14 @@ class ProductScreen extends React.PureComponent {
           onBackdropPress={this.closeSort}
           hasBackdrop
           useNativeDriver
-          animationType="slide"
-          transparent={true}
-          backdropColor={"black"}
-          backdropOpacity={1}
-          visible={showFilterSort}
-          onRequestClose={this.closeSort}>
-          <View style={{padding: 15, backgroundColor: "#fff"}}>
-            <View style={{flexDirection: "row", justifyContent: "space-between", paddingBottom: 5}}>
-              <Text style={{fontWeight: "400", fontSize: 16}}>Sort By</Text>
-              <Button onPress={this.closeSort}>
-                <Icon type="Entypo" name="cross" size={24} />
-              </Button>
-            </View>
-            <Button style={styles.sortbtn} onPress={this.sortData("popularity")}>
-              <Text style={{color: this.params.sort == "popularity" ? "#0275f9" : "#000"}}>
-                {t("POPULARITY")}
-              </Text>
-              {this.params.sort == "popularity" && (
-                <Icon
-                  name="md-checkmark"
-                  size={20}
-                  color={this.params.sort == "popularity" ? "#0275f9" : "#000"}
-                />
-              )}
-            </Button>
-            <Button style={styles.sortbtn} onPress={this.sortData("rating")}>
-              <Text style={{color: this.params.sort == "rating" ? "#0275f9" : "#000"}}>
-                {t("AVERAGE_RATING")}
-              </Text>
-              {this.params.sort == "rating" && (
-                <Icon
-                  name="md-checkmark"
-                  size={20}
-                  color={this.params.sort == "rating" ? "#0275f9" : "#000"}
-                />
-              )}
-            </Button>
-            <Button style={styles.sortbtn} onPress={this.sortData("date")}>
-              <Text style={{color: this.params.sort == "date" ? "#0275f9" : "#000"}}>
-                {t("NEWNESS")}
-              </Text>
-              {this.params.sort == "date" && (
-                <Icon
-                  name="md-checkmark"
-                  size={20}
-                  color={this.params.sort == "date" ? "#0275f9" : "#000"}
-                />
-              )}
-            </Button>
-            <Button style={styles.sortbtn} onPress={this.sortData("price_asc")}>
-              <Text style={{color: this.params.sort == "price_asc" ? "#0275f9" : "#000"}}>
-                {t("PRICE_ASC")}
-              </Text>
-              {this.params.sort == "price_asc" && (
-                <Icon
-                  name="md-checkmark"
-                  size={20}
-                  color={this.params.sort == "price_asc" ? "#0275f9" : "#000"}
-                />
-              )}
-            </Button>
-            <Button style={styles.sortbtn} onPress={this.sortData("price_desc")}>
-              <Text style={{color: this.params.sort == "price_desc" ? "#0275f9" : "#000"}}>
-                {t("PRICE_DESC")}
-              </Text>
-              {this.params.sort == "price_desc" && (
-                <Icon
-                  name="md-checkmark"
-                  size={20}
-                  color={this.params.sort == "price_desc" ? "#0275f9" : "#000"}
-                />
-              )}
-            </Button>
-          </View>
+          hideModalContentWhileAnimating
+          isVisible={showFilterSort}>
+          <SortOptions
+            data={products}
+            sort={this.params.sort}
+            onBackButtonPress={this.closeSort}
+            sortData={this.sortData}
+          />
         </Modal>
       </Container>
     );
@@ -357,24 +251,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  filterView: {
+  filterContainer: {
     elevation: 5,
-    paddingHorizontal: 15,
+    shadowRadius: 2,
+    shadowOpacity: 0.5,
+    shadowOffset: {width: 0, height: 2},
+    paddingHorizontal: 16,
     backgroundColor: "#fff",
     flexDirection: "row",
-    justifyContent: "space-between",
   },
   button: {
     paddingVertical: 10,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
   },
-  btntext: {marginStart: 5},
-  sortbtn: {
-    paddingTop: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingBottom: 10,
+  btntext: {
+    marginStart: 5,
   },
 });
 
@@ -390,4 +284,6 @@ const styles = StyleSheet.create({
 //   on_sale: ''
 // }
 
-export default withTranslation()(ProductScreen);
+const mapStateToProps = state => ({appSettings: state.appSettings});
+
+export default connect(mapStateToProps)(ProductScreen);

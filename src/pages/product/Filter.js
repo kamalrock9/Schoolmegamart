@@ -1,132 +1,111 @@
 import React, {useState, useEffect} from "react";
-import {View, StatusBar, StyleSheet, Platform} from "react-native";
-import {Text, Icon, Button, CheckBox} from "components";
+import {View, StatusBar, StyleSheet, Platform, ScrollView} from "react-native";
+import {Text, Icon, Button, CheckBox, Container} from "components";
 import {useSelector, useDispatch} from "react-redux";
 import {useTranslation} from "react-i18next";
-import {uniq, intersection, max, min} from "lodash";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import {getAllCategories} from "store/actions";
 
-function Filter({onBackPress, data, filterVal, onChangeFilter, filter}) {
-  console.log(filterVal);
-  console.log(data);
-  const {primary_color_dark, primary_color, primary_color_text} = useSelector(
-    state => state.appSettings,
-  );
-
+function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}}) {
+  const [priceFilter, setPriceFilter] = useState({
+    min_price: filterData.min_price,
+    max_price: filterData.max_price,
+  });
+  const [category, setCategoryID] = useState(filterData.category);
+  const [attr, setAttr] = useState(seletedAttr);
+  const [tabIndex, setTabIndex] = useState(0);
   const {t} = useTranslation();
   const disptach = useDispatch();
 
+  const {primary_color_dark, primary_color, primary_color_text, price, accent_color} = useSelector(
+    state => state.appSettings,
+  );
   const categories = useSelector(state => state.categories);
 
-  const filterTabs = ["Price", "Categories", "Color", "Size"];
-
-  const [index, setIndex] = useState(0);
-  const [priceFilter, setpriceFilter] = useState([]);
-  const [colorFilter, setcolorFilter] = useState([]);
-  const [sizeFilter, setsizeFilter] = useState([]);
-  const [catFilter, setCatFilter] = useState([]);
+  const filterTabs = ["Price", "Categories", ...attributes.map(item => item.name)];
 
   useEffect(() => {
-    let price = [];
-    for (let value of data) {
-      price.push(parseInt(value.price));
-    }
-    price = [Math.floor(min(price)), Math.ceil(max(price))];
-    setpriceFilter(price);
     disptach(getAllCategories());
   }, []);
 
-  const onChangeIndex = index => () => {
-    setIndex(index);
+  const onChangeIndex = tabIndex => () => {
+    setTabIndex(tabIndex);
   };
 
-  const onSliderUpdate = key => value => {
-    //return;
-    let newData = Object.assign({}, filterVal);
-    newData[key] = [value[0], value[1] || priceFilter[key][1]];
-    onChangeFilter && onChangeFilter(newData);
+  const onSliderUpdate = value => {
+    setPriceFilter({min_price: value[0], max_price: value[1] || priceFilter.max_price});
   };
 
-  const updateFilter = (key, item, index) => () => {
-    if (!filterVal[key]) {
-      var newData = {...filterVal, [key]: []};
+  const updateAttributes = item => () => {
+    const key = attributes[tabIndex - 2].slug;
+    let index =
+      attr[key] && Array.isArray(attr[key]) ? attr[key].findIndex(el => el === item.slug) : -1;
+    if (index != -1) {
+      setAttr(prevAttr => {
+        let data = prevAttr[key].filter(el => el !== item.slug);
+        let newState = {
+          ...prevAttr,
+          [key]: data,
+        };
+        if (data.length == 0) {
+          delete newState[key];
+        }
+        return newState;
+      });
     } else {
-      var newData = {...filterVal};
+      setAttr(prevAttr => ({
+        ...prevAttr,
+        [key]:
+          prevAttr[key] && Array.isArray(attr[key]) ? [...prevAttr[key], item.slug] : [item.slug],
+      }));
     }
-    if (key == "categories") {
-      if (filterVal.categories.length == 0) {
-        var data = filterVal.categories.push(item);
-      } else if (filterVal.categories.length > 0) {
-        var rm = filterVal.categories.splice(0, 1);
-        let rmd = {...filterVal, [key]: rm};
-        var ndata = rmd.categories.push(item);
-      }
-      var newDataVal = {...filterVal, ...data, ...ndata};
-    } else if (newData[key].includes(item)) {
-      let newdata = newData[key].filter(val => val !== item);
-      //setcolorFilter(newdata);
-      var newDataVal = {...filterVal, [key]: newdata};
-      if (key == "pa_size") {
-        setsizeFilter(newDataVal[key]);
-      } else if (key == "pa_color") {
-        setcolorFilter(newDataVal[key]);
-      } else {
-        setCatFilter(newDataVal[key]);
-      }
-    } else {
-      let newVal = newData[key];
-      newVal.push(item);
-      //setcolorFilter(newdata)
-      var newDataVal = {...filterVal, [key]: newVal};
-      if (key == "pa_size") {
-        setsizeFilter(newDataVal[key]);
-      } else if (key == "pa_color") {
-        setcolorFilter(newDataVal[key]);
-      } else {
-        setCatFilter(newDataVal[key]);
-      }
-    }
-    //return;
+  };
 
-    onChangeFilter && onChangeFilter(newDataVal);
+  const filter = () => {
+    let params = {
+      ...filterData,
+      ...priceFilter,
+      page: 1,
+      category,
+    };
+    onFilter && onFilter(params, attr);
+  };
+
+  const reset = () => {
+    setAttr({});
+    setCategoryID(undefined);
+    setPriceFilter({min_price: price.min, max_price: price.max});
   };
 
   return (
-    <View style={{flex: 1, margin: -21}}>
+    <Container>
       <StatusBar backgroundColor={primary_color_dark} barStyle="light-content" />
-      <View style={[styles.container, {backgroundColor: primary_color}]}>
+      <View style={[styles.toolbar, {backgroundColor: primary_color}]}>
+        <Text style={[styles.title, {color: primary_color_text}]}>{t("FILTER")}</Text>
+
         <Button onPress={onBackPress} style={styles.menuButton}>
           <Icon color={primary_color_text} type="Entypo" name="cross" size={24} />
         </Button>
-
-        <Text style={[styles.title, {color: primary_color_text}]}>{t("FILTER")}</Text>
       </View>
       <View style={{flex: 1, flexDirection: "row"}}>
-        <View style={{flex: 2, backgroundColor: "#E8EEF6"}}>
-          {filterTabs.map((item, i) => (
+        <ScrollView style={{flex: 2, backgroundColor: "#E8EEF6"}}>
+          {filterTabs.map((item, index) => (
             <Button
-              style={[styles.filterTabs, {backgroundColor: i === index ? "#FFFFFF" : null}]}
+              style={[styles.filterTabs, {backgroundColor: index === tabIndex ? "#FFFFFF" : null}]}
               key={"filter_" + item + index}
-              onPress={onChangeIndex(i)}>
-              <Text>
-                {item}
-                {filterVal.hasOwnProperty("pa_size") && i == 3 && filterVal.pa_size.length > 0
-                  ? "(" + filterVal.pa_size.length + ")"
-                  : filterVal.hasOwnProperty("pa_color") && i == 2 && filterVal.pa_color.length > 0
-                  ? "(" + filterVal.pa_color.length + ")"
-                  : ""}
-              </Text>
+              onPress={onChangeIndex(index)}>
+              <Text>{item}</Text>
             </Button>
           ))}
-        </View>
-        <View style={{flex: 3, backgroundColor: "#FFFFFF"}}>
-          {index == 0 && (
+        </ScrollView>
+        <ScrollView style={{flex: 3, backgroundColor: "#FFFFFF"}}>
+          {tabIndex == 0 && (
             <View
               style={{
                 marginHorizontal: Platform.OS == "ios" ? 10 : 0,
                 alignItems: "center",
                 paddingHorizontal: 8,
+                paddingVertical: 16,
               }}>
               <MultiSlider
                 containerStyle={{marginHorizontal: Platform.OS == "ios" ? 10 : 0}}
@@ -139,13 +118,11 @@ function Filter({onBackPress, data, filterVal, onChangeFilter, filter}) {
                   width: 20,
                 }}
                 sliderLength={170}
-                min={priceFilter[0]}
-                max={priceFilter[1]}
-                values={
-                  [filterVal.price[0] || priceFilter[0], filterVal.price[1]] || priceFilter[1]
-                }
+                min={price.min}
+                max={price.max}
+                values={[priceFilter.min_price, priceFilter.max_price]}
                 enabledTwo
-                onValuesChangeFinish={onSliderUpdate("price")}
+                onValuesChangeFinish={onSliderUpdate}
               />
               <View
                 style={{
@@ -154,12 +131,12 @@ function Filter({onBackPress, data, filterVal, onChangeFilter, filter}) {
                   flexDirection: "row",
                   marginTop: -10,
                 }}>
-                <Text style={{fontWeight: "700"}}>{filterVal.price[0] || priceFilter[0]}</Text>
-                <Text style={{fontWeight: "700"}}>{filterVal.price[1] || priceFilter[1]}</Text>
+                <Text style={{fontWeight: "700"}}>{priceFilter.min_price}</Text>
+                <Text style={{fontWeight: "700"}}>{priceFilter.max_price}</Text>
               </View>
             </View>
           )}
-          {index == 1 && (
+          {tabIndex == 1 && (
             <View
               style={{
                 marginHorizontal: Platform.OS == "ios" ? 10 : 0,
@@ -170,76 +147,61 @@ function Filter({onBackPress, data, filterVal, onChangeFilter, filter}) {
                 <CheckBox
                   label={item.name}
                   key={"categories" + item + index}
-                  checked={filterVal["categories"].includes(item.id)}
-                  onPress={updateFilter("categories", item.id, index)}
+                  checked={category == item.id}
+                  onPress={() => setCategoryID(item.id)}
                 />
               ))}
             </View>
           )}
-          {index == 2 && (
+          {tabIndex > 1 && (
             <View
               style={{
                 marginHorizontal: Platform.OS == "ios" ? 10 : 0,
                 alignItems: "center",
                 padding: 8,
               }}>
-              {filterVal.Color.options.map((item, index) => (
+              {attributes[tabIndex - 2].options.map((item, index) => (
                 <CheckBox
                   label={item.name}
-                  key={"color" + item + index}
+                  key={item + index}
                   checked={
-                    filterVal["pa_color"]
-                      ? filterVal["pa_color"].includes(item.slug)
-                      : colorFilter.includes(item.slug)
+                    attr[attributes[tabIndex - 2].slug] &&
+                    Array.isArray(attr[attributes[tabIndex - 2].slug]) &&
+                    attr[attributes[tabIndex - 2].slug].includes(item.slug)
                   }
-                  onPress={updateFilter(filterVal.Color.slug, item.slug, index)}
+                  onPress={updateAttributes(item)}
                 />
               ))}
             </View>
           )}
-          {index == 3 && (
-            <View
-              style={{
-                marginHorizontal: Platform.OS == "ios" ? 10 : 0,
-                alignItems: "center",
-                padding: 8,
-              }}>
-              {filterVal.Size.options.map((item, index) => (
-                <CheckBox
-                  label={item.name}
-                  key={"size" + item + index}
-                  checked={
-                    filterVal["pa_size"]
-                      ? filterVal["pa_size"].includes(item.slug)
-                      : sizeFilter.includes(item.slug)
-                  }
-                  onPress={updateFilter(filterVal.Size.slug, item.slug, index)}
-                />
-              ))}
-            </View>
-          )}
-        </View>
+        </ScrollView>
       </View>
       <View style={styles.footer}>
-        <Button style={styles.applyButton} onPress={filter}>
-          <Text style={{color: "#FFFFFF", fontWeight: "700"}}>Apply</Text>
+        <Button style={[styles.applyButton, {backgroundColor: primary_color}]} onPress={reset}>
+          <Text style={{color: "#FFFFFF", fontWeight: "700"}}>RESET</Text>
+        </Button>
+        <Button
+          style={[styles.applyButton, {backgroundColor: accent_color, flex: 3}]}
+          onPress={filter}>
+          <Text style={{color: "#FFFFFF", fontWeight: "700"}}>APPLY</Text>
         </Button>
       </View>
-    </View>
+    </Container>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  toolbar: {
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
     height: 56,
+    justifyContent: "space-between",
   },
   title: {
     fontWeight: "600",
     fontSize: 16,
-    paddingHorizontal: 16,
+    paddingStart: 16,
   },
   menuButton: {padding: 16},
   filterTabs: {
@@ -256,9 +218,9 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     justifyContent: "center",
-    backgroundColor: "#F68E1F",
-    borderRadius: 24,
+    borderRadius: 20,
     alignItems: "center",
+    marginHorizontal: 10,
   },
 });
 
