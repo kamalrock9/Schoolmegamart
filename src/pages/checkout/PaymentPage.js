@@ -5,6 +5,7 @@ import {useTranslation} from "react-i18next";
 import moment from "moment";
 import {useSelector} from "react-redux";
 import Constants from "../../service/Config";
+import {WooCommerce} from "../../service";
 import RazorpayCheckout from "react-native-razorpay";
 import {ApiClient} from "service";
 import axios from "axios";
@@ -162,7 +163,7 @@ function PaymentPage({navigation}) {
       options,
       payment_id => {
         //alert('payment_id: ' + payment_id);
-        refreshPage(payment_id);
+        refreshPage(payment_id.razorpay_payment_id);
       },
       error => {
         //alert(error.description + ' (Error ' + error.code + ')');
@@ -179,8 +180,7 @@ function PaymentPage({navigation}) {
         transaction_id: payment_id || "",
       };
       console.log(id, param);
-      axios
-        .put("https://app.democontentphoeniixx.com/orders/" + id, param)
+      WooCommerce.put("https://app.tutiixx.com/orders/" + id, param)
         .then(res => {
           console.log(res);
         })
@@ -266,7 +266,7 @@ function PaymentPage({navigation}) {
             </Text>
           </View>
         </View>
-        <View style={[styles.card, {alignItems: "flex-start"}]}>
+        <View style={[styles.card, {alignItems: "flex-start", marginBottom: 20}]}>
           <Text style={styles.heading}>{t("CUSTOMER_DETAILS")}</Text>
           <View style={styles.view}>
             <Text>{t("NAME")}</Text>
