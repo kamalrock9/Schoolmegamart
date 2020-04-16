@@ -26,7 +26,13 @@ function HomeScreen({navigation}) {
 
   const _categoryKeyExtractor = item => "category_" + item.id;
 
+  // const trackScreenView = async screen => {
+  //   // Set & override the MainActivity screen name
+  //   await analytics().setCurrentScreen(screen, screen);
+  // };
+
   useEffect(() => {
+    //trackScreenView("Home Page");
     setLoading(layout ? false : true);
     ApiClient.get("/layout")
       .then(({data}) => {
