@@ -1,5 +1,5 @@
 import React, {Component, Fragment} from "react";
-import {View, StyleSheet, ScrollView} from "react-native";
+import {View, StyleSheet, ScrollView, TextInput} from "react-native";
 import {connect} from "react-redux";
 import StarRating from "react-native-star-rating";
 import RNFetchBlob from "rn-fetch-blob";
@@ -20,10 +20,13 @@ import {CustomPicker} from "react-native-custom-picker";
 import SpecificationRow from "./SpecificationRow";
 import MiniCart from "./MiniCart";
 import ProductsRow from "./ProductsRow";
-import {ApiClient} from "service";
+import {ApiClient, WooCommerce} from "service";
 import {getCartCount} from "store/actions";
 import {FlatGrid} from "react-native-super-grid";
 import Toast from "react-native-simple-toast";
+import {withTranslation} from "react-i18next";
+import Constants from "../../service/Config";
+import axios from "axios";
 
 class ProductDetailScreen extends Component {
   constructor(props) {
@@ -37,6 +40,7 @@ class ProductDetailScreen extends Component {
       attributes: [],
       selectedAttrs: {},
       variation: {},
+      postcode: "",
     };
   }
   componentDidMount() {
@@ -236,8 +240,25 @@ class ProductDetailScreen extends Component {
       });
   }
 
+  submitPincodeCheck = postcode => () => {
+    let URL = Constants.baseURL + Constants.path;
+    let param = {
+      pincode: postcode,
+      product_id: this.state.product.id,
+    };
+    console.log(param, URL);
+    ApiClient.post(URL + "/checkpincode/", param)
+      .then(({data}) => {
+        console.log(data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   render() {
     const {accent_color} = this.props.appSettings;
+    const {t} = this.props;
     const {product, attributes, selectedAttrs, modalVisible, variation} = this.state;
     return (
       <>
@@ -335,6 +356,31 @@ class ProductDetailScreen extends Component {
                 />
               </View>
             )}
+            <View style={styles.card}>
+              <Text style={styles.cardItemHeader}>{t("DELIVERY_OPTIONS")}</Text>
+              <View
+                style={{
+                  paddingHorizontal: 16,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}>
+                <TextInput
+                  placeholder={t("ENTER_POSTCODE")}
+                  onChangeText={text => this.setState({postcode: text})}
+                />
+                <Button
+                  style={{
+                    // backgroundColor: accent_color,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: 40,
+                    paddingHorizontal: 10,
+                  }}
+                  onPress={this.submitPincodeCheck(this.state.postcode)}>
+                  <Text style={{color: accent_color}}>Apply</Text>
+                </Button>
+              </View>
+            </View>
             <View style={styles.card}>
               <Text style={styles.cardItemHeader}>Specification</Text>
               <View style={styles.cardItem}>
@@ -498,4 +544,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(ProductDetailScreen);
+)(withTranslation()(ProductDetailScreen));

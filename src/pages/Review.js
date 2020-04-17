@@ -85,31 +85,33 @@ function Review({cartData, orderData}) {
 
   return (
     <View style={{marginHorizontal: 16}}>
-      <View style={styles.card}>
-        <Text style={styles.heading}>Shipping Method(S)</Text>
-        {!isEmpty(data.shipping_method) &&
-          data.shipping_method.map((item, index) => {
-            return (
-              <View
-                key={item.method_id}
-                style={{flexDirection: "row", width: "100%", alignItems: "center"}}>
-                <Text style={{flex: 1}}>{item.shipping_method_name}</Text>
-                <HTMLRender
-                  html={item.shipping_method_price ? item.shipping_method_price : <b></b>}
-                />
-                <Button onPress={selectShippingMethod(item)} style={{paddingVertical: 4}}>
-                  <Icon
-                    name={
-                      isSelectShipping === item.id ? "md-radio-button-on" : "md-radio-button-off"
-                    }
-                    size={18}
-                    style={{marginStart: 5}}
+      {data.hasOwnProperty(shipping_method) && (
+        <View style={styles.card}>
+          <Text style={styles.heading}>Shipping Method(S)</Text>
+          {!isEmpty(data.shipping_method) &&
+            data.shipping_method.map((item, index) => {
+              return (
+                <View
+                  key={item.method_id}
+                  style={{flexDirection: "row", width: "100%", alignItems: "center"}}>
+                  <Text style={{flex: 1}}>{item.shipping_method_name}</Text>
+                  <HTMLRender
+                    html={item.shipping_method_price ? item.shipping_method_price : <b />}
                   />
-                </Button>
-              </View>
-            );
-          })}
-      </View>
+                  <Button onPress={selectShippingMethod(item)} style={{paddingVertical: 4}}>
+                    <Icon
+                      name={
+                        isSelectShipping === item.id ? "md-radio-button-on" : "md-radio-button-off"
+                      }
+                      size={18}
+                      style={{marginStart: 5}}
+                    />
+                  </Button>
+                </View>
+              );
+            })}
+        </View>
+      )}
       <View style={styles.card}>
         <Text style={styles.heading}>Order Summary</Text>
         <FlatList data={data.cart_data} renderItem={_renderItem} keyExtractor={_keyExtractor} />
@@ -118,20 +120,22 @@ function Review({cartData, orderData}) {
           <Text>Subtotal</Text>
           <HTMLRender html={data.cart_subtotal || "<b></b>"} />
         </View>
-        <View style={styles.flexdirection}>
-          <Text>Shipping Charge</Text>
-          <HTMLRender
-            html={
-              data.shipping_method.find(item => item.id == data.chosen_shipping_method)
-                .shipping_method_price
-            }
-          />
-        </View>
+        {data.hasOwnProperty("chosen_shipping_method") && (
+          <View style={styles.flexdirection}>
+            <Text>Shipping Charge</Text>
+            <HTMLRender
+              html={
+                data.shipping_method.find(item => item.id == data.chosen_shipping_method)
+                  .shipping_method_price
+              }
+            />
+          </View>
+        )}
         <View style={styles.flexdirection}>
           <Text style={{color: "green"}}>Total Discount</Text>
           <HTMLRender html={data.discount_total || "<b></b>"} baseFontStyle={{color: "green"}} />
         </View>
-        <View style={{height: 1.35, backgroundColor: "#d2d2d2", marginVertical: 10}}></View>
+        <View style={{height: 1.35, backgroundColor: "#d2d2d2", marginVertical: 10}} />
         <View style={styles.flexdirection}>
           <Text style={{fontWeight: "700", color: "grey"}}>Total</Text>
           <HTMLRender html={data.total || "<b></b>"} baseFontStyle={{fontWeight: "700"}} />

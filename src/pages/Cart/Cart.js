@@ -1,6 +1,6 @@
 import React from "react";
 import {View, StyleSheet, FlatList, ActivityIndicator} from "react-native";
-import {Toolbar, Button, Text, HTMLRender, Container} from "components";
+import {Toolbar, Button, Text, HTMLRender, Container, Icon} from "components";
 import {connect} from "react-redux";
 import {ApiClient} from "service";
 import CartPriceBreakup from "./CartPriceBreakup";
@@ -78,6 +78,10 @@ class Cart extends React.PureComponent {
     />
   );
 
+  gotoProductPage = () => {
+    //this.props.navigation.navigate("ProductStack");
+  };
+
   renderFooter = () => (
     <CartPriceBreakup
       data={this.state.cart_data}
@@ -116,7 +120,21 @@ class Cart extends React.PureComponent {
           </>
         ) : (
           <View style={[styles.container, {alignItems: "center", justifyContent: "center"}]}>
-            <Text>Cart is empty</Text>
+            <Icon name="md-cart" size={26} color={appSettings.accent_color} />
+            <Text style={{color: appSettings.accent_color, fontWeight: "500", marginVertical: 8}}>
+              Cart is empty.
+            </Text>
+            <Button
+              style={{
+                backgroundColor: appSettings.accent_color,
+                paddingVertical: 6,
+                paddingHorizontal: 10,
+                borderRadius: 2,
+                elevation: 2,
+              }}
+              onPress={this.gotoProductPage}>
+              <Text style={{color: "#fff", fontSize: 10}}>Start Shopping</Text>
+            </Button>
           </View>
         )}
         <Modal
@@ -136,7 +154,8 @@ class Cart extends React.PureComponent {
                 backgroundColor: "#d2d2d2",
                 width: "100%",
                 marginVertical: 10,
-              }}></View>
+              }}
+            />
             <View style={{flexDirection: "row"}}>
               <Button
                 style={[

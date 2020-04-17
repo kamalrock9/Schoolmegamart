@@ -11,6 +11,7 @@ import {ApiClient} from "service";
 import axios from "axios";
 import InAppBrowser from "react-native-inappbrowser-reborn";
 import Paytm from "react-native-paytm";
+import {isEmpty} from "lodash";
 
 function PaymentPage({navigation}) {
   console.log(navigation.state.params);
@@ -88,15 +89,16 @@ function PaymentPage({navigation}) {
       mode: "Staging",
       EMAIL: user.billing.email, // String
       MOBILE_NO: user.billing.phone, //Mobile
-      MID: "WzcSRv11587918800886", // PayTM Credentials
+      MID: "Phoeni74329133703044", // PayTM Credentials
       ORDER_ID: data.id.toString(), //Should be unique for every order.
       CUST_ID: data.customer_id.toString(),
       INDUSTRY_TYPE_ID: "Retail", // PayTM Credentials
-      CHANNEL_ID: "WAP", // PayTM Credentials
+      CHANNEL_ID: "WEB", // PayTM Credentials
       TXN_AMOUNT: data.total.toString(), // Transaction Amount should be a String
       WEBSITE: "WEBSTAGING", // PayTM Credentials
       CALLBACK_URL: "https://securegw.paytm.in/theia/paytmCallback?ORDER_ID=" + data.id,
       CHECKSUMHASH: "",
+      ENVIRONMENT: "",
     };
 
     let formData = new FormData();
@@ -108,7 +110,7 @@ function PaymentPage({navigation}) {
       .then(res => {
         console.log(res);
         txnRequest.CHECKSUMHASH = res.data.CHECKSUMHASH;
-        //txnRequest["ENVIRONMENT"] = "production";
+        txnRequest.ENVIRONMENT = "staging";
         console.log(txnRequest);
         Paytm.startPayment(
           txnRequest,
@@ -176,13 +178,16 @@ function PaymentPage({navigation}) {
     //this.loader.show();
     if (payment_id) {
       var param = {
-        status: status,
+        status: "processing",
         transaction_id: payment_id || "",
       };
       console.log(id, param);
-      WooCommerce.put("https://app.tutiixx.com/orders/" + id, param)
+      WooCommerce.put("orders/" + id, param)
         .then(res => {
           console.log(res);
+          if (res.status == 200) {
+            Setdata(res.data);
+          }
         })
         .catch(error => {
           console.log(error);
@@ -245,10 +250,12 @@ function PaymentPage({navigation}) {
                 moment(data.date_created).format("hh:mm A")}
             </Text>
           </View>
-          <View style={styles.view}>
-            <Text>{t("SHIPPING")}</Text>
-            <Text>{data.shipping_lines[0].method_title}</Text>
-          </View>
+          {!isEmpty(data.shipping_lines) && (
+            <View style={styles.view}>
+              <Text>{t("SHIPPING")}</Text>
+              <Text>{data.shipping_lines[0].method_title}</Text>
+            </View>
+          )}
           <View style={styles.view}>
             <Text>{t("PAYMENT_METHODS")}</Text>
             <Text>{data.payment_method_title || datas.payment_method}</Text>

@@ -9,19 +9,26 @@ import {useTranslation} from "react-i18next";
 function Orders({navigation}) {
   const {t} = useTranslation();
   const user = useSelector(state => state.user);
+  const {accent_color} = useSelector(state => state.appSettings);
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(true);
-  const [flatlistEndReach, setFlatlistEdnReach] = useState(false);
   const [page, setpage] = useState(1);
 
   useEffect(() => {
     loadOrder();
   }, []);
 
+  const onEndReached = () => {
+    if (!refreshing) return;
+    setpage(page + 1);
+    setLoading(true);
+    setRefreshing(false);
+    loadOrder();
+  };
+
   const loadOrder = () => {
     console.log("order");
-    setpage(page + 1);
     let params = {
       page: page,
       per_page: 10,
@@ -29,14 +36,17 @@ function Orders({navigation}) {
 
     console.log(params);
     setLoading(true);
-    WooCommerce.get("orders?customer=" + user.id, params)
+    WooCommerce.get("orders?customer=" + user.id, {params: params})
       .then(res => {
         console.log(orders.concat(res.data));
         setLoading(false);
         if (res.status == 200) {
           setOrders(orders.concat(res.data));
-          setFlatlistEdnReach(res.data.length < params.per_page);
-          setRefreshing(false);
+          setRefreshing(res.data.length == params.per_page);
+          setLoading(false);
+          if (page == 1) {
+            setpage(page + 1);
+          }
         }
       })
       .catch(error => {
@@ -111,10 +121,19 @@ function Orders({navigation}) {
       <Toolbar backButton title={t("ORDERS")} />
       <FlatList
         data={orders}
-        onEndReached={() => loadOrder()}
+        onEndReached={onEndReached}
         onEndReachedThreshold={0.33}
         renderItem={_renderItem}
         keyExtractor={_keyExtractor}
+        ListFooterComponent={
+          orders.length > 0 && loading ? (
+            <ActivityIndicator
+              color={accent_color}
+              size="large"
+              style={{alignItems: "center", justifyContent: "center"}}
+            />
+          ) : null
+        }
       />
       {loading && <ActivityIndicator style={{alignItems: "center", justifyContent: "center"}} />}
     </View>

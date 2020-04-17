@@ -11,7 +11,9 @@ const {width} = Dimensions.get("window");
 function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt, shippingMethod}) {
   // console.log(data);
   const [isCoupon, setIsCoupon] = useState(false);
-  const [isSelectShipping, setShippingMethod] = useState(data.chosen_shipping_method);
+  if (data.hasOwnProperty("chosen_shipping_method")) {
+    const [isSelectShipping, setShippingMethod] = useState(data.chosen_shipping_method);
+  }
 
   const toggleCouponModal = () => {
     setIsCoupon(!isCoupon);
@@ -74,41 +76,43 @@ function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt, shipping
           </View>
         )}
       </View>
-      <View style={styles.card}>
-        <Text style={styles.heading}>Shipping Method(S)</Text>
-        {!isEmpty(data.shipping_method) &&
-          data.shipping_method.map((item, index) => {
-            return (
-              <View
-                key={item.method_id}
-                style={{flexDirection: "row", width: "100%", alignItems: "center"}}>
-                <Text style={{flex: 1}}>{item.shipping_method_name}</Text>
-                <HTMLRender
-                  html={item.shipping_method_price ? item.shipping_method_price : <b></b>}
-                />
-                <Button onPress={selectShippingMethod(item)} style={{paddingVertical: 4}}>
-                  <Icon
-                    name={
-                      data.chosen_shipping_method == item.id
-                        ? "md-radio-button-on"
-                        : "md-radio-button-off"
-                    }
-                    size={18}
-                    style={{marginStart: 5}}
+      {data.hasOwnProperty("shipping_method") && (
+        <View style={styles.card}>
+          <Text style={styles.heading}>Shipping Method(S)</Text>
+          {!isEmpty(data.shipping_method) &&
+            data.shipping_method.map((item, index) => {
+              return (
+                <View
+                  key={item.method_id}
+                  style={{flexDirection: "row", width: "100%", alignItems: "center"}}>
+                  <Text style={{flex: 1}}>{item.shipping_method_name}</Text>
+                  <HTMLRender
+                    html={item.shipping_method_price ? item.shipping_method_price : <b />}
                   />
-                </Button>
-              </View>
-            );
-          })}
+                  <Button onPress={selectShippingMethod(item)} style={{paddingVertical: 4}}>
+                    <Icon
+                      name={
+                        data.chosen_shipping_method == item.id
+                          ? "md-radio-button-on"
+                          : "md-radio-button-off"
+                      }
+                      size={18}
+                      style={{marginStart: 5}}
+                    />
+                  </Button>
+                </View>
+              );
+            })}
 
-        <Text
-          style={{
-            alignSelf: "flex-end",
-            textDecorationLine: "underline",
-          }}>
-          Calculate Shipping
-        </Text>
-      </View>
+          <Text
+            style={{
+              alignSelf: "flex-end",
+              textDecorationLine: "underline",
+            }}>
+            Calculate Shipping
+          </Text>
+        </View>
+      )}
 
       <View style={[styles.card, {marginBottom: 8}]}>
         <Text style={styles.heading}>Order Summary</Text>
@@ -116,15 +120,17 @@ function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt, shipping
           <Text>Subtotal</Text>
           <HTMLRender html={data.cart_subtotal} />
         </View>
-        <View style={styles.view}>
-          <Text>Shipping Charge</Text>
-          <HTMLRender
-            html={
-              data.shipping_method.find(item => item.id == data.chosen_shipping_method)
-                .shipping_method_price
-            }
-          />
-        </View>
+        {data.hasOwnProperty("shipping_method") && (
+          <View style={styles.view}>
+            <Text>Shipping Charge</Text>
+            <HTMLRender
+              html={
+                data.shipping_method.find(item => item.id == data.chosen_shipping_method)
+                  .shipping_method_price
+              }
+            />
+          </View>
+        )}
         <View style={styles.view}>
           <Text>Tax</Text>
           <HTMLRender html={data.taxes} />
