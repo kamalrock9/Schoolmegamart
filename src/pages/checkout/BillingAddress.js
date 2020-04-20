@@ -21,8 +21,6 @@ function BillingAddresss({}) {
     setCountry(arr);
   }, []);
 
-  const [switchh, setSwitch] = useState(false);
-
   const [firstname, setFirstname] = useState(user.billing.first_name);
   const [lastname, setLastname] = useState(user.billing.last_name);
   const [email, setEmail] = useState(user.billing.email);

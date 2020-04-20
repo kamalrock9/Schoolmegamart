@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from "react";
+import React, {useState, useCallback, useEffect} from "react";
 import {View, StyleSheet, Dimensions, Switch, ActivityIndicator} from "react-native";
 import {Text, Toolbar, Container, Button, Icon} from "components";
 import {useSelector, useDispatch} from "react-redux";
@@ -11,6 +11,7 @@ import Toast from "react-native-simple-toast";
 import {ApiClient} from "service";
 import {isEmpty} from "lodash";
 import {updateShipping} from "store/actions";
+import Constants from "../../service/Config";
 
 const {width} = Dimensions.get("window");
 
@@ -51,6 +52,26 @@ function CheckoutScreen({navigation}) {
 
   const [orderdata, SetorderData] = useState("");
   const [loading, setloading] = useState(false);
+
+  const ApiCall = (postcode, pos) => {
+    let param = {
+      pincode: postcode,
+    };
+    let URL = Constants.baseURL + Constants.path;
+    console.log(param);
+    ApiClient.post(URL + "/checkpincode/", param)
+      .then(({data}) => {
+        console.log(data);
+        if (data.delivery) {
+          setStepPos(pos);
+        } else {
+          Toast.show("Delivery is not available for your location");
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
 
   const onChangeShipToDifferent = useCallback(() => {
     setShipToDifferent(prevState => !prevState);
@@ -147,6 +168,9 @@ function CheckoutScreen({navigation}) {
           isEmpty(shipping.address_1))
       ) {
         Toast.show("Please enter the required filled");
+      } else if (pincode_active) {
+        console.log("Shii");
+        ApiCall(user.shipping.postcode, 3);
       } else {
         setStepPos(3);
       }
@@ -163,6 +187,8 @@ function CheckoutScreen({navigation}) {
         isEmpty(billing.address_1)
       ) {
         Toast.show("Please enter the required filled");
+      } else if (pincode_active) {
+        ApiCall(user.billing.postcode, 2);
       } else {
         setStepPos(2);
       }

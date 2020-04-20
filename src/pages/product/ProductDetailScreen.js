@@ -1,5 +1,5 @@
 import React, {Component, Fragment} from "react";
-import {View, StyleSheet, ScrollView, TextInput} from "react-native";
+import {View, StyleSheet, ScrollView, TextInput, ActivityIndicator} from "react-native";
 import {connect} from "react-redux";
 import StarRating from "react-native-star-rating";
 import RNFetchBlob from "rn-fetch-blob";
@@ -26,7 +26,6 @@ import {FlatGrid} from "react-native-super-grid";
 import Toast from "react-native-simple-toast";
 import {withTranslation} from "react-i18next";
 import Constants from "../../service/Config";
-import axios from "axios";
 
 class ProductDetailScreen extends Component {
   constructor(props) {
@@ -41,6 +40,8 @@ class ProductDetailScreen extends Component {
       selectedAttrs: {},
       variation: {},
       postcode: "",
+      deliverDetails: {},
+      loading: false,
     };
   }
   componentDidMount() {
@@ -172,6 +173,24 @@ class ProductDetailScreen extends Component {
         }
     }
 
+    if (this.props.appSettings.pincode_active) {
+      if (this.state.postcode == "") {
+        Toast.show("Please select a pincode first.");
+        return;
+      }
+      if (isEmpty(this.state.deliverDetails)) {
+        Toast.show("Please apply the pincode first.");
+        return;
+      }
+      if (
+        this.state.deliverDetails.hasOwnProperty("delivery") &&
+        !this.state.deliverDetails.delivery
+      ) {
+        Toast.show("Delivery is not available for your location");
+        return;
+      }
+    }
+
     ApiClient.post("/cart/add", data)
       .then(({data}) => {
         this.setState({
@@ -241,25 +260,42 @@ class ProductDetailScreen extends Component {
   }
 
   submitPincodeCheck = postcode => () => {
+    if (postcode == "change") {
+      this.setState({deliverDetails: {}});
+      return;
+    }
     let URL = Constants.baseURL + Constants.path;
     let param = {
       pincode: postcode,
       product_id: this.state.product.id,
     };
     console.log(param, URL);
+    this.setState({loading: true});
     ApiClient.post(URL + "/checkpincode/", param)
       .then(({data}) => {
         console.log(data);
+        this.setState({loading: false});
+        this.setState({deliverDetails: data});
       })
       .catch(error => {
+        this.setState({loading: false});
         console.log(error);
       });
   };
 
   render() {
-    const {accent_color} = this.props.appSettings;
+    const {accent_color, pincode_active} = this.props.appSettings;
     const {t} = this.props;
-    const {product, attributes, selectedAttrs, modalVisible, variation} = this.state;
+    const {
+      product,
+      attributes,
+      selectedAttrs,
+      modalVisible,
+      variation,
+      postcode,
+      deliverDetails,
+      loading,
+    } = this.state;
     return (
       <>
         <Container style={styles.container}>
@@ -356,31 +392,103 @@ class ProductDetailScreen extends Component {
                 />
               </View>
             )}
-            <View style={styles.card}>
-              <Text style={styles.cardItemHeader}>{t("DELIVERY_OPTIONS")}</Text>
-              <View
-                style={{
-                  paddingHorizontal: 16,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}>
-                <TextInput
-                  placeholder={t("ENTER_POSTCODE")}
-                  onChangeText={text => this.setState({postcode: text})}
-                />
-                <Button
-                  style={{
-                    // backgroundColor: accent_color,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    height: 40,
-                    paddingHorizontal: 10,
-                  }}
-                  onPress={this.submitPincodeCheck(this.state.postcode)}>
-                  <Text style={{color: accent_color}}>Apply</Text>
-                </Button>
+            {pincode_active && (
+              <View style={styles.card}>
+                <Text style={styles.cardItemHeader}>{t("DELIVERY_OPTIONS")}</Text>
+                {!deliverDetails.hasOwnProperty("delivery") && (
+                  <View
+                    style={{
+                      paddingHorizontal: 16,
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}>
+                    <TextInput
+                      placeholder={t("ENTER_POSTCODE")}
+                      onChangeText={text => this.setState({postcode: text})}
+                    />
+                    <Button
+                      style={{
+                        // backgroundColor: accent_color,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: 40,
+                        paddingHorizontal: 10,
+                      }}
+                      onPress={this.submitPincodeCheck(postcode)}>
+                      <Text style={{color: accent_color}}>Apply</Text>
+                    </Button>
+                  </View>
+                )}
+                {postcode != "" && (
+                  <View style={{marginHorizontal: 16}}>
+                    {deliverDetails.hasOwnProperty("delivery") && !deliverDetails.delivery && (
+                      <View style={{justifyContent: "space-between", flexDirection: "row"}}>
+                        <Text>
+                          Delivery not available at -{" "}
+                          <Text style={{fontWeight: "600"}}>{postcode}</Text>
+                        </Text>
+                        <Button onPress={this.submitPincodeCheck("change")}>
+                          <Text style={{color: accent_color}}>Change</Text>
+                        </Button>
+                      </View>
+                    )}
+                    {deliverDetails.hasOwnProperty("delivery") && deliverDetails.delivery && (
+                      <View style={{justifyContent: "space-between", flexDirection: "row"}}>
+                        <Text>
+                          Delivery available at -{" "}
+                          <Text style={{fontWeight: "600"}}>{postcode}</Text>
+                        </Text>
+                        <Button onPress={this.submitPincodeCheck("change")}>
+                          <Text style={{color: accent_color}}>Change</Text>
+                        </Button>
+                      </View>
+                    )}
+                  </View>
+                )}
+
+                {postcode != "" &&
+                  deliverDetails.hasOwnProperty("delivery") &&
+                  deliverDetails.delivery && (
+                    <>
+                      <View
+                        style={{
+                          marginHorizontal: 16,
+                          marginTop: 10,
+                          backgroundColor: "#d2d2d2",
+                          height: 1.25,
+                        }}
+                      />
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          marginHorizontal: 16,
+                          marginTop: 10,
+                        }}>
+                        <View style={{alignItems: "center"}}>
+                          <Icon type="MaterialIcons" name="location-on" size={24} />
+                          <Text>LOCATION</Text>
+                          <Text style={{fontWeight: "500"}}>
+                            {deliverDetails.city + "\n" + deliverDetails.state}
+                          </Text>
+                        </View>
+                        <View style={{alignItems: "center"}}>
+                          <Icon type="Entypo" name="calendar" size={24} />
+                          <Text>DELIVERY BY</Text>
+                          {deliverDetails.delivery_date != "" && (
+                            <Text style={{fontWeight: "500"}}>{deliverDetails.delivery_date}</Text>
+                          )}
+                        </View>
+                        <View style={{alignItems: "center"}}>
+                          <Icon type="Feather" name="credit-card" size={24} />
+                          <Text>COD</Text>
+                          <Text style={{fontWeight: "500"}}>{deliverDetails.cod_message}</Text>
+                        </View>
+                      </View>
+                    </>
+                  )}
               </View>
-            </View>
+            )}
             <View style={styles.card}>
               <Text style={styles.cardItemHeader}>Specification</Text>
               <View style={styles.cardItem}>
@@ -434,6 +542,7 @@ class ProductDetailScreen extends Component {
                 <ProductsRow keyPrefix="product" products={product.related} />
               </View>
             )}
+            {loading && <ActivityIndicator style={{flex: 1}} />}
           </ScrollView>
 
           {/* Footer Content */}

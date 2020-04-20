@@ -8,7 +8,6 @@ import {ApiClient} from "service";
 import {FlatGrid} from "react-native-super-grid";
 import Filter from "./Filter";
 import Modal from "react-native-modal";
-import {withTranslation} from "react-i18next";
 import {isEmpty} from "lodash";
 import CategoryItem from "../home/CategoryItem";
 import SortOptions from "./SortOptions";
