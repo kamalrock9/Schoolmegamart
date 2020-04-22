@@ -26,6 +26,7 @@ import {FlatGrid} from "react-native-super-grid";
 import Toast from "react-native-simple-toast";
 import {withTranslation} from "react-i18next";
 import Constants from "../../service/Config";
+import {FlatList} from "react-native-gesture-handler";
 
 class ProductDetailScreen extends Component {
   constructor(props) {
@@ -42,6 +43,7 @@ class ProductDetailScreen extends Component {
       postcode: "",
       deliverDetails: {},
       loading: false,
+      checked: false,
     };
   }
   componentDidMount() {
@@ -75,6 +77,20 @@ class ProductDetailScreen extends Component {
         })
         .catch(error => {});
     }
+    if (this.state.product.grouped_products.length > 0) {
+      ApiClient.get("/get-products-by-id", {include: this.state.product.grouped_products.join()})
+        .then(({data}) => {
+          let newData = data.map(item => {
+            let varia = {...item, quantity: 0};
+            return varia;
+          });
+          console.log(newData);
+          this.setState(prevState => ({
+            product: {...prevState.product, group: newData},
+          }));
+        })
+        .catch(error => {});
+    }
   };
 
   shareProduct = () => {
@@ -103,9 +119,18 @@ class ProductDetailScreen extends Component {
       });
   };
 
-  _increaseCounter = () => {
+  _increaseCounter = i => () => {
     const {variation, product} = this.state;
     let quantity = this.state.quantity;
+
+    if (product.type == "grouped") {
+      product.group[i].quantity++;
+      console.log(quantity);
+      console.log(product);
+      // let newdata = Object.assign([],product.group);
+      // let newD =  {...products,}
+      // this.setState({product:})
+    }
 
     if (product.type == "variable") {
       if (!isEmpty(variation)) {
@@ -134,22 +159,33 @@ class ProductDetailScreen extends Component {
     } else {
       if (product.manage_stock) {
         if (quantity < product.stock_quantity) {
-          this.product.quantity++;
+          product.quantity++;
         } else {
           Toast.show("More items cannot be added");
         }
       } else {
-        this.product.quantity++;
+        product.quantity++;
       }
     }
 
     this.setState({quantity});
   };
 
-  _decreaseCounter = () => {
-    if (this.state.quantity > 1) {
+  _decreaseCounter = i => () => {
+    const {quantity, product} = this.state;
+    console.log(quantity);
+    console.log(product);
+    if (product.type == "grouped") {
+      if (product.group[i].quantity > 0) {
+        product.group[i].quantity--;
+        this.setState({
+          quantity: quantity - 1,
+        });
+      }
+    }
+    if (quantity > 1) {
       this.setState({
-        quantity: this.state.quantity - 1,
+        quantity: quantity - 1,
       });
     }
   };
@@ -283,6 +319,47 @@ class ProductDetailScreen extends Component {
       });
   };
 
+  _renderItem = ({item, index}) => {
+    return (
+      <View
+        key={item.id}
+        style={{
+          marginHorizontal: 16,
+          marginTop: index > 0 ? 8 : 0,
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}>
+        <Text>{item.name}</Text>
+        {!item.sold_individually && item.type !== "variable" && (
+          <View style={{flexDirection: "row"}}>
+            <Button style={styles.btn} onPress={this._decreaseCounter(index)}>
+              <Icon name="minus" type="Entypo" size={16} color="#757575" />
+            </Button>
+            <Text style={{paddingHorizontal: 8}}>{item.quantity}</Text>
+            <Button style={styles.btn} onPress={this._increaseCounter(index)}>
+              <Icon name="plus" type="Entypo" size={16} color="#757575" />
+            </Button>
+          </View>
+        )}
+        {item.sold_individually && item.type !== "variable" && (
+          <Icon
+            type="MaterialCommunityIcons"
+            color={this.state.checked ? this.props.appSettings.primary_color : "#00000099"}
+            size={24}
+            name={this.state.checked ? "checkbox-marked" : "checkbox-blank-outline"}
+          />
+        )}
+        {item.type === "variable" && (
+          <Button>
+            <Text style={{textDecorationLine: "underline"}}>Select Option</Text>
+          </Button>
+        )}
+      </View>
+    );
+  };
+
+  _keyExtractor = (index, item) => index + item;
+
   render() {
     const {accent_color, pincode_active} = this.props.appSettings;
     const {t} = this.props;
@@ -340,14 +417,16 @@ class ProductDetailScreen extends Component {
                 </Text>
               </View>
 
-              <View style={[styles.rowCenterSpaced, styles.cardItem]}>
-                <Text>Quantity</Text>
-                <QuantitySelector
-                  minusClick={this._decreaseCounter}
-                  plusClick={this._increaseCounter}
-                  quantity={this.state.quantity}
-                />
-              </View>
+              {product.type != "grouped" && (
+                <View style={[styles.rowCenterSpaced, styles.cardItem]}>
+                  <Text>Quantity</Text>
+                  <QuantitySelector
+                    minusClick={this._decreaseCounter()}
+                    plusClick={this._increaseCounter()}
+                    quantity={this.state.quantity}
+                  />
+                </View>
+              )}
             </View>
             <View
               style={[styles.card, styles.cardItem, {flexDirection: "row", alignItems: "center"}]}>
@@ -389,6 +468,16 @@ class ProductDetailScreen extends Component {
                   itemDimension={180}
                   spacing={8}
                   itemContainerStyle={{justifyContent: "flex-start"}}
+                />
+              </View>
+            )}
+            {product.group && product.group.length > 0 && (
+              <View style={styles.card}>
+                <Text style={styles.cardItemHeader}>Group Products</Text>
+                <FlatList
+                  data={product.group}
+                  renderItem={this._renderItem}
+                  keyExtractor={this._keyExtractor}
                 />
               </View>
             )}
@@ -465,24 +554,24 @@ class ProductDetailScreen extends Component {
                           marginHorizontal: 16,
                           marginTop: 10,
                         }}>
-                        <View style={{alignItems: "center"}}>
+                        <View style={styles.pincodeView}>
                           <Icon type="MaterialIcons" name="location-on" size={24} />
                           <Text>LOCATION</Text>
-                          <Text style={{fontWeight: "500"}}>
+                          <Text style={styles.pincodeText}>
                             {deliverDetails.city + "\n" + deliverDetails.state}
                           </Text>
                         </View>
-                        <View style={{alignItems: "center"}}>
+                        <View style={styles.pincodeView}>
                           <Icon type="Entypo" name="calendar" size={24} />
                           <Text>DELIVERY BY</Text>
                           {deliverDetails.delivery_date != "" && (
-                            <Text style={{fontWeight: "500"}}>{deliverDetails.delivery_date}</Text>
+                            <Text style={styles.pincodeText}>{deliverDetails.delivery_date}</Text>
                           )}
                         </View>
-                        <View style={{alignItems: "center"}}>
+                        <View style={styles.pincodeView}>
                           <Icon type="Feather" name="credit-card" size={24} />
                           <Text>COD</Text>
-                          <Text style={{fontWeight: "500"}}>{deliverDetails.cod_message}</Text>
+                          <Text style={styles.pincodeText}>{deliverDetails.cod_message}</Text>
                         </View>
                       </View>
                     </>
@@ -641,6 +730,15 @@ const styles = StyleSheet.create({
   },
   cardItem: {
     paddingHorizontal: 16,
+  },
+  pincodeView: {alignItems: "center"},
+  pincodeText: {fontWeight: "500"},
+  btn: {
+    borderWidth: 1,
+    borderColor: "#dedede",
+    backgroundColor: "#EFEFEF",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

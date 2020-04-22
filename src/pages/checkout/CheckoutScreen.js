@@ -200,7 +200,6 @@ function CheckoutScreen({navigation}) {
   );
 
   const getStepIndicatorIconConfig = ({position, stepStatus}) => {
-    console.log(position, stepStatus);
     const iconConfig = {
       name: "feed",
       color: stepStatus === "finished" ? "#ffffff" : "#fe7013",
