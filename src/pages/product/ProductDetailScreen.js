@@ -1,5 +1,12 @@
 import React, {Component, Fragment} from "react";
-import {View, StyleSheet, ScrollView, TextInput, ActivityIndicator} from "react-native";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  TextInput,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import {connect} from "react-redux";
 import StarRating from "react-native-star-rating";
 import RNFetchBlob from "rn-fetch-blob";
@@ -190,11 +197,51 @@ class ProductDetailScreen extends Component {
     }
   };
 
+  checkBox = i => () => {
+    const {quantity, product, checked} = this.state;
+    console.log(quantity);
+    console.log(product);
+    if (checked) {
+      product.group[i].quantity--;
+      this.setState({
+        quantity: quantity - 1,
+        checked: false,
+      });
+    } else {
+      product.group[i].quantity++;
+      this.setState({
+        quantity: quantity + 1,
+        checked: true,
+      });
+    }
+  };
+
+  gotoProductDetailPage = item => () => {
+    console.log("kamal");
+    this.props.navigation.push("ProductDetailScreen", item);
+  };
+
   _handleAddToCart = (isBuyNow = false) => {
     const {product, quantity, variation, selectedAttrs} = this.state;
     let data = {id: this.state.product.id};
 
     switch (product.type) {
+      case "grouped":
+        if (
+          product.group.every(element => {
+            return element.quantity == 0;
+          })
+        ) {
+          Toast.show("Select atleast one product");
+          return;
+        }
+        data.quantity = {};
+        for (let i in product.group) {
+          if (product.group[i].quantity > 0) {
+            data.quantity[product.group[i].id] = product.group[i].quantity;
+          }
+        }
+        break;
       case "simple":
         data.quantity = quantity;
         break;
@@ -342,15 +389,17 @@ class ProductDetailScreen extends Component {
           </View>
         )}
         {item.sold_individually && item.type !== "variable" && (
-          <Icon
-            type="MaterialCommunityIcons"
-            color={this.state.checked ? this.props.appSettings.primary_color : "#00000099"}
-            size={24}
-            name={this.state.checked ? "checkbox-marked" : "checkbox-blank-outline"}
-          />
+          <TouchableOpacity onPress={this.checkBox(index)}>
+            <Icon
+              type="MaterialCommunityIcons"
+              color={this.state.checked ? this.props.appSettings.primary_color : "#00000099"}
+              size={24}
+              name={this.state.checked ? "checkbox-marked" : "checkbox-blank-outline"}
+            />
+          </TouchableOpacity>
         )}
         {item.type === "variable" && (
-          <Button>
+          <Button onPress={this.gotoProductDetailPage(item)}>
             <Text style={{textDecorationLine: "underline"}}>Select Option</Text>
           </Button>
         )}

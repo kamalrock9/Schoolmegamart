@@ -76,8 +76,6 @@ class ProductScreen extends React.PureComponent {
 
   componentDidMount() {
     this.loadProducts();
-    // this.props.navigation.addListener('focus',
-    //   () => { this.loadProducts })
     if (this.params.category) {
       ApiClient.get("products/all-categories", {parent: this.params.category}).then(({data}) => {
         console.log(data);
@@ -86,7 +84,6 @@ class ProductScreen extends React.PureComponent {
     }
 
     const params = {
-      // product: this.state.products.map(item => item.id).join(),
       hide_empty: true,
       show_all: true,
     };
@@ -270,18 +267,6 @@ const styles = StyleSheet.create({
     marginStart: 5,
   },
 });
-
-// ProductScreen.propTypes = {
-//   feature: PropTypes.bool,
-//   sortby: PropTypes.string,
-//   on_sale: PropTypes.string
-// }
-
-// ProductScreen.defaultProps = {
-//   feature: false,
-//   sortby: 'popularity',
-//   on_sale: ''
-// }
 
 const mapStateToProps = state => ({appSettings: state.appSettings});
 
