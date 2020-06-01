@@ -1,88 +1,72 @@
 import React, {useState, useEffect} from "react";
-import {View, StyleSheet, FlatList, Image, TextInput} from "react-native";
-import {Toolbar, Button, Text, Icon} from "components";
+import {View, StyleSheet, FlatList, TextInput} from "react-native";
+import {Toolbar, Button, Text, Icon, Container, EmptyList} from "components";
 import {useSelector} from "react-redux";
 import Toast from "react-native-simple-toast";
 import {WooCommerce, ApiClient} from "service";
 import moment from "moment";
 
-function Coupon({submit, couponSubmit}) {
+function Coupon({onBackButtonPress, applyCoupon}) {
   const appSettings = useSelector(state => state.appSettings);
+  const user = useSelector(state => state.user);
+  const [couponCode, setCouponCode] = useState("");
   const [text, setText] = useState("");
   const [coupons, setCoupons] = useState([]);
+  const [loading, setLoding] = useState(true);
 
   useEffect(() => {
     WooCommerce.get("coupons")
       .then(({data}) => {
-        console.log(data);
+        setLoding(false);
         setCoupons(data);
       })
-      .catch(error => {});
+      .catch(error => {
+        setLoding(false);
+      });
   }, []);
 
-  const setData = () => {
-    if (text != "") {
-      let param = {
-        coupon_code: text,
-        user_id: 17,
-      };
-      ApiCall(param);
-    } else {
-      Toast.show("Please enter the Promo Code/Voucher");
-    }
-  };
-
-  const ApiCall = param => {
+  useEffect(() => {
+    if (couponCode == "") return;
+    let param = {
+      coupon_code: couponCode,
+      user_id: user.id,
+    };
     ApiClient.get("/cart/coupon", param)
       .then(({data}) => {
-        console.log(data);
-        if (data.code == 201) {
-          Toast.show(data.message[0].notice);
+        if (data.code) {
+          if (data.message && data.message.length > 0) {
+            Toast.show(data.message.join());
+          } else if (data.message && data.message !== "") {
+            Toast.show(data.message);
+          } else {
+            Toast.show("Coupon code is not valid.");
+          }
         } else {
-          couponSubmit && couponSubmit(text);
+          applyCoupon && applyCoupon(data);
+          onBackButtonPress && onBackButtonPress();
         }
       })
       .catch(error => {});
-  };
+  }, [couponCode]);
 
-  const setCoupon = code => () => {
-    let param = {
-      coupon_code: code,
-      user_id: 17,
-    };
-    ApiCall(param);
+  const setData = () => {
+    setCouponCode(text);
   };
 
   const _renderItem = ({item, index}) => {
     return (
-      <View
-        style={{
-          marginHorizontal: 8,
-          elevation: 2,
-          backgroundColor: "#fff",
-          marginTop: 10,
-          marginBottom: 5,
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: 10,
-        }}>
+      <View style={styles.itemContainer}>
         <View>
           <Text style={{fontWeight: "700", fontSize: 18}}>{item.code.toUpperCase()}</Text>
           <Text>{item.description}</Text>
-          <Text>Valid Till {moment(item.date_expires).format("MMM DD,YYYY")}</Text>
+          <Text>
+            Valid till{" - "}
+            {item.date_expires ? moment(item.date_expires).format("MMM DD,YYYY") : "no limit"}
+          </Text>
         </View>
         <Button
-          style={{
-            backgroundColor: appSettings.accent_color,
-            elevation: 2,
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 2,
-            paddingHorizontal: 5,
-            paddingBottom: 3,
-          }}
-          onPress={setCoupon(item.code)}>
+          style={[styles.itemApplyButton, {backgroundColor: appSettings.accent_color}]}
+          onPress={() => setCouponCode(item.code)}>
           <Text style={{color: "#fff"}}>Apply</Text>
         </Button>
       </View>
@@ -92,47 +76,34 @@ function Coupon({submit, couponSubmit}) {
   const _keyExtractor = (item, index) => item.id;
 
   return (
-    <View style={{flex: 1, backgroundColor: "#FFF"}}>
-      <Toolbar submit={submit} cancelButton title="Apply Coupon" />
-      <View style={{elevation: 2, backgroundColor: "#ffff", marginBottom: 10}}>
-        <View
-          style={{
-            flexDirection: "row",
-            borderColor: "#d2d2d2",
-            borderWidth: 1,
-            borderRadius: 4,
-            alignItems: "center",
-            margin: 10,
-            justifyContent: "space-between",
-          }}>
-          <Icon
-            name="brightness-percent"
-            type="MaterialCommunityIcons"
-            size={24}
-            style={{paddingHorizontal: 5}}
-          />
-          <TextInput
-            underlineColorAndroid="transparent"
-            style={{flex: 1}}
-            onChangeText={text => setText(text)}
-            placeholder="Apply Promo Code/Voucher"
-          />
-          <Button
-            style={{
-              backgroundColor: appSettings.accent_color,
-              alignItems: "flex-end",
-              height: 50,
-              justifyContent: "center",
-              alignItems: "center",
-              borderRadius: 4,
-            }}
-            onPress={setData}>
-            <Text style={{paddingHorizontal: 30, color: "#fff", marginBottom: 5}}>Apply</Text>
-          </Button>
-        </View>
+    <Container style={{backgroundColor: "#FFF"}}>
+      <Toolbar onCancel={onBackButtonPress} cancelButton title="Apply Coupon" />
+      <View style={styles.headerContainer}>
+        <Icon
+          name="brightness-percent"
+          type="MaterialCommunityIcons"
+          style={{paddingHorizontal: 5, fontSize: 24}}
+        />
+        <TextInput
+          underlineColorAndroid="transparent"
+          onChangeText={text => setText(text)}
+          style={{height: 44}}
+          placeholder="Apply Promo Code/Voucher"
+        />
+        <Button
+          style={[styles.headerApplyButton, {backgroundColor: appSettings.accent_color}]}
+          onPress={setData}>
+          <Text style={{color: "#fff"}}>Apply</Text>
+        </Button>
       </View>
-      <FlatList data={coupons} renderItem={_renderItem} keyExtractor={_keyExtractor} />
-    </View>
+      <FlatList
+        data={coupons}
+        renderItem={_renderItem}
+        keyExtractor={_keyExtractor}
+        contentContainerStyle={{padding: 4, flexGrow: 1}}
+        ListEmptyComponent={<EmptyList loading={loading} />}
+      />
+    </Container>
   );
 }
 
@@ -140,40 +111,38 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  btn: {
+  headerContainer: {
+    flexDirection: "row",
+    borderColor: "#d2d2d2",
     borderWidth: 1,
-    borderColor: "#D2d2d9",
-    backgroundColor: "#D2d2d2",
-    width: 22,
-    height: 22,
+    borderRadius: 4,
     alignItems: "center",
-    justifyContent: "center",
-  },
-  heading: {fontWeight: "700"},
-  footer: {
-    width: "100%",
-    flexDirection: "row",
-  },
-  footerButton: {
-    flex: 1,
-    height: 40,
-    margin: 5,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  view: {
-    flexDirection: "row",
+    margin: 10,
     justifyContent: "space-between",
   },
-  line: {
-    height: 1,
-    width: "100%",
-    backgroundColor: "#F1F1F1",
+  headerApplyButton: {
+    height: 44,
+    paddingHorizontal: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4,
   },
-  btnTxt: {
-    fontWeight: "600",
-    fontSize: 24,
-    marginBottom: 5,
+  itemContainer: {
+    marginVertical: 4,
+    elevation: 2,
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 8,
+  },
+  itemApplyButton: {
+    elevation: 2,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 2,
+    paddingHorizontal: 5,
+    paddingBottom: 3,
   },
 });
 

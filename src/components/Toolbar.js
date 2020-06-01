@@ -16,7 +16,7 @@ function Toolbar({
   wishListButton,
   cartButton,
   cancelButton,
-  submit,
+  onCancel,
   walletRupee,
   searchButton,
   paymentpage,
@@ -60,7 +60,7 @@ function Toolbar({
           </Button>
         )}
         {cancelButton && (
-          <Button onPress={submitt} style={styles.menuButton}>
+          <Button onPress={onCancel} style={styles.menuButton}>
             <Icon color={appSettings.primary_color_text} name="cross" type="Entypo" size={24} />
           </Button>
         )}

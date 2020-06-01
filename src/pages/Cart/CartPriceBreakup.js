@@ -8,7 +8,7 @@ import {ApiClient} from "service";
 
 const {width} = Dimensions.get("window");
 
-function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt, shippingMethod}) {
+function CartPriceBreakup({applyCoupon, data, removeCoupon, shippingMethod}) {
   // console.log(data);
   const [isCoupon, setIsCoupon] = useState(false);
   if (data.hasOwnProperty("chosen_shipping_method")) {
@@ -23,24 +23,6 @@ function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt, shipping
     setShippingMethod(item.id);
     console.log(item);
     shippingMethod && shippingMethod(item.id);
-  };
-
-  const couponSubmit = text => {
-    console.log(text);
-    setIsCoupon(!isCoupon);
-    quantityIncrementDecremnt && quantityIncrementDecremnt();
-  };
-
-  const removeCoupon = code => () => {
-    let param = {
-      coupon_code: code,
-    };
-    ApiClient.get("/cart/remove-coupon", param)
-      .then(res => {
-        console.log(res);
-        quantityIncrementDecremnt && quantityIncrementDecremnt();
-      })
-      .catch(error => {});
   };
 
   return (
@@ -67,7 +49,7 @@ function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt, shipping
                   <Text>
                     <Text style={{color: "green"}}>{item.code}</Text> applied{" "}
                   </Text>
-                  <Button onPress={removeCoupon(item.code)}>
+                  <Button onPress={() => removeCoupon(item.code)}>
                     <Icon type="MaterialIcons" name="cancel" size={22} />
                   </Button>
                 </View>
@@ -153,11 +135,7 @@ function CartPriceBreakup({couponCode, data, quantityIncrementDecremnt, shipping
         useNativeDriver
         hideModalContentWhileAnimating
         coverScreen>
-        <Coupon
-          submit={toggleCouponModal}
-          couponSubmit={couponSubmit}
-          onModalBackPress={toggleCouponModal}
-        />
+        <Coupon onBackButtonPress={toggleCouponModal} applyCoupon={applyCoupon} />
       </Modal>
     </>
   );

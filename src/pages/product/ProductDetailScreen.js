@@ -311,19 +311,22 @@ class ProductDetailScreen extends Component {
     this.props.navigation.navigate("Reviews", product);
   };
 
-  onVariationChange = item => async option => {
-    await this.setState(prevState => ({
-      selectedAttrs: {
-        ...prevState.selectedAttrs,
-        [item.slug]: option && option.slug ? option.slug : option,
+  onVariationChange = item => option => {
+    this.setState(
+      prevState => ({
+        selectedAttrs: {
+          ...prevState.selectedAttrs,
+          [item.slug]: option && option.slug ? option.slug : option,
+        },
+      }),
+      () => {
+        console.log(this.state.selectedAttrs);
+        const {selectedAttrs, product, attributes} = this.state;
+        if (Object.keys(selectedAttrs).length == attributes.length) {
+          this.loadVariation({product_id: product.id, attributes: selectedAttrs});
+        }
       },
-    }));
-
-    console.log(this.state.selectedAttrs);
-    const {selectedAttrs, product, attributes} = this.state;
-    if (Object.keys(selectedAttrs).length == attributes.length) {
-      this.loadVariation({product_id: product.id, attributes: selectedAttrs});
-    }
+    );
   };
 
   loadVariation(data) {
@@ -504,16 +507,19 @@ class ProductDetailScreen extends Component {
                 <FlatGrid
                   items={attributes}
                   keyExtractor={this._keyExtractor}
-                  renderItem={({item, index}) => (
-                    <CustomPicker
-                      options={item.options}
-                      getLabel={option => (option && option.slug ? option.name : option)}
-                      fieldTemplate={PickerField}
-                      placeholder={item.name}
-                      modalAnimationType="slide"
-                      onValueChange={this.onVariationChange(item)}
-                    />
-                  )}
+                  renderItem={({item, index}) => {
+                    console.log(index);
+                    return (
+                      <CustomPicker
+                        options={item.options}
+                        getLabel={option => (option && option.slug ? option.name : option)}
+                        fieldTemplate={PickerField}
+                        placeholder={item.name}
+                        modalAnimationType="slide"
+                        onValueChange={this.onVariationChange(item)}
+                      />
+                    );
+                  }}
                   itemDimension={180}
                   spacing={8}
                   itemContainerStyle={{justifyContent: "flex-start"}}
