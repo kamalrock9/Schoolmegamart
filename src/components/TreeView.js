@@ -1,12 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
+import {View} from "react-native";
+import {TouchableOpacity} from "react-native-gesture-handler";
+import {withNavigation} from "react-navigation";
+import FastImage from "react-native-fast-image";
 import Text from "./Text";
 import Icon from "./IconNB";
 import Button from "./Button";
-
-import { View, Image } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { withNavigation } from "react-navigation";
 
 const makeCollapsed = (data, childrenKey) => {
   return data.map(children => {
@@ -131,11 +131,7 @@ class TreeView extends React.PureComponent {
 
   handleNodePressed(children, level) {
     const newData = this.toggleCollapse(this.state.data.slice(), children[this.props.idKey]);
-
-    this.setState({
-      data: newData,
-    });
-
+    this.setState({data: newData});
     this.props.onItemPress && this.props.onItemPress(children, level);
   }
 
@@ -147,9 +143,9 @@ class TreeView extends React.PureComponent {
     });
   }
 
-  gotoPage = (id) => () => {
+  gotoPage = id => () => {
     this.props.onpress && this.props.onpress(id);
-  }
+  };
 
   renderTree(data, level) {
     return data.map(children => {
@@ -173,19 +169,29 @@ class TreeView extends React.PureComponent {
               marginStart: 25 * level,
               //height: 40
             }}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Image source={{ uri: children.image != null ? children.image.src : "https://user-images.githubusercontent.com/2351721/31314483-7611c488-ac0e-11e7-97d1-3cfc1c79610e.png" }} style={{ width: 40, height: 40 }} />
-              <TouchableOpacity onPress={this.gotoPage(children.id)}><Text style={{ fontSize: 14, paddingStart: 10, fontWeight: "400" }}>{children.name + " (" + children.count + ")"}</Text></TouchableOpacity>
+            <View style={{flexDirection: "row", alignItems: "center"}}>
+              <FastImage
+                source={{
+                  uri:
+                    children.image != null
+                      ? children.image.src
+                      : "https://user-images.githubusercontent.com/2351721/31314483-7611c488-ac0e-11e7-97d1-3cfc1c79610e.png",
+                }}
+                style={{width: 36, height: 36}}
+              />
+              <TouchableOpacity onPress={this.gotoPage(children.id)}>
+                <Text style={{fontSize: 14, paddingStart: 10, fontWeight: "400"}}>
+                  {children.name + " (" + children.count + ")"}
+                </Text>
+              </TouchableOpacity>
             </View>
             {children.collapsed !== null &&
               children[this.props.childrenKey] &&
-              children[this.props.childrenKey].length > 0 ? (
-                <Button transparent onPress={() => this.handleNodePressed(children, level)}>
+              children[this.props.childrenKey].length > 0 && (
+                <Button
+                  style={{padding: 8}}
+                  onPress={() => this.handleNodePressed(children, level)}>
                   <Icon name={children.collapsed ? "ios-add" : "ios-remove"} size={24} />
-                </Button>
-              ) : (
-                <Button transparent>
-                  <Icon name="ios-add" style={{ color: "transparent" }} size={24} />
                 </Button>
               )}
           </View>

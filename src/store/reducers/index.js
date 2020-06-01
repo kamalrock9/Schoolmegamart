@@ -6,6 +6,7 @@ import {wishlistReducer} from "./wishlistReducer";
 import {cartCountReducer} from "./cartCountReducer";
 import {userReducer} from "./userReducer";
 import {saveNotification} from "./saveNotification";
+import {shippingReducer} from "./shippingReducer";
 
 export default combineReducers({
   homeLayout: homeReducer,
@@ -15,4 +16,5 @@ export default combineReducers({
   cartCount: cartCountReducer,
   user: userReducer,
   saveNotification: saveNotification,
+  shipping: shippingReducer,
 });

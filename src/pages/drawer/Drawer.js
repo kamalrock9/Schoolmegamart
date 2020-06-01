@@ -238,7 +238,8 @@ class Drawer extends React.PureComponent {
                 backgroundColor: "#d2d2d2",
                 width: "100%",
                 marginVertical: 10,
-              }}></View>
+              }}
+            />
             <View style={{flexDirection: "row"}}>
               <Button
                 style={[
@@ -325,4 +326,7 @@ const mapDispatchToProps = {
   logout,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(Drawer));
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslation()(Drawer));

@@ -73,6 +73,10 @@ function HomeScreen({navigation}) {
     navigation.push(route, params);
   };
 
+  const openCategories = () => {
+    navigation.navigate("CategoryScreen");
+  };
+
   const _renderItem = ({item, index}) => <CategoryItem item={item} index={index} />;
 
   if (loading) {
@@ -101,7 +105,7 @@ function HomeScreen({navigation}) {
           <SectonHeader
             title={t("ALL_CATEGORIES")}
             titleEnd={t("VIEW_ALL")}
-            //onPress={goTo}
+            onPress={openCategories}
             onPressArgs={["CategoryScreen"]}
           />
 

@@ -1,12 +1,5 @@
-import React, {Component, Fragment} from "react";
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  TextInput,
-  ActivityIndicator,
-  TouchableOpacity,
-} from "react-native";
+import React from "react";
+import {View, StyleSheet, ScrollView, TextInput, ActivityIndicator, FlatList} from "react-native";
 import {connect} from "react-redux";
 import StarRating from "react-native-star-rating";
 import RNFetchBlob from "rn-fetch-blob";
@@ -27,15 +20,13 @@ import {CustomPicker} from "react-native-custom-picker";
 import SpecificationRow from "./SpecificationRow";
 import MiniCart from "./MiniCart";
 import ProductsRow from "./ProductsRow";
-import {ApiClient, WooCommerce} from "service";
-import {getCartCount} from "store/actions";
+import {ApiClient} from "service";
+import {getCartCount, changeShippingPincode} from "store/actions";
 import {FlatGrid} from "react-native-super-grid";
 import Toast from "react-native-simple-toast";
 import {withTranslation} from "react-i18next";
-import Constants from "../../service/Config";
-import {FlatList} from "react-native-gesture-handler";
 
-class ProductDetailScreen extends Component {
+class ProductDetailScreen extends React.PureComponent {
   constructor(props) {
     super(props);
     console.log(this.props.navigation.state.params);
@@ -47,14 +38,14 @@ class ProductDetailScreen extends Component {
       attributes: [],
       selectedAttrs: {},
       variation: {},
-      postcode: "",
+      postcode: props.shipping.postcode || "",
       deliverDetails: {},
       loading: false,
       checked: false,
     };
   }
   componentDidMount() {
-    const {product} = this.state;
+    const {product, postcode} = this.state;
     let attributes = [];
     for (let attr of product.attributes) {
       if (attr.variation && attr.visible) {
@@ -64,6 +55,9 @@ class ProductDetailScreen extends Component {
     this.setState({attributes});
     console.log(attributes);
     this.setup();
+    if (postcode !== "") {
+      this.submitPostcode();
+    }
   }
   setup = () => {
     if (this.state.product.upsell_ids.length > 0) {
@@ -126,12 +120,13 @@ class ProductDetailScreen extends Component {
       });
   };
 
-  _increaseCounter = i => () => {
+  _increaseCounter = index => {
+    console.log("abc");
     const {variation, product} = this.state;
     let quantity = this.state.quantity;
 
     if (product.type == "grouped") {
-      product.group[i].quantity++;
+      product.group[index].quantity++;
       console.log(quantity);
       console.log(product);
       // let newdata = Object.assign([],product.group);
@@ -164,33 +159,33 @@ class ProductDetailScreen extends Component {
         Toast.show("Select a variation first");
       }
     } else {
+      console.log("def", product.manage_stock);
       if (product.manage_stock) {
         if (quantity < product.stock_quantity) {
-          product.quantity++;
+          quantity++;
         } else {
           Toast.show("More items cannot be added");
         }
       } else {
-        product.quantity++;
+        quantity++;
       }
     }
 
     this.setState({quantity});
   };
 
-  _decreaseCounter = i => () => {
+  _decreaseCounter = index => {
     const {quantity, product} = this.state;
     console.log(quantity);
     console.log(product);
     if (product.type == "grouped") {
-      if (product.group[i].quantity > 0) {
-        product.group[i].quantity--;
+      if (product.group[index].quantity > 0) {
+        product.group[index].quantity--;
         this.setState({
           quantity: quantity - 1,
         });
       }
-    }
-    if (quantity > 1) {
+    } else if (quantity > 1) {
       this.setState({
         quantity: quantity - 1,
       });
@@ -345,28 +340,26 @@ class ProductDetailScreen extends Component {
       });
   }
 
-  submitPincodeCheck = postcode => () => {
-    if (postcode == "change") {
-      this.setState({deliverDetails: {}});
-      return;
-    }
-    let URL = Constants.baseURL + Constants.path;
+  submitPostcode = () => {
     let param = {
-      pincode: postcode,
+      pincode: this.state.postcode,
       product_id: this.state.product.id,
     };
-    console.log(param, URL);
+    this.props.changeShippingPincode(this.state.postcode);
     this.setState({loading: true});
-    ApiClient.post(URL + "/checkpincode/", param)
+    ApiClient.post("/checkpincode/", param)
       .then(({data}) => {
         console.log(data);
-        this.setState({loading: false});
-        this.setState({deliverDetails: data});
+        this.setState({loading: false, deliverDetails: data});
       })
       .catch(error => {
         this.setState({loading: false});
         console.log(error);
       });
+  };
+
+  changePostcode = () => {
+    this.setState({deliverDetails: {}});
   };
 
   _renderItem = ({item, index}) => {
@@ -382,24 +375,24 @@ class ProductDetailScreen extends Component {
         <Text>{item.name}</Text>
         {!item.sold_individually && item.type !== "variable" && (
           <View style={{flexDirection: "row"}}>
-            <Button style={styles.btn} onPress={this._decreaseCounter(index)}>
+            <Button style={styles.btn} onPress={() => this._decreaseCounter(index)}>
               <Icon name="minus" type="Entypo" size={16} color="#757575" />
             </Button>
             <Text style={{paddingHorizontal: 8}}>{item.quantity}</Text>
-            <Button style={styles.btn} onPress={this._increaseCounter(index)}>
+            <Button style={styles.btn} onPress={() => this._increaseCounter(index)}>
               <Icon name="plus" type="Entypo" size={16} color="#757575" />
             </Button>
           </View>
         )}
         {item.sold_individually && item.type !== "variable" && (
-          <TouchableOpacity onPress={this.checkBox(index)}>
+          <Button onPress={this.checkBox(index)}>
             <Icon
               type="MaterialCommunityIcons"
               color={this.state.checked ? this.props.appSettings.primary_color : "#00000099"}
               size={24}
               name={this.state.checked ? "checkbox-marked" : "checkbox-blank-outline"}
             />
-          </TouchableOpacity>
+          </Button>
         )}
         {item.type === "variable" && (
           <Button onPress={this.gotoProductDetailPage(item)}>
@@ -473,8 +466,8 @@ class ProductDetailScreen extends Component {
                 <View style={[styles.rowCenterSpaced, styles.cardItem]}>
                   <Text>Quantity</Text>
                   <QuantitySelector
-                    minusClick={this._decreaseCounter()}
-                    plusClick={this._increaseCounter()}
+                    minusClick={this._decreaseCounter}
+                    plusClick={this._increaseCounter}
                     quantity={this.state.quantity}
                   />
                 </View>
@@ -539,7 +532,7 @@ class ProductDetailScreen extends Component {
             {pincode_active && (
               <View style={styles.card}>
                 <Text style={styles.cardItemHeader}>{t("DELIVERY_OPTIONS")}</Text>
-                {!deliverDetails.hasOwnProperty("delivery") && (
+                {!deliverDetails.hasOwnProperty("delivery") ? (
                   <View
                     style={{
                       paddingHorizontal: 16,
@@ -548,6 +541,7 @@ class ProductDetailScreen extends Component {
                     }}>
                     <TextInput
                       placeholder={t("ENTER_POSTCODE")}
+                      value={postcode}
                       onChangeText={text => this.setState({postcode: text})}
                     />
                     <Button
@@ -558,78 +552,64 @@ class ProductDetailScreen extends Component {
                         height: 40,
                         paddingHorizontal: 10,
                       }}
-                      onPress={this.submitPincodeCheck(postcode)}>
+                      onPress={this.submitPostcode}>
                       <Text style={{color: accent_color}}>Apply</Text>
                     </Button>
                   </View>
-                )}
-                {postcode != "" && (
-                  <View style={{marginHorizontal: 16}}>
-                    {deliverDetails.hasOwnProperty("delivery") && !deliverDetails.delivery && (
-                      <View style={{justifyContent: "space-between", flexDirection: "row"}}>
-                        <Text>
-                          Delivery not available at -{" "}
-                          <Text style={{fontWeight: "600"}}>{postcode}</Text>
-                        </Text>
-                        <Button onPress={this.submitPincodeCheck("change")}>
-                          <Text style={{color: accent_color}}>Change</Text>
-                        </Button>
-                      </View>
-                    )}
-                    {deliverDetails.hasOwnProperty("delivery") && deliverDetails.delivery && (
-                      <View style={{justifyContent: "space-between", flexDirection: "row"}}>
-                        <Text>
-                          Delivery available at -{" "}
-                          <Text style={{fontWeight: "600"}}>{postcode}</Text>
-                        </Text>
-                        <Button onPress={this.submitPincodeCheck("change")}>
-                          <Text style={{color: accent_color}}>Change</Text>
-                        </Button>
-                      </View>
-                    )}
-                  </View>
+                ) : (
+                  postcode != "" &&
+                  deliverDetails.hasOwnProperty("delivery") && (
+                    <View
+                      style={{
+                        justifyContent: "space-between",
+                        flexDirection: "row",
+                        marginHorizontal: 16,
+                      }}>
+                      <Text>
+                        Delivery {deliverDetails.delivery ? "" : "not"} available at -{" "}
+                        <Text style={{fontWeight: "600"}}>{postcode}</Text>
+                      </Text>
+                      <Button onPress={this.changePostcode}>
+                        <Text style={{color: accent_color}}>Change</Text>
+                      </Button>
+                    </View>
+                  )
                 )}
 
                 {postcode != "" &&
                   deliverDetails.hasOwnProperty("delivery") &&
                   deliverDetails.delivery && (
-                    <>
-                      <View
-                        style={{
-                          marginHorizontal: 16,
-                          marginTop: 10,
-                          backgroundColor: "#d2d2d2",
-                          height: 1.25,
-                        }}
-                      />
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          marginHorizontal: 16,
-                          marginTop: 10,
-                        }}>
-                        <View style={styles.pincodeView}>
-                          <Icon type="MaterialIcons" name="location-on" size={24} />
-                          <Text>LOCATION</Text>
-                          <Text style={styles.pincodeText}>
-                            {deliverDetails.city + "\n" + deliverDetails.state}
-                          </Text>
-                        </View>
-                        <View style={styles.pincodeView}>
-                          <Icon type="Entypo" name="calendar" size={24} />
-                          <Text>DELIVERY BY</Text>
-                          {deliverDetails.delivery_date != "" && (
-                            <Text style={styles.pincodeText}>{deliverDetails.delivery_date}</Text>
-                          )}
-                        </View>
-                        <View style={styles.pincodeView}>
-                          <Icon type="Feather" name="credit-card" size={24} />
-                          <Text>COD</Text>
-                          <Text style={styles.pincodeText}>{deliverDetails.cod_message}</Text>
-                        </View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        marginTop: 16,
+                        paddingTop: 16,
+                        borderTopWidth: 1,
+                        borderTopColor: "#d2d2d2",
+                      }}>
+                      <View style={styles.pincodeView}>
+                        <Icon type="MaterialIcons" name="location-on" size={24} />
+                        <Text style={{fontSize: 12, fontWeight: 600, marginTop: 8}}>LOCATION</Text>
+                        <Text style={styles.pincodeText}>
+                          {deliverDetails.city + "," + deliverDetails.state}
+                        </Text>
                       </View>
-                    </>
+                      <View style={styles.pincodeView}>
+                        <Icon type="MaterialIcons" name="date-range" size={24} />
+                        <Text style={{fontSize: 12, fontWeight: 600, marginTop: 8}}>
+                          DELIVERY BY
+                        </Text>
+                        {deliverDetails.delivery_date != "" && (
+                          <Text style={styles.pincodeText}>{deliverDetails.delivery_date}</Text>
+                        )}
+                      </View>
+                      <View style={styles.pincodeView}>
+                        <Icon name="ios-cash" size={24} />
+                        <Text style={{fontSize: 12, fontWeight: 600, marginTop: 8}}>COD</Text>
+                        <Text style={styles.pincodeText}>{deliverDetails.cod_message}</Text>
+                      </View>
+                    </View>
                   )}
               </View>
             )}
@@ -695,7 +675,7 @@ class ProductDetailScreen extends Component {
             product.type === "grouped") && (
             <View style={styles.footer}>
               {((!isEmpty(variation) && variation.in_stock) || product.in_stock) && (
-                <Fragment>
+                <>
                   <Button
                     onPress={() => this._handleAddToCart(true)}
                     style={[styles.footerButton, {backgroundColor: "#f7f7f7"}]}>
@@ -706,7 +686,7 @@ class ProductDetailScreen extends Component {
                     onPress={() => this._handleAddToCart(false)}>
                     <Text style={{color: "white"}}>Add to Cart</Text>
                   </Button>
-                </Fragment>
+                </>
               )}
             </View>
           )}
@@ -786,8 +766,15 @@ const styles = StyleSheet.create({
   cardItem: {
     paddingHorizontal: 16,
   },
-  pincodeView: {alignItems: "center"},
-  pincodeText: {fontWeight: "500"},
+  pincodeView: {
+    flex: 1,
+    alignItems: "center",
+  },
+  pincodeText: {
+    //fontWeight: "500",
+    textAlign: "center",
+    fontSize: 12,
+  },
   btn: {
     borderWidth: 1,
     borderColor: "#dedede",
@@ -799,9 +786,11 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
   appSettings: state.appSettings,
+  shipping: state.shipping,
 });
 const mapDispatchToProps = {
   getCartCount,
+  changeShippingPincode,
 };
 export default connect(
   mapStateToProps,

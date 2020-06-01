@@ -72,3 +72,24 @@ export const deleteNotification = data => ({
   type: types.DELETE_NOTIFICATION,
   payload: data,
 });
+
+export const saveShipping = data => ({
+  type: types.SAVE_SHIPPING,
+  payload: data,
+});
+export const changeShippingCountry = data => ({
+  type: types.CHANGE_SHIPPING_COUNTRY,
+  payload: data,
+});
+export const changeShippingState = data => ({
+  type: types.CHANGE_SHIPPING_STATE,
+  payload: data,
+});
+export const changeShippingCity = data => ({
+  type: types.CHANGE_SHIPPING_CITY,
+  payload: data,
+});
+export const changeShippingPincode = data => ({
+  type: types.CHANGE_SHIPPING_PINCODE,
+  payload: data,
+});
