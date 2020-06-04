@@ -42,6 +42,7 @@
     "react-native-render-html": "^4.2.0",
     "react-native-screens": "1.0.0-alpha.23",
     "react-native-share": "^2.0.0",
+    "react-native-shimmer": "^0.6.0",
     "react-native-simple-toast": "^1.0.0",
     "react-native-star-rating": "^1.1.0",
     "react-native-step-indicator": "^0.0.11",

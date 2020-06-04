@@ -25,8 +25,8 @@ import ManageAddress from "./src/pages/manageAddress/ManageAddress";
 import BillingAddress from "./src/pages/manageAddress/BillingAddress";
 import ShippingAddress from "./src/pages/manageAddress/ShippingAddress";
 import Download from "./src/pages/Download";
-import Wallet from "./src/pages/Wallet";
-import ReferAndEarn from "./src/pages/ReferAndEarn";
+import Wallet from "./src/pages/wallet/Wallet";
+import ReferAndEarn from "./src/pages/wallet/ReferAndEarn";
 import CheckoutScreen from "./src/pages/checkout/CheckoutScreen";
 import Review from "./src/pages/Review";
 import Search from "./src/pages/Search";
@@ -67,7 +67,7 @@ const HomeStack = createStackNavigator(
   },
   {
     defaultNavigationOptions: {
-      header: null,
+      headerShown: false,
     },
   },
 );
@@ -84,7 +84,7 @@ const CategoryStack = createStackNavigator(
   },
   {
     defaultNavigationOptions: {
-      header: null,
+      headerShown: false,
     },
   },
 );
@@ -103,7 +103,7 @@ const ProductStack = createStackNavigator(
   },
   {
     defaultNavigationOptions: {
-      header: null,
+      headerShown: false,
     },
   },
 );
@@ -112,6 +112,19 @@ const OrderStack = createStackNavigator({
   Orders,
   OrderDetails,
 });
+
+const WalletStack = createStackNavigator(
+  {
+    Wallet,
+    ReferAndEarn,
+  },
+  {
+    initialRouteName: "Wallet",
+    defaultNavigationOptions: {
+      headerShown: false,
+    },
+  },
+);
 
 const DrawerNavigator = createDrawerNavigator(
   {
@@ -126,9 +139,8 @@ const DrawerNavigator = createDrawerNavigator(
     BillingAddress,
     ShippingAddress,
     Download,
+    WalletStack,
     Notification,
-    Wallet,
-    ReferAndEarn,
     Review,
   },
   {

@@ -16,39 +16,7 @@ class Drawer extends React.PureComponent {
       isOpenModal: false,
       isContactModalOpen: false,
     };
-    console.log(getVersion());
   }
-
-  _Call = () => {
-    let phoneNumber = 8860617526;
-    if (Platform.OS === "ios") {
-      phoneNumber = `telprompt:${phoneNumber}`;
-    } else {
-      phoneNumber = `tel:${phoneNumber}`;
-    }
-    Linking.canOpenURL(phoneNumber)
-      .then(supported => {
-        if (!supported) {
-          Alert.alert("Phone number is not available");
-        } else {
-          Linking.openURL(phoneNumber);
-        }
-      })
-      .catch(err => console.log(err));
-  };
-
-  _OpenEmail = () => {
-    let email = "mailto:www.phoeniixx.com";
-    Linking.canOpenURL(email)
-      .then(supported => {
-        if (!supported) {
-          Alert.alert("Email is not available");
-        } else {
-          Linking.openURL(email);
-        }
-      })
-      .catch(err => console.log(err));
-  };
 
   openModal = () => {
     //this.setState({isOpenModal: true});
@@ -107,7 +75,11 @@ class Drawer extends React.PureComponent {
   };
 
   render() {
-    const {appSettings, t, user} = this.props;
+    const {
+      appSettings: {wallet_active, direct_tawk_id, primary_color, accent_color},
+      t,
+      user,
+    } = this.props;
     const {isOpenModal, isContactModalOpen} = this.state;
 
     return (
@@ -172,20 +144,20 @@ class Drawer extends React.PureComponent {
                   <Icon name="download" type="Entypo" style={styles.icon} />
                   <Text style={styles.text}>{t("DOWNLOAD")}</Text>
                 </Button>
-                <Button style={styles.button} onPress={this.navigateToScreen("Wallet")}>
-                  <Icon name="wallet" type="Entypo" style={styles.icon} />
-                  <Text style={styles.text}>{t("WALLET")}</Text>
-                </Button>
+                {wallet_active && (
+                  <Button style={styles.button} onPress={this.navigateToScreen("WalletStack")}>
+                    <Icon name="wallet" type="Entypo" style={styles.icon} />
+                    <Text style={styles.text}>{t("WALLET")}</Text>
+                  </Button>
+                )}
                 <View style={styles.divider} />
               </>
             )}
 
-            {appSettings.hasOwnProperty("direct_tawk_id") && appSettings.direct_tawk_id != "" && (
+            {direct_tawk_id && direct_tawk_id != "" && (
               <Button
                 style={styles.button}
-                onPress={this.navigateToScreen("TawkToChat", {
-                  uri: appSettings.direct_tawk_id,
-                })}>
+                onPress={this.navigateToScreen("TawkToChat", {uri: direct_tawk_id})}>
                 <Icon name="chat" type="Entypo" style={styles.icon} />
                 <Text style={styles.text}>{t("CHAT_SUPPORT")}</Text>
               </Button>
@@ -242,23 +214,11 @@ class Drawer extends React.PureComponent {
             />
             <View style={{flexDirection: "row"}}>
               <Button
-                style={[
-                  styles.contact_btn,
-                  {
-                    backgroundColor: appSettings.primary_color,
-                  },
-                ]}
-                onPress={this._OpenEmail}>
+                style={[styles.contact_btn, {backgroundColor: primary_color}]}
+                onPress={openEmail}>
                 <Text style={{color: "#fff"}}>{t("EMAIL").toUpperCase()}</Text>
               </Button>
-              <Button
-                style={[
-                  styles.contact_btn,
-                  {
-                    backgroundColor: appSettings.accent_color,
-                  },
-                ]}
-                onPress={this._Call}>
+              <Button style={[styles.contact_btn, {backgroundColor: accent_color}]} onPress={call}>
                 <Text style={{color: "#fff"}}>{t("CALL")}</Text>
               </Button>
             </View>
@@ -268,6 +228,37 @@ class Drawer extends React.PureComponent {
     );
   }
 }
+
+const call = () => {
+  let phoneNumber = 8860617526;
+  if (Platform.OS === "ios") {
+    phoneNumber = `telprompt:${phoneNumber}`;
+  } else {
+    phoneNumber = `tel:${phoneNumber}`;
+  }
+  Linking.canOpenURL(phoneNumber)
+    .then(supported => {
+      if (!supported) {
+        Alert.alert("Phone number is not available");
+      } else {
+        Linking.openURL(phoneNumber);
+      }
+    })
+    .catch(err => console.log(err));
+};
+
+const openEmail = () => {
+  let email = "mailto:www.phoeniixx.com";
+  Linking.canOpenURL(email)
+    .then(supported => {
+      if (!supported) {
+        Alert.alert("Email is not available");
+      } else {
+        Linking.openURL(email);
+      }
+    })
+    .catch(err => console.log(err));
+};
 
 const styles = StyleSheet.create({
   container: {
