@@ -9,8 +9,6 @@ import {useSelector} from "react-redux";
 const {height} = Dimensions.get("window");
 
 function CartItem({item, index, quantityIncrementDecremnt}) {
-  //console.log(item);
-
   const appSetting = useSelector(state => state.appSettings);
 
   const [isOpenModal, setModal] = useState(false);
@@ -20,7 +18,6 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
     if (item == "false") {
       setModal(false);
     } else {
-      console.log("delete");
       setModal(false);
       deleteItem(itemEach);
     }
@@ -67,14 +64,12 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
         })
         .catch(error => {
           setLoading(false);
-
           console.log(error);
         });
     }
   };
 
   const deleteItem = itemEach => {
-    console.log("kamal");
     let data = {
       cart_item_key: itemEach.cart_item_key,
     };

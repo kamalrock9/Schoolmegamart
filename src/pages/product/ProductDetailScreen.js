@@ -6,6 +6,8 @@ import {
   TextInput,
   ActivityIndicator,
   TouchableOpacity,
+  FlatList,
+  Linking,
 } from "react-native";
 import {connect} from "react-redux";
 import StarRating from "react-native-star-rating";
@@ -33,7 +35,7 @@ import {FlatGrid} from "react-native-super-grid";
 import Toast from "react-native-simple-toast";
 import {withTranslation} from "react-i18next";
 import Constants from "../../service/Config";
-import {FlatList} from "react-native-gesture-handler";
+import InAppBrowser from "react-native-inappbrowser-reborn";
 
 class ProductDetailScreen extends Component {
   constructor(props) {
@@ -126,6 +128,29 @@ class ProductDetailScreen extends Component {
       });
   };
 
+  _handleExternalProduct = () => {
+    const isAvailable = InAppBrowser.isAvailable();
+    if (isAvailable) {
+      InAppBrowser.open(this.state.product.external_url, {
+        // iOS Properties
+        dismissButtonStyle: "cancel",
+        preferredBarTintColor: "gray",
+        preferredControlTintColor: "white",
+        // Android Properties
+        showTitle: true,
+        toolbarColor: "#6200EE",
+        secondaryToolbarColor: "black",
+        enableUrlBarHiding: true,
+        enableDefaultShare: true,
+        forceCloseOnRedirection: true,
+      }).then(result => {
+        //Toast.show(result);
+      });
+    } else {
+      Linking.openURL(url);
+    }
+  };
+
   _increaseCounter = i => () => {
     const {variation, product} = this.state;
     let quantity = this.state.quantity;
@@ -134,9 +159,6 @@ class ProductDetailScreen extends Component {
       product.group[i].quantity++;
       console.log(quantity);
       console.log(product);
-      // let newdata = Object.assign([],product.group);
-      // let newD =  {...products,}
-      // this.setState({product:})
     }
 
     if (product.type == "variable") {
@@ -688,19 +710,29 @@ class ProductDetailScreen extends Component {
             (product.type === "external" && product.external_url) ||
             product.type === "grouped") && (
             <View style={styles.footer}>
-              {((!isEmpty(variation) && variation.in_stock) || product.in_stock) && (
+              {product.type === "external" ? (
                 <Fragment>
                   <Button
-                    onPress={() => this._handleAddToCart(true)}
-                    style={[styles.footerButton, {backgroundColor: "#f7f7f7"}]}>
-                    <Text>Buy Now</Text>
-                  </Button>
-                  <Button
-                    style={[styles.footerButton, {backgroundColor: accent_color}]}
-                    onPress={() => this._handleAddToCart(false)}>
-                    <Text style={{color: "white"}}>Add to Cart</Text>
+                    onPress={this._handleExternalProduct}
+                    style={[styles.footerButton, {backgroundColor: accent_color}]}>
+                    <Text style={{color: "white"}}>Buy External Product</Text>
                   </Button>
                 </Fragment>
+              ) : (
+                ((!isEmpty(variation) && variation.in_stock) || product.in_stock) && (
+                  <Fragment>
+                    <Button
+                      onPress={() => this._handleAddToCart(true)}
+                      style={[styles.footerButton, {backgroundColor: "#f7f7f7"}]}>
+                      <Text>Buy Now</Text>
+                    </Button>
+                    <Button
+                      style={[styles.footerButton, {backgroundColor: accent_color}]}
+                      onPress={() => this._handleAddToCart(false)}>
+                      <Text style={{color: "white"}}>Add to Cart</Text>
+                    </Button>
+                  </Fragment>
+                )
               )}
             </View>
           )}
