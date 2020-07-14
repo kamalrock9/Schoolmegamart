@@ -29,15 +29,15 @@ import {CustomPicker} from "react-native-custom-picker";
 import SpecificationRow from "./SpecificationRow";
 import MiniCart from "./MiniCart";
 import ProductsRow from "./ProductsRow";
-import {ApiClient, WooCommerce} from "service";
-import {getCartCount} from "store/actions";
+import {ApiClient} from "service";
+import {getCartCount, changeShippingPincode} from "store/actions";
 import {FlatGrid} from "react-native-super-grid";
 import Toast from "react-native-simple-toast";
 import {withTranslation} from "react-i18next";
 import Constants from "../../service/Config";
 import InAppBrowser from "react-native-inappbrowser-reborn";
 
-class ProductDetailScreen extends Component {
+class ProductDetailScreen extends React.PureComponent {
   constructor(props) {
     super(props);
     console.log(this.props.navigation.state.params);
@@ -49,14 +49,14 @@ class ProductDetailScreen extends Component {
       attributes: [],
       selectedAttrs: {},
       variation: {},
-      postcode: "",
+      postcode: props.shipping.postcode || "",
       deliverDetails: {},
       loading: false,
       checked: false,
     };
   }
   componentDidMount() {
-    const {product} = this.state;
+    const {product, postcode} = this.state;
     let attributes = [];
     for (let attr of product.attributes) {
       if (attr.variation && attr.visible) {
@@ -66,53 +66,56 @@ class ProductDetailScreen extends Component {
     this.setState({attributes});
     console.log(attributes);
     this.setup();
+    if (postcode !== "") {
+      this.submitPostcode();
+    }
   }
   setup = () => {
     if (this.state.product.upsell_ids.length > 0) {
       ApiClient.get("/get-products-by-id", {include: this.state.product.upsell_ids.join()})
         .then(({data}) => {
-          this.setState(prevState => ({
+          this.setState((prevState) => ({
             product: {...prevState.product, upsell: data},
           }));
         })
-        .catch(error => {});
+        .catch((error) => {});
     }
     if (this.state.product.related_ids.length > 0) {
       ApiClient.get("/get-products-by-id", {include: this.state.product.related_ids.join()})
         .then(({data}) => {
-          this.setState(prevState => ({
+          this.setState((prevState) => ({
             product: {...prevState.product, related: data},
           }));
         })
-        .catch(error => {});
+        .catch((error) => {});
     }
     if (this.state.product.grouped_products.length > 0) {
       ApiClient.get("/get-products-by-id", {include: this.state.product.grouped_products.join()})
         .then(({data}) => {
-          let newData = data.map(item => {
+          let newData = data.map((item) => {
             let varia = {...item, quantity: 0};
             return varia;
           });
           console.log(newData);
-          this.setState(prevState => ({
+          this.setState((prevState) => ({
             product: {...prevState.product, group: newData},
           }));
         })
-        .catch(error => {});
+        .catch((error) => {});
     }
   };
 
   shareProduct = () => {
     RNFetchBlob.fetch("GET", this.state.product.images[0].src)
-      .then(resp => {
+      .then((resp) => {
         console.log("response : ", resp);
         let base64image = resp.data;
         this.share("data:image/png;base64," + base64image);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
-  share = base64image => {
+  share = (base64image) => {
     let shareOptions = {
       title: "Share " + this.state.product.name,
       url: base64image,
@@ -120,10 +123,10 @@ class ProductDetailScreen extends Component {
       subject: this.state.product.name,
     };
     Share.open(shareOptions)
-      .then(res => {
+      .then((res) => {
         console.log(res);
       })
-      .catch(err => {
+      .catch((err) => {
         err && console.log(err);
       });
   };
@@ -143,7 +146,7 @@ class ProductDetailScreen extends Component {
         enableUrlBarHiding: true,
         enableDefaultShare: true,
         forceCloseOnRedirection: true,
-      }).then(result => {
+      }).then((result) => {
         //Toast.show(result);
       });
     } else {
@@ -151,12 +154,12 @@ class ProductDetailScreen extends Component {
     }
   };
 
-  _increaseCounter = i => () => {
+  _increaseCounter = (i) => () => {
     const {variation, product} = this.state;
     let quantity = this.state.quantity;
 
     if (product.type == "grouped") {
-      product.group[i].quantity++;
+      product.group[index].quantity++;
       console.log(quantity);
       console.log(product);
     }
@@ -186,40 +189,40 @@ class ProductDetailScreen extends Component {
         Toast.show("Select a variation first");
       }
     } else {
+      console.log("def", product.manage_stock);
       if (product.manage_stock) {
         if (quantity < product.stock_quantity) {
-          product.quantity++;
+          quantity++;
         } else {
           Toast.show("More items cannot be added");
         }
       } else {
-        product.quantity++;
+        quantity++;
       }
     }
 
     this.setState({quantity});
   };
 
-  _decreaseCounter = i => () => {
+  _decreaseCounter = (index) => {
     const {quantity, product} = this.state;
     console.log(quantity);
     console.log(product);
     if (product.type == "grouped") {
-      if (product.group[i].quantity > 0) {
-        product.group[i].quantity--;
+      if (product.group[index].quantity > 0) {
+        product.group[index].quantity--;
         this.setState({
           quantity: quantity - 1,
         });
       }
-    }
-    if (quantity > 1) {
+    } else if (quantity > 1) {
       this.setState({
         quantity: quantity - 1,
       });
     }
   };
 
-  checkBox = i => () => {
+  checkBox = (i) => () => {
     const {quantity, product, checked} = this.state;
     console.log(quantity);
     console.log(product);
@@ -238,7 +241,7 @@ class ProductDetailScreen extends Component {
     }
   };
 
-  gotoProductDetailPage = item => () => {
+  gotoProductDetailPage = (item) => () => {
     console.log("kamal");
     this.props.navigation.push("ProductDetailScreen", item);
   };
@@ -250,7 +253,7 @@ class ProductDetailScreen extends Component {
     switch (product.type) {
       case "grouped":
         if (
-          product.group.every(element => {
+          product.group.every((element) => {
             return element.quantity == 0;
           })
         ) {
@@ -299,7 +302,7 @@ class ProductDetailScreen extends Component {
     ApiClient.post("/cart/add", data)
       .then(({data}) => {
         this.setState({
-          cartMsg: Array.isArray(data) ? data.map(e => e.message).join(", ") : data.message,
+          cartMsg: Array.isArray(data) ? data.map((e) => e.message).join(", ") : data.message,
         });
         if (this.isError(data)) {
           console.log("error");
@@ -312,14 +315,14 @@ class ProductDetailScreen extends Component {
           }
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   };
 
   isError(data) {
     if (Array.isArray(data)) {
-      return data.every(e => e.code === "0");
+      return data.every((e) => e.code === "0");
     } else {
       return data.code == 0;
     }
@@ -329,23 +332,26 @@ class ProductDetailScreen extends Component {
     this.setState({modalVisible: false});
   };
 
-  gotoReviews = product => () => {
+  gotoReviews = (product) => () => {
     this.props.navigation.navigate("Reviews", product);
   };
 
-  onVariationChange = item => async option => {
-    await this.setState(prevState => ({
-      selectedAttrs: {
-        ...prevState.selectedAttrs,
-        [item.slug]: option && option.slug ? option.slug : option,
+  onVariationChange = (item) => (option) => {
+    this.setState(
+      (prevState) => ({
+        selectedAttrs: {
+          ...prevState.selectedAttrs,
+          [item.slug]: option && option.slug ? option.slug : option,
+        },
+      }),
+      () => {
+        console.log(this.state.selectedAttrs);
+        const {selectedAttrs, product, attributes} = this.state;
+        if (Object.keys(selectedAttrs).length == attributes.length) {
+          this.loadVariation({product_id: product.id, attributes: selectedAttrs});
+        }
       },
-    }));
-
-    console.log(this.state.selectedAttrs);
-    const {selectedAttrs, product, attributes} = this.state;
-    if (Object.keys(selectedAttrs).length == attributes.length) {
-      this.loadVariation({product_id: product.id, attributes: selectedAttrs});
-    }
+    );
   };
 
   loadVariation(data) {
@@ -359,33 +365,31 @@ class ProductDetailScreen extends Component {
           this.setState({variation: data});
         }
       })
-      .catch(err => {
+      .catch((err) => {
         Toast.show("Something went wrong! Try later");
       });
   }
 
-  submitPincodeCheck = postcode => () => {
-    if (postcode == "change") {
-      this.setState({deliverDetails: {}});
-      return;
-    }
-    let URL = Constants.baseURL + Constants.path;
+  submitPostcode = () => {
     let param = {
-      pincode: postcode,
+      pincode: this.state.postcode,
       product_id: this.state.product.id,
     };
-    console.log(param, URL);
+    this.props.changeShippingPincode(this.state.postcode);
     this.setState({loading: true});
-    ApiClient.post(URL + "/checkpincode/", param)
+    ApiClient.post("/checkpincode/", param)
       .then(({data}) => {
         console.log(data);
-        this.setState({loading: false});
-        this.setState({deliverDetails: data});
+        this.setState({loading: false, deliverDetails: data});
       })
-      .catch(error => {
+      .catch((error) => {
         this.setState({loading: false});
         console.log(error);
       });
+  };
+
+  changePostcode = () => {
+    this.setState({deliverDetails: {}});
   };
 
   _renderItem = ({item, index}) => {
@@ -401,24 +405,24 @@ class ProductDetailScreen extends Component {
         <Text>{item.name}</Text>
         {!item.sold_individually && item.type !== "variable" && (
           <View style={{flexDirection: "row"}}>
-            <Button style={styles.btn} onPress={this._decreaseCounter(index)}>
+            <Button style={styles.btn} onPress={() => this._decreaseCounter(index)}>
               <Icon name="minus" type="Entypo" size={16} color="#757575" />
             </Button>
             <Text style={{paddingHorizontal: 8}}>{item.quantity}</Text>
-            <Button style={styles.btn} onPress={this._increaseCounter(index)}>
+            <Button style={styles.btn} onPress={() => this._increaseCounter(index)}>
               <Icon name="plus" type="Entypo" size={16} color="#757575" />
             </Button>
           </View>
         )}
         {item.sold_individually && item.type !== "variable" && (
-          <TouchableOpacity onPress={this.checkBox(index)}>
+          <Button onPress={this.checkBox(index)}>
             <Icon
               type="MaterialCommunityIcons"
               color={this.state.checked ? this.props.appSettings.primary_color : "#00000099"}
               size={24}
               name={this.state.checked ? "checkbox-marked" : "checkbox-blank-outline"}
             />
-          </TouchableOpacity>
+          </Button>
         )}
         {item.type === "variable" && (
           <Button onPress={this.gotoProductDetailPage(item)}>
@@ -453,7 +457,7 @@ class ProductDetailScreen extends Component {
               <Slider
                 data={
                   variation.image
-                    ? unionBy([variation.image], product.images, x => x.id)
+                    ? unionBy([variation.image], product.images, (x) => x.id)
                     : product.images
                 }
               />
@@ -492,8 +496,8 @@ class ProductDetailScreen extends Component {
                 <View style={[styles.rowCenterSpaced, styles.cardItem]}>
                   <Text>Quantity</Text>
                   <QuantitySelector
-                    minusClick={this._decreaseCounter()}
-                    plusClick={this._increaseCounter()}
+                    minusClick={this._decreaseCounter}
+                    plusClick={this._increaseCounter}
                     quantity={this.state.quantity}
                   />
                 </View>
@@ -526,16 +530,19 @@ class ProductDetailScreen extends Component {
                 <FlatGrid
                   items={attributes}
                   keyExtractor={this._keyExtractor}
-                  renderItem={({item, index}) => (
-                    <CustomPicker
-                      options={item.options}
-                      getLabel={option => (option && option.slug ? option.name : option)}
-                      fieldTemplate={PickerField}
-                      placeholder={item.name}
-                      modalAnimationType="slide"
-                      onValueChange={this.onVariationChange(item)}
-                    />
-                  )}
+                  renderItem={({item, index}) => {
+                    console.log(index);
+                    return (
+                      <CustomPicker
+                        options={item.options}
+                        getLabel={(option) => (option && option.slug ? option.name : option)}
+                        fieldTemplate={PickerField}
+                        placeholder={item.name}
+                        modalAnimationType="slide"
+                        onValueChange={this.onVariationChange(item)}
+                      />
+                    );
+                  }}
                   itemDimension={180}
                   spacing={8}
                   itemContainerStyle={{justifyContent: "flex-start"}}
@@ -555,7 +562,7 @@ class ProductDetailScreen extends Component {
             {pincode_active && (
               <View style={styles.card}>
                 <Text style={styles.cardItemHeader}>{t("DELIVERY_OPTIONS")}</Text>
-                {!deliverDetails.hasOwnProperty("delivery") && (
+                {!deliverDetails.hasOwnProperty("delivery") ? (
                   <View
                     style={{
                       paddingHorizontal: 16,
@@ -564,7 +571,8 @@ class ProductDetailScreen extends Component {
                     }}>
                     <TextInput
                       placeholder={t("ENTER_POSTCODE")}
-                      onChangeText={text => this.setState({postcode: text})}
+                      value={postcode}
+                      onChangeText={(text) => this.setState({postcode: text})}
                     />
                     <Button
                       style={{
@@ -574,78 +582,64 @@ class ProductDetailScreen extends Component {
                         height: 40,
                         paddingHorizontal: 10,
                       }}
-                      onPress={this.submitPincodeCheck(postcode)}>
+                      onPress={this.submitPostcode}>
                       <Text style={{color: accent_color}}>Apply</Text>
                     </Button>
                   </View>
-                )}
-                {postcode != "" && (
-                  <View style={{marginHorizontal: 16}}>
-                    {deliverDetails.hasOwnProperty("delivery") && !deliverDetails.delivery && (
-                      <View style={{justifyContent: "space-between", flexDirection: "row"}}>
-                        <Text>
-                          Delivery not available at -{" "}
-                          <Text style={{fontWeight: "600"}}>{postcode}</Text>
-                        </Text>
-                        <Button onPress={this.submitPincodeCheck("change")}>
-                          <Text style={{color: accent_color}}>Change</Text>
-                        </Button>
-                      </View>
-                    )}
-                    {deliverDetails.hasOwnProperty("delivery") && deliverDetails.delivery && (
-                      <View style={{justifyContent: "space-between", flexDirection: "row"}}>
-                        <Text>
-                          Delivery available at -{" "}
-                          <Text style={{fontWeight: "600"}}>{postcode}</Text>
-                        </Text>
-                        <Button onPress={this.submitPincodeCheck("change")}>
-                          <Text style={{color: accent_color}}>Change</Text>
-                        </Button>
-                      </View>
-                    )}
-                  </View>
+                ) : (
+                  postcode != "" &&
+                  deliverDetails.hasOwnProperty("delivery") && (
+                    <View
+                      style={{
+                        justifyContent: "space-between",
+                        flexDirection: "row",
+                        marginHorizontal: 16,
+                      }}>
+                      <Text>
+                        Delivery {deliverDetails.delivery ? "" : "not"} available at -{" "}
+                        <Text style={{fontWeight: "600"}}>{postcode}</Text>
+                      </Text>
+                      <Button onPress={this.changePostcode}>
+                        <Text style={{color: accent_color}}>Change</Text>
+                      </Button>
+                    </View>
+                  )
                 )}
 
                 {postcode != "" &&
                   deliverDetails.hasOwnProperty("delivery") &&
                   deliverDetails.delivery && (
-                    <>
-                      <View
-                        style={{
-                          marginHorizontal: 16,
-                          marginTop: 10,
-                          backgroundColor: "#d2d2d2",
-                          height: 1.25,
-                        }}
-                      />
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          marginHorizontal: 16,
-                          marginTop: 10,
-                        }}>
-                        <View style={styles.pincodeView}>
-                          <Icon type="MaterialIcons" name="location-on" size={24} />
-                          <Text>LOCATION</Text>
-                          <Text style={styles.pincodeText}>
-                            {deliverDetails.city + "\n" + deliverDetails.state}
-                          </Text>
-                        </View>
-                        <View style={styles.pincodeView}>
-                          <Icon type="Entypo" name="calendar" size={24} />
-                          <Text>DELIVERY BY</Text>
-                          {deliverDetails.delivery_date != "" && (
-                            <Text style={styles.pincodeText}>{deliverDetails.delivery_date}</Text>
-                          )}
-                        </View>
-                        <View style={styles.pincodeView}>
-                          <Icon type="Feather" name="credit-card" size={24} />
-                          <Text>COD</Text>
-                          <Text style={styles.pincodeText}>{deliverDetails.cod_message}</Text>
-                        </View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        marginTop: 16,
+                        paddingTop: 16,
+                        borderTopWidth: 1,
+                        borderTopColor: "#d2d2d2",
+                      }}>
+                      <View style={styles.pincodeView}>
+                        <Icon type="MaterialIcons" name="location-on" size={24} />
+                        <Text style={{fontSize: 12, fontWeight: 600, marginTop: 8}}>LOCATION</Text>
+                        <Text style={styles.pincodeText}>
+                          {deliverDetails.city + "," + deliverDetails.state}
+                        </Text>
                       </View>
-                    </>
+                      <View style={styles.pincodeView}>
+                        <Icon type="MaterialIcons" name="date-range" size={24} />
+                        <Text style={{fontSize: 12, fontWeight: 600, marginTop: 8}}>
+                          DELIVERY BY
+                        </Text>
+                        {deliverDetails.delivery_date != "" && (
+                          <Text style={styles.pincodeText}>{deliverDetails.delivery_date}</Text>
+                        )}
+                      </View>
+                      <View style={styles.pincodeView}>
+                        <Icon name="ios-cash" size={24} />
+                        <Text style={{fontSize: 12, fontWeight: 600, marginTop: 8}}>COD</Text>
+                        <Text style={styles.pincodeText}>{deliverDetails.cod_message}</Text>
+                      </View>
+                    </View>
                   )}
               </View>
             )}
@@ -654,7 +648,7 @@ class ProductDetailScreen extends Component {
               <View style={styles.cardItem}>
                 <SpecificationRow
                   leftContent="Categories"
-                  rightContent={product.categories.map(item => item.name).join(", ")}
+                  rightContent={product.categories.map((item) => item.name).join(", ")}
                 />
 
                 {product.hasOwnProperty("total_sales") && (
@@ -678,7 +672,7 @@ class ProductDetailScreen extends Component {
                 {product.attributes.map((item, index) => (
                   <SpecificationRow
                     leftContent={item.name}
-                    rightContent={item.options.map(opt => (opt.slug ? opt.name : opt)).join(", ")}
+                    rightContent={item.options.map((opt) => (opt.slug ? opt.name : opt)).join(", ")}
                     key={item.name + index}
                   />
                 ))}
@@ -812,8 +806,15 @@ const styles = StyleSheet.create({
   cardItem: {
     paddingHorizontal: 16,
   },
-  pincodeView: {alignItems: "center"},
-  pincodeText: {fontWeight: "500"},
+  pincodeView: {
+    flex: 1,
+    alignItems: "center",
+  },
+  pincodeText: {
+    //fontWeight: "500",
+    textAlign: "center",
+    fontSize: 12,
+  },
   btn: {
     borderWidth: 1,
     borderColor: "#dedede",
@@ -823,13 +824,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   appSettings: state.appSettings,
+  shipping: state.shipping,
 });
 const mapDispatchToProps = {
   getCartCount,
+  changeShippingPincode,
 };
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslation()(ProductDetailScreen));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(ProductDetailScreen));

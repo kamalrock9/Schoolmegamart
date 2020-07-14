@@ -6,7 +6,7 @@ import {useTranslation} from "react-i18next";
 import {useDispatch} from "react-redux";
 import Constants from "service/Config";
 import {ApiClient} from "service";
-import {user} from "store/actions";
+import {user, saveShipping} from "store/actions";
 import Toast from "react-native-simple-toast";
 import {GoogleSignin} from "@react-native-community/google-signin";
 import {LoginManager, AccessToken, GraphRequest, GraphRequestManager} from "react-native-fbsdk";
@@ -46,16 +46,12 @@ function reducer(state = initialState, action) {
 
 function Auth({navigation}) {
   const [loading, setLoading] = useState(false);
-  console.log(navigation);
   //return;
   const {NeedLogin, NeedRegister} = navigation.state.params;
   console.log(NeedRegister);
-
   const {t} = useTranslation();
   const dispatchAction = useDispatch();
-
   const [state, dispatch] = useReducer(reducer, initialState);
-
   const scrollRef = useRef(null);
 
   if (NeedRegister) {
@@ -118,7 +114,8 @@ function Auth({navigation}) {
             console.log(data);
             setLoading(false);
             if (data.code == 1) {
-              dispatchAction(user(data.details));
+              saveDetails(data.details);
+
               //  onClose && onClose();
               if (NeedLogin) {
                 navigation.goBack();
@@ -158,7 +155,7 @@ function Auth({navigation}) {
                       console.log(data);
                       setLoading(false);
                       if (data.code == 1) {
-                        dispatchAction(user(data.details));
+                        saveDetails(data.details);
                         //onClose && onClose();
                         if (NeedLogin) {
                           navigation.goBack();
@@ -192,7 +189,8 @@ function Auth({navigation}) {
         console.log(data);
         setLoading(false);
         if (data.code == 1) {
-          dispatchAction(user(data.details));
+          saveDetails(data.details);
+
           // onClose && onClose();
           if (NeedLogin) {
             navigation.goBack();
@@ -247,6 +245,18 @@ function Auth({navigation}) {
     } else {
       Toast.show("Please fill all the details", Toast.LONG);
     }
+  };
+
+  const saveDetails = data => {
+    dispatchAction(user(data));
+    dispatchAction(
+      saveShipping({
+        city: data.shipping.city,
+        postcode: data.shipping.postcode,
+        country: data.shipping.country,
+        state: data.shipping.state,
+      }),
+    );
   };
 
   return (

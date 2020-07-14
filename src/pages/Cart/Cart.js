@@ -1,6 +1,15 @@
 import React from "react";
-import {View, StyleSheet, FlatList, ActivityIndicator} from "react-native";
-import {Toolbar, Button, Text, HTMLRender, Container, Icon} from "components";
+import {View, StyleSheet, FlatList} from "react-native";
+import {
+  Toolbar,
+  Button,
+  Text,
+  HTMLRender,
+  Container,
+  Icon,
+  EmptyList,
+  ProgressDialog,
+} from "components";
 import {connect} from "react-redux";
 import {ApiClient} from "service";
 import CartPriceBreakup from "./CartPriceBreakup";
@@ -8,6 +17,7 @@ import CartItem from "./CartItem";
 import {isArray, isEmpty} from "lodash";
 import {withTranslation} from "react-i18next";
 import Modal from "react-native-modal";
+import Toast from "react-native-simple-toast";
 
 class Cart extends React.PureComponent {
   static navigationOptions = {
@@ -16,8 +26,9 @@ class Cart extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      cart_data: [],
+      cart_data: {},
       loading: false,
+      updating: false,
       isContactModalOpen: false,
       shipping_method: "",
     };
@@ -54,11 +65,9 @@ class Cart extends React.PureComponent {
       shipping_method: params ? params : "",
       user_id: 17,
     };
-
     this.setState({loading: true});
     ApiClient.get("/cart", param)
       .then(({data}) => {
-        console.log(data);
         this.setState({loading: false, cart_data: data});
       })
       .catch(() => {
@@ -66,77 +75,110 @@ class Cart extends React.PureComponent {
       });
   };
 
-  quantityIncrementDecremnt = () => {
-    this.ApiCall(null);
+  manageQuanity = (key, quantity) => {
+    this.setState({updating: true});
+    ApiClient.get("/cart/update", {
+      cart_item_key: key,
+      quantity: quantity,
+    })
+      .then(({data}) => {
+        this.setState({cart_data: data, updating: false});
+      })
+      .catch(error => {
+        this.setState({updating: false});
+        Toast.show("Something went wrong!");
+      });
+  };
+
+  deleteCartItem = key => {
+    this.setState({updating: true});
+    ApiClient.get("/cart/remove", {cart_item_key: key})
+      .then(({data}) => {
+        this.setState({cart_data: data, updating: false});
+      })
+      .catch(error => {
+        this.setState({updating: false});
+        Toast.show("Something went wrong!");
+      });
+  };
+
+  applyCoupon = cart_data => {
+    this.setState({cart_data});
+  };
+  removeCoupon = coupon_code => {
+    this.setState({updating: true});
+    ApiClient.get("/cart/remove-coupon", {coupon_code})
+      .then(({data}) => {
+        this.setState({cart_data: data, updating: false});
+      })
+      .catch(error => {
+        this.setState({updating: false});
+        Toast.show("Something went wrong!");
+      });
+  };
+
+  goBack = () => {
+    this.props.navigation.goBack(null);
   };
 
   renderItem = ({item, index}) => (
     <CartItem
       item={item}
       index={index}
-      quantityIncrementDecremnt={this.quantityIncrementDecremnt}
+      manageQuanity={this.manageQuanity}
+      deleteCartItem={this.deleteCartItem}
     />
   );
-
-  gotoProductPage = () => {
-    //this.props.navigation.navigate("ProductStack");
-  };
 
   renderFooter = () => (
     <CartPriceBreakup
       data={this.state.cart_data}
-      quantityIncrementDecremnt={this.quantityIncrementDecremnt}
+      applyCoupon={this.applyCoupon}
+      removeCoupon={this.removeCoupon}
       shippingMethod={this.selectShipping}
     />
   );
 
   render() {
-    const {cart_data, isContactModalOpen, loading} = this.state;
+    const {cart_data, isContactModalOpen, loading, updating} = this.state;
     const {appSettings, user} = this.props;
+    const isListAvailable =
+      cart_data.cart_data && isArray(cart_data.cart_data) && !isEmpty(cart_data.cart_data);
     return (
-      <Container>
-        <Toolbar backButton title="Cart" />
-        {loading ? (
-          <View style={[styles.container, {alignItems: "center", justifyContent: "center"}]}>
-            <ActivityIndicator size={"large"} />
-          </View>
-        ) : isArray(cart_data.cart_data) && !isEmpty(cart_data.cart_data) ? (
-          <>
-            <FlatList
-              data={cart_data.cart_data}
-              renderItem={this.renderItem}
-              keyExtractor={keyExtractor}
-              ItemSeparatorComponent={ItemSeparatorComponent}
-              ListFooterComponent={this.renderFooter}
-            />
-            <View style={styles.footer}>
-              <Button
-                style={[styles.footerButton, {backgroundColor: appSettings.accent_color}]}
-                onPress={this.gotoCheckout("CheckoutScreen", this.state.cart_data)}>
-                <Text style={{color: "white", marginEnd: 5}}>CHECKOUT {" | "}</Text>
-                <HTMLRender html={cart_data.total} baseFontStyle={{color: "#fff"}} />
-              </Button>
-            </View>
-          </>
-        ) : (
-          <View style={[styles.container, {alignItems: "center", justifyContent: "center"}]}>
-            <Icon name="md-cart" size={26} color={appSettings.accent_color} />
-            <Text style={{color: appSettings.accent_color, fontWeight: "500", marginVertical: 8}}>
-              Cart is empty.
-            </Text>
+      <>
+        <Container>
+          <Toolbar backButton title="Cart" />
+
+          <FlatList
+            data={cart_data.cart_data}
+            renderItem={this.renderItem}
+            keyExtractor={keyExtractor}
+            ItemSeparatorComponent={ItemSeparatorComponent}
+            contentContainerStyle={{flexGrow: 1}}
+            ListFooterComponent={isListAvailable && this.renderFooter}
+            ListEmptyComponent={
+              <EmptyList
+                loading={loading}
+                label="Cart is empty."
+                iconName="md-cart"
+                iconType="Ionicons"
+              />
+            }
+          />
+          {isListAvailable && (
             <Button
-              style={{
-                backgroundColor: appSettings.accent_color,
-                paddingVertical: 6,
-                paddingHorizontal: 10,
-                borderRadius: 2,
-                elevation: 2,
-              }}
-              onPress={this.gotoProductPage}>
-              <Text style={{color: "#fff", fontSize: 10}}>Start Shopping</Text>
+              style={[styles.footerButton, {backgroundColor: appSettings.accent_color}]}
+              onPress={this.gotoCheckout("CheckoutScreen", this.state.cart_data)}>
+              <Text style={{color: "#fff", fontWeight: "600"}}>CHECKOUT {" | "}</Text>
+              <HTMLRender
+                html={cart_data.total}
+                baseFontStyle={{color: "#fff", fontWeight: "600"}}
+              />
             </Button>
-          </View>
-        )}
+          )}
+
+          <ProgressDialog loading={updating} />
+        </Container>
         <Modal
           isVisible={isContactModalOpen}
           style={{justifyContent: "flex-end", margin: 0, marginTop: "auto"}}
@@ -158,34 +200,24 @@ class Cart extends React.PureComponent {
             />
             <View style={{flexDirection: "row"}}>
               <Button
-                style={[
-                  styles.contact_btn,
-                  {
-                    backgroundColor: appSettings.primary_color,
-                  },
-                ]}
+                style={[styles.contact_btn, {backgroundColor: appSettings.primary_color}]}
                 onPress={this.gotoAuth(true, false)}>
                 <Text style={{color: "#fff"}}>LOGIN</Text>
               </Button>
               <Button
-                style={[
-                  styles.contact_btn,
-                  {
-                    backgroundColor: appSettings.accent_color,
-                  },
-                ]}
+                style={[styles.contact_btn, {backgroundColor: appSettings.accent_color}]}
                 onPress={this.gotoAuth(true, true)}>
                 <Text style={{color: "#fff"}}>REGISTER</Text>
               </Button>
             </View>
           </View>
         </Modal>
-      </Container>
+      </>
     );
   }
 }
 
-const keyExtractor = (item, index) => item + "sap" + index;
+const keyExtractor = item => item.cart_item_key;
 
 function ItemSeparatorComponent() {
   return <View style={[styles.line, {margin: 16}]} />;
@@ -210,9 +242,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   footerButton: {
-    flex: 1,
-    height: 40,
-    margin: 5,
+    width: "100%",
+    height: 44,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

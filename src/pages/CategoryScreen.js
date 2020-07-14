@@ -5,9 +5,9 @@ import {Text, Toolbar, Icon, TreeView} from "components";
 import {getAllCategories} from "store/actions";
 
 class CategoryScreen extends React.PureComponent {
-  static navigationOptions = ({navigation}) => ({
+  static navigationOptions = {
     header: <Toolbar backButton title="Category" />,
-  });
+  };
 
   constructor(props) {
     super(props);
@@ -39,14 +39,9 @@ class CategoryScreen extends React.PureComponent {
 
   render() {
     return (
-      <ScrollView
-        style={{
-          //paddingVertical: 16
-          paddingHorizontal: 10,
-        }}>
+      <ScrollView style={{paddingHorizontal: 10}}>
         {this.props.categories.data != undefined && (
           <TreeView
-            ref={ref => (this.treeView = ref)}
             data={this.props.categories.data}
             collapsedItemHeight={40}
             onpress={this.gotoPage}
@@ -67,4 +62,7 @@ const mapDispatchToProps = {
   getAllCategories,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(CategoryScreen);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(CategoryScreen);

@@ -25,6 +25,25 @@ function HTMLRender({fontSize, fontWeight, color, baseFontStyle, ...props}) {
         ins: styles.ins,
         p: {paddingVertical: 0},
         ul: {paddingLeft: 0},
+        dl: {
+          display: "flex",
+          flexDirection: "row",
+          textTransform: "capitalize",
+          color: "#757575",
+          margin: 0,
+          flexWrap: "wrap",
+        },
+        dt: {
+          paddingEnd: 5,
+        },
+        dd: {
+          color: "#000",
+          paddingHorizontal: 5,
+          marginEnd: "auto",
+          //borderEndWidth: 1,
+          // flexGrow: 1,
+          // borderEndColor: "#ccc",
+        },
       }}
       renderers={{del: delRenderer}}
     />

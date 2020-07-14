@@ -62,7 +62,7 @@ function Download() {
     );
   };
 
-  const _keyExtractor = item => item.product_id;
+  const _keyExtractor = item => item.download_id;
 
   return (
     <View>

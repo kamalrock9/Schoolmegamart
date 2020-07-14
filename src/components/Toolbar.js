@@ -16,15 +16,21 @@ function Toolbar({
   wishListButton,
   cartButton,
   cancelButton,
-  submit,
-  walletRupee,
+  onCancel,
+  walletBalance,
   searchButton,
   paymentpage,
 }) {
   const navigation = useNavigation();
   const {routeName} = useNavigationState();
   const {t} = useTranslation();
-  const appSettings = useSelector(state => state.appSettings);
+  const {
+    primary_color_dark,
+    primary_color,
+    primary_color_text,
+    toolbarbadgecolor,
+    accent_color,
+  } = useSelector(state => state.appSettings);
   const count = useSelector(state => state.cartCount);
   const wishlist = useSelector(state => state.wishlist);
 
@@ -42,52 +48,51 @@ function Toolbar({
 
   return (
     <>
-      <StatusBar backgroundColor={appSettings.primary_color_dark} barStyle="light-content" />
-      <View style={[styles.container, {backgroundColor: appSettings.primary_color}]}>
+      <StatusBar backgroundColor={primary_color_dark} barStyle="light-content" />
+      <View style={[styles.container, {backgroundColor: primary_color}]}>
         {menuButton && (
           <Button onPress={navigation.openDrawer} style={styles.menuButton}>
-            <Icon color={appSettings.primary_color_text} name="md-menu" size={24} />
+            <Icon color={primary_color_text} name="md-menu" size={24} />
           </Button>
         )}
         {backButton && (
           <Button onPress={goBack} style={styles.menuButton}>
-            <Icon color={appSettings.primary_color_text} name="md-arrow-back" size={24} />
+            <Icon
+              color={primary_color_text}
+              name="keyboard-backspace"
+              type="MaterialIcons"
+              size={24}
+            />
           </Button>
         )}
         {paymentpage && (
           <Button onPress={goTo("HomeScreen")} style={styles.menuButton}>
-            <Icon color={appSettings.primary_color_text} name="md-arrow-back" size={24} />
+            <Icon color={primary_color_text} name="md-arrow-back" size={24} />
           </Button>
         )}
         {cancelButton && (
-          <Button onPress={submitt} style={styles.menuButton}>
-            <Icon color={appSettings.primary_color_text} name="cross" type="Entypo" size={24} />
+          <Button onPress={onCancel} style={styles.menuButton}>
+            <Icon color={primary_color_text} name="cross" type="Entypo" size={24} />
           </Button>
         )}
 
-        <Text style={[styles.title, {color: appSettings.primary_color_text}]}>
-          {t(title) || t(routeName)}
-        </Text>
+        <Text style={[styles.title, {color: primary_color_text}]}>{t(title) || t(routeName)}</Text>
 
         <View style={styles.right}>
           {searchButton && (
             <Button
               style={[styles.right, {paddingVertical: 16, paddingHorizontal: 10}]}
               onPress={goTo("Search")}>
-              <Icon color={appSettings.primary_color_text} name="md-search" size={24} />
+              <Icon color={primary_color_text} name="md-search" size={24} />
             </Button>
           )}
           {wishListButton && (
             <Button
               onPress={goTo("WishlistScreen")}
               style={[styles.menuButton, {paddingVertical: 16, paddingHorizontal: 10}]}>
-              <Icon color={appSettings.primary_color_text} name="md-heart" size={24} />
+              <Icon color={primary_color_text} name="md-heart" size={24} />
               {isArray(wishlist) && !isEmpty(wishlist) && (
-                <View
-                  style={[
-                    styles.badge,
-                    {backgroundColor: appSettings.toolbarbadgecolor || appSettings.accent_color},
-                  ]}>
+                <View style={[styles.badge, {backgroundColor: toolbarbadgecolor || accent_color}]}>
                   <Text style={styles.badgeText}>{wishlist.length}</Text>
                 </View>
               )}
@@ -97,20 +102,20 @@ function Toolbar({
             <Button
               onPress={goTo("Cart")}
               style={[styles.menuButton, {paddingVertical: 16, paddingHorizontal: 10}]}>
-              <Icon color={appSettings.primary_color_text} name="md-cart" size={24} />
+              <Icon color={primary_color_text} name="md-cart" size={24} />
               {count > 0 && (
-                <View
-                  style={[
-                    styles.badge,
-                    {backgroundColor: appSettings.toolbarbadgecolor || appSettings.accent_color},
-                  ]}>
+                <View style={[styles.badge, {backgroundColor: toolbarbadgecolor || accent_color}]}>
                   <Text style={styles.badgeText}>{count}</Text>
                 </View>
               )}
             </Button>
           )}
-          {!isEmpty(walletRupee) && (
-            <HTMLRender html={walletRupee} baseFontStyle={{color: "#fff", paddingEnd: 10}} />
+          {!isEmpty(walletBalance) && (
+            <HTMLRender
+              html={walletBalance}
+              baseFontStyle={{color: primary_color_text}}
+              containerStyle={{paddingEnd: 10}}
+            />
           )}
         </View>
       </View>

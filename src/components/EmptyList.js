@@ -14,8 +14,8 @@ function EmptyList({iconName, iconType, loading, label, enabled}) {
         <ActivityIndicator color={accent_color} size="large" />
       ) : (
         <>
-          <Icon style={styles.icon} type={iconType} name={iconName} />
-          <Text style={styles.label}>{label}</Text>
+          <Icon style={[styles.icon, {color: accent_color}]} type={iconType} name={iconName} />
+          <Text style={[styles.label, {color: accent_color}]}>{label}</Text>
         </>
       )}
     </View>
@@ -62,11 +62,9 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 48,
-    color: "#314277",
-    marginBottom: 24,
+    marginBottom: 16,
   },
   label: {
-    color: "#314277",
     textAlign: "center",
     fontWeight: "500",
     fontSize: 16,

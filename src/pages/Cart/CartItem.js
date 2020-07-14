@@ -1,19 +1,22 @@
 import React, {useState} from "react";
-import {View, StyleSheet, Image, ActivityIndicator, Dimensions} from "react-native";
+import {View, StyleSheet, Image} from "react-native";
 import {Button, Text, Icon, HTMLRender} from "components";
-import {ApiClient} from "service";
 import Modal from "react-native-modal";
 import Toast from "react-native-simple-toast";
 import {useSelector} from "react-redux";
 
+<<<<<<< HEAD
 const {height} = Dimensions.get("window");
 
 function CartItem({item, index, quantityIncrementDecremnt}) {
+=======
+function CartItem({item, index, manageQuanity, deleteCartItem}) {
+>>>>>>> b2f71fb7134fc710665cea1ba15c45e42def9239
   const appSetting = useSelector(state => state.appSettings);
 
   const [isOpenModal, setModal] = useState(false);
-  const [loading, setLoading] = useState(false);
 
+<<<<<<< HEAD
   const closeModal = (item, itemEach) => () => {
     if (item == "false") {
       setModal(false);
@@ -21,34 +24,25 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
       setModal(false);
       deleteItem(itemEach);
     }
+=======
+  const closeModal = () => {
+    setModal(false);
+>>>>>>> b2f71fb7134fc710665cea1ba15c45e42def9239
   };
 
   const openModal = () => {
     setModal(true);
   };
 
-  const decrement = (itemEach, index) => () => {
-    let data = {
-      cart_item_key: itemEach.cart_item_key,
-      quantity: parseInt(itemEach.quantity) - 1,
-    };
-    if (itemEach.quantity > 1) {
-      setLoading(true);
-      ApiClient.get("/cart/update", data)
-        .then(response => {
-          setLoading(false);
-          quantityIncrementDecremnt && quantityIncrementDecremnt();
-        })
-        .catch(error => {
-          setLoading(false);
-
-          console.log(error);
-        });
+  const decrement = () => {
+    if (item.quantity > 1) {
+      manageQuanity && manageQuanity(item.cart_item_key, parseInt(item.quantity) - 1);
     } else {
       Toast.show("Minimum item quantity reached");
     }
   };
 
+<<<<<<< HEAD
   const increment = (itemEach, index) => () => {
     let data = {
       cart_item_key: itemEach.cart_item_key,
@@ -66,9 +60,24 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
           setLoading(false);
           console.log(error);
         });
+=======
+  const increment = () => {
+    let quantity = Number(item.quantity);
+    if (item.manage_stock) {
+      if (quantity < item.stock_quanity) {
+        quantity++;
+      } else {
+        Toast.show("Maximum item quantity reached");
+      }
+    } else {
+      quantity++;
+>>>>>>> b2f71fb7134fc710665cea1ba15c45e42def9239
     }
+    if (quantity !== Number(item.quantity))
+      manageQuanity && manageQuanity(item.cart_item_key, parseInt(item.quantity) + 1);
   };
 
+<<<<<<< HEAD
   const deleteItem = itemEach => {
     let data = {
       cart_item_key: itemEach.cart_item_key,
@@ -87,85 +96,76 @@ function CartItem({item, index, quantityIncrementDecremnt}) {
 
         console.log(error);
       });
+=======
+  const deleteItem = () => {
+    setModal(false);
+    deleteCartItem && deleteCartItem(item.cart_item_key);
+>>>>>>> b2f71fb7134fc710665cea1ba15c45e42def9239
   };
 
-  if (loading) {
-    return (
-      <View style={[styles.container]}>
-        <ActivityIndicator size={"large"} />
-      </View>
-    );
-  } else {
-    return (
-      <>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "flex-start",
-            width: "100%",
-            paddingTop: index == 0 ? 16 : 0,
-            paddingHorizontal: 16,
-          }}>
-          <Image
-            style={{height: 70, width: 70}}
-            source={{
-              uri: item.image,
-            }}
-          />
-          <View style={{marginStart: 16, flex: 1}}>
-            <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-              <Text style={{fontWeight: "700"}}>{item.name}</Text>
-              <Button onPress={openModal}>
-                <Icon type="MaterialIcons" name="delete" size={22} />
+  return (
+    <>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "flex-start",
+          width: "100%",
+          paddingTop: index == 0 ? 16 : 0,
+          paddingHorizontal: 16,
+        }}>
+        <Image style={{height: 70, width: 70}} source={{uri: item.image}} />
+        <View style={{marginStart: 16, flex: 1}}>
+          <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+            <Text style={{fontWeight: "700"}}>{item.name}</Text>
+            <Button onPress={openModal}>
+              <Icon type="MaterialIcons" name="delete" size={22} />
+            </Button>
+          </View>
+          <HTMLRender html={item.product_desc} />
+          <HTMLRender html={item.varitions} />
+          <View
+            style={{
+              justifyContent: "space-between",
+              flexDirection: "row",
+              marginTop: 10,
+              flex: 1,
+            }}>
+            <Text>Price:</Text>
+            <HTMLRender html={item.subtotal} />
+            <View style={{flexDirection: "row"}}>
+              <Button style={styles.btn} onPress={decrement}>
+                <Icon name="minus" type="Entypo" size={16} color="#757575" />
               </Button>
-            </View>
-            <HTMLRender html={item.product_desc} />
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                flex: 1,
-                marginTop: 10,
-              }}>
-              <Text>Price:</Text>
-              <HTMLRender html={item.subtotal} />
-              <View style={{flexDirection: "row"}}>
-                <Button style={styles.btn} onPress={decrement(item, index)}>
-                  <Icon name="minus" type="Entypo" size={16} color="#757575" />
-                </Button>
-                <Text style={{paddingHorizontal: 8}}>{item.quantity}</Text>
-                <Button style={styles.btn} onPress={increment(item, index)}>
-                  <Icon name="plus" type="Entypo" size={16} color="#757575" />
-                </Button>
-              </View>
+              <Text style={{paddingHorizontal: 8}}>{item.quantity}</Text>
+              <Button style={styles.btn} onPress={increment}>
+                <Icon name="plus" type="Entypo" size={16} color="#757575" />
+              </Button>
             </View>
           </View>
         </View>
-        <Modal
-          isVisible={isOpenModal}
-          style={{margin: 0}}
-          onBackButtonPress={closeModal("false", null)}
-          onBackdropPress={closeModal("false", null)}
-          useNativeDriver
-          hideModalContentWhileAnimating>
-          <View style={{backgroundColor: "#fff", marginHorizontal: 64, padding: 20}}>
-            <Text style={{fontWeight: "500", fontSize: 20, marginBottom: 15}}>
-              Remove From Cart
-            </Text>
-            <Text>Are you sure to remove this?</Text>
-            <View style={{flexDirection: "row", justifyContent: "flex-end", marginTop: 30}}>
-              <Button onPress={closeModal("false", null)}>
-                <Text style={{color: appSetting.accent_color}}>NO</Text>
-              </Button>
-              <Button onPress={closeModal("item", item)} style={{marginStart: 20}}>
-                <Text style={{color: appSetting.accent_color}}>YES</Text>
-              </Button>
-            </View>
+      </View>
+      <Modal
+        isVisible={isOpenModal}
+        style={{margin: 0}}
+        onBackButtonPress={closeModal}
+        onBackdropPress={closeModal}
+        useNativeDriver
+        hideModalContentWhileAnimating>
+        <View style={{backgroundColor: "#fff", marginHorizontal: 64, padding: 20}}>
+          <Text style={{fontWeight: "500", fontSize: 20, marginBottom: 15}}>Remove From Cart</Text>
+          <Text>Are you sure to remove this?</Text>
+          <View style={{flexDirection: "row", justifyContent: "flex-end", marginTop: 30}}>
+            <Button onPress={closeModal}>
+              <Text style={{color: appSetting.accent_color}}>NO</Text>
+            </Button>
+            <Button onPress={deleteItem} style={{marginStart: 20}}>
+              <Text style={{color: appSetting.accent_color}}>YES</Text>
+            </Button>
           </View>
-        </Modal>
-      </>
-    );
-  }
+        </View>
+      </Modal>
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -207,4 +207,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CartItem;
+export default React.memo(CartItem);
