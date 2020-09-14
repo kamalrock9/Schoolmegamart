@@ -24,7 +24,7 @@ function HomeScreen({navigation}) {
   const {t} = useTranslation();
   const dispatch = useDispatch();
 
-  const _categoryKeyExtractor = item => "category_" + item.id;
+  const _categoryKeyExtractor = (item, index) => item.id + "category_" + index;
 
   // const trackScreenView = async screen => {
   //   // Set & override the MainActivity screen name
@@ -36,6 +36,7 @@ function HomeScreen({navigation}) {
     setLoading(layout ? false : true);
     ApiClient.get("/layout")
       .then(({data}) => {
+        console.log(data);
         unstable_batchedUpdates(() => {
           dispatch(saveHomeLayout(data));
           setLoading(false);

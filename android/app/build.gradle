@@ -128,11 +128,11 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.phoeniixx.wooapp"
+        applicationId "com.schoolmegamart"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 41
-        versionName "0.4.1"
+        versionCode 1
+        versionName "0.0.1"
         multiDexEnabled true
     }
     splits {

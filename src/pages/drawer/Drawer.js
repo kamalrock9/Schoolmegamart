@@ -1,5 +1,5 @@
 import React from "react";
-import {ScrollView, View, StyleSheet, Linking, Platform, Alert} from "react-native";
+import {ScrollView, View, StyleSheet, Linking, Platform, Alert, Image} from "react-native";
 import {Button, Text, Icon} from "components";
 import {connect} from "react-redux";
 import {withTranslation} from "react-i18next";
@@ -86,14 +86,18 @@ class Drawer extends React.PureComponent {
       <>
         <View style={styles.container}>
           <View style={styles.header}>
-            <Icon name="account-circle" type="MaterialCommunityIcons" style={{fontSize: 54}} />
+            <Icon
+              name="account-circle"
+              type="MaterialCommunityIcons"
+              style={{fontSize: 54, marginEnd: 10}}
+            />
             {isEmpty(user) ? (
               <Text style={{fontSize: 16}} onPress={this.openModal}>
                 {t("LOGIN/REGISTER")}
               </Text>
             ) : (
-              <View style={{alignItems: "center"}}>
-                <Text style={{fontSize: 16}}>
+              <View>
+                <Text style={{fontSize: 16, fontWeight: "500"}}>
                   {user.first_name && user.last_name
                     ? user.first_name + " " + user.last_name
                     : user.first_name
@@ -102,42 +106,42 @@ class Drawer extends React.PureComponent {
                     ? user.username
                     : ""}
                 </Text>
-                <Text>{user.email}</Text>
+                <Text style={{fontSize: 12, color: "grey"}}>{user.email}</Text>
               </View>
             )}
           </View>
           <ScrollView>
             <Button style={styles.button} onPress={this.navigateToScreen("HomeStack")}>
-              <Icon name="home" type="FontAwesome" style={styles.icon} />
+              <Image source={require("../../assets/imgs/home.png")} style={styles.img} />
               <Text style={styles.text}>{t("HOME")}</Text>
             </Button>
 
             <Button style={styles.button} onPress={this.navigateToScreen("ProductScreen")}>
-              <Icon name="shopping-bag" type="FontAwesome" style={styles.icon} />
+              <Image source={require("../../assets/imgs/shop.png")} style={styles.img} />
               <Text style={styles.text}>{t("SHOP")}</Text>
             </Button>
 
             <Button style={styles.button} onPress={this.navigateToScreen("CategoryScreen")}>
-              <Icon name="archive" type="Entypo" style={styles.icon} />
-              <Text style={styles.text}>{t("CATEGORIES")}</Text>
+              <Image source={require("../../assets/imgs/category.png")} style={styles.img} />
+              <Text style={styles.text}>Shop by caregory</Text>
             </Button>
             <View style={styles.divider} />
             {!isEmpty(user) && (
               <>
                 <Button style={styles.button} onPress={this.navigateToScreen("OrderStack")}>
-                  <Icon name="list-unordered" type="Octicons" style={styles.icon} />
+                  <Image source={require("../../assets/imgs/order.png")} style={styles.img} />
                   <Text style={styles.text}>{t("ORDERS")}</Text>
                 </Button>
                 <Button style={styles.button} onPress={this.navigateToScreen("AccountSetting")}>
-                  <Icon name="md-settings" style={styles.icon} />
+                  <Image source={require("../../assets/imgs/setting.png")} style={styles.img} />
                   <Text style={styles.text}>{t("ACCOUNT")}</Text>
                 </Button>
                 <Button style={styles.button} onPress={this.navigateToScreen("ManageAddress")}>
-                  <Icon name="note" type="SimpleLineIcons" style={styles.icon} />
+                  <Image source={require("../../assets/imgs/address.png")} style={styles.img} />
                   <Text style={styles.text}>{t("MANAGE_ADDRESS")}</Text>
                 </Button>
                 <Button style={styles.button} onPress={this.navigateToScreen("Notification")}>
-                  <Icon name="bell" type="Feather" style={styles.icon} />
+                  <Image source={require("../../assets/imgs/bell.png")} style={styles.img} />
                   <Text style={styles.text}>{t("NOTIFICATIONS")}</Text>
                 </Button>
                 <Button style={styles.button} onPress={this.navigateToScreen("Download")}>
@@ -154,7 +158,7 @@ class Drawer extends React.PureComponent {
               </>
             )}
 
-            {direct_tawk_id && direct_tawk_id != "" && (
+            {direct_tawk_id != "" && (
               <Button
                 style={styles.button}
                 onPress={this.navigateToScreen("TawkToChat", {uri: direct_tawk_id})}>
@@ -163,11 +167,11 @@ class Drawer extends React.PureComponent {
               </Button>
             )}
             <Button style={styles.button} onPress={this.contactUs}>
-              <Icon name="md-call" style={styles.icon} />
+              <Image source={require("../../assets/imgs/telephone.png")} style={styles.img} />
               <Text style={styles.text}>{t("CONTACT")}</Text>
             </Button>
             <Button style={styles.button} onPress={this.navigateToScreen("TermAndCondition")}>
-              <Icon name="tools" type="Entypo" style={styles.icon} />
+              <Image source={require("../../assets/imgs/term.png")} style={styles.img} />
               <Text style={styles.text}>{t("TOS")}</Text>
             </Button>
             <Button style={styles.button} onPress={this.navigateToScreen("giveFeedback")}>
@@ -176,13 +180,13 @@ class Drawer extends React.PureComponent {
             </Button>
             {!isEmpty(user) && (
               <Button style={styles.button} onPress={this.navigateToScreen("Logout")}>
-                <Icon name="logout" type="MaterialCommunityIcons" style={styles.icon} />
+                <Image source={require("../../assets/imgs/logout.png")} style={styles.img} />
                 <Text style={styles.text}>{t("SIGN_OUT")}</Text>
               </Button>
             )}
           </ScrollView>
           <View style={styles.footer}>
-            <Text style={{fontSize: 12, fontWeight: "300"}}>{t("v") + getVersion()}</Text>
+            <Text style={{fontSize: 12, fontWeight: "500"}}>{"version : " + getVersion()}</Text>
           </View>
         </View>
         <Modal
@@ -263,10 +267,14 @@ const openEmail = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#fff",
+    borderTopStartRadius: 20,
+    borderBottomStartRadius: 20,
   },
   divider: {
-    backgroundColor: "#dedede",
+    backgroundColor: "#DBDBDB",
     height: 1,
+    marginHorizontal: 16,
   },
   button: {
     flexDirection: "row",
@@ -282,22 +290,24 @@ const styles = StyleSheet.create({
   text: {
     color: "#000000",
     fontWeight: "500",
+    fontSize: 12,
   },
   footer: {
     width: "100%",
-    alignItems: "flex-end",
+    alignItems: "center",
     justifyContent: "center",
     paddingEnd: 16,
     paddingVertical: 4,
-    borderTopWidth: 0.5,
-    borderTopColor: "#dedede",
+    marginBottom: 20,
   },
   header: {
     width: "100%",
     alignItems: "center",
-    backgroundColor: "#dedede",
-    justifyContent: "center",
-    height: 150,
+    marginHorizontal: 8,
+    //justifyContent: "center",
+    height: 110,
+    flexDirection: "row",
+    borderTopLeftRadius: 20,
   },
   contact_btn: {
     flex: 1,
@@ -306,6 +316,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 2,
   },
+  img: {height: 22, width: 22, resizeMode: "contain", marginHorizontal: 16},
 });
 
 const mapStateToProps = state => ({

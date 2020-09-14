@@ -145,6 +145,8 @@ const DrawerNavigator = createDrawerNavigator(
   },
   {
     contentComponent: Drawer,
+    drawerPosition: "right",
+    drawerBackgroundColor: "transparent",
   },
 );
 

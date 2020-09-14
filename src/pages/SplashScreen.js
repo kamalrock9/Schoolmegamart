@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {Image, StyleSheet, View} from "react-native";
+import {Image, StyleSheet, View, Dimensions} from "react-native";
 import {saveAppSettings, getCartCount} from "store/actions";
 import {useSelector, useDispatch} from "react-redux";
 import {isEmpty} from "lodash";
@@ -27,6 +27,7 @@ i18n
     },
   });
 
+const {width, height} = Dimensions.get("window");
 function SplashScreen({navigation}) {
   const appSettings = useSelector(state => state.appSettings);
   const dispatch = useDispatch();
@@ -54,7 +55,18 @@ function SplashScreen({navigation}) {
 
   return (
     <View style={styles.container}>
-      <Image source={require("../assets/icon/icon.png")} style={{width: 112, height: 112}} />
+      <Image
+        source={require("../assets/imgs/SplashBG.png")}
+        style={{width, height: 200, position: "absolute", top: 0}}
+      />
+      <Image
+        source={require("../assets/imgs/splashLogo.png")}
+        style={{width: 250, height: 250, resizeMode: "contain"}}
+      />
+      <Image
+        source={require("../assets/imgs/SplashBG1.png")}
+        style={{width, height: 200, position: "absolute", bottom: 0}}
+      />
     </View>
   );
 }

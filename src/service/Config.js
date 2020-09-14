@@ -11,12 +11,12 @@ const Constants = {
 };
 
 const ConstantsDemo = {
-  storeName: "WooApp",
-  baseURL: "https://app.tutiixx.com",
+  storeName: "Schoolmegamart",
+  baseURL: "https://schoolmegamart.com",
   path: "/wp-json/wc/v2",
   keys: {
-    consumerKey: "ck_240313b54a926b379613c352b179588ee757807f",
-    consumerSecret: "cs_406cf9c8094af5a5d2f987e1d3a9160fa9b6bfdb",
+    consumerKey: "ck_fbc6415e2cdabef5554492c38e06b4ab96883429",
+    consumerSecret: "cs_58302a7ce2c17a188f8e3be94392459ca66e3352",
   },
 };
 
