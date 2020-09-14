@@ -10,7 +10,7 @@ import SwiperFlatList from "react-native-swiper-flatlist";
 import Toast from "react-native-simple-toast";
 import {ApiClient} from "service";
 import {isEmpty} from "lodash";
-import {updateShipping} from "store/actions";
+import {updateBilling, updateShipping} from "../../store/actions";
 import Constants from "../../service/Config";
 
 const {width} = Dimensions.get("window");
@@ -172,6 +172,83 @@ function CheckoutScreen({navigation}) {
         console.log("Shii");
         ApiCall(user.shipping.postcode, 3);
       } else {
+        if (shipToDifferent) {
+          let billingParam = {
+            first_name: billing.first_name,
+            last_name: billing.last_name,
+            company: billing.company,
+            email: billing.email,
+            phone: billing.phone,
+            city: billing.city,
+            state: billing.state,
+            postcode: billing.postcode,
+            address_1: billing.address_1,
+            address_2: billing.address_2,
+            country: billing.country,
+          };
+          let shippingParam = {
+            first_name: billing.first_name,
+            last_name: billing.last_name,
+            company: billing.company,
+            city: billing.city,
+            state: billing.state,
+            postcode: billing.postcode,
+            address_1: billing.address_1,
+            address_2: billing.address_2,
+            country: billing.country,
+          };
+          console.log(billingParam);
+
+          let data = {};
+          data.billing = billingParam;
+          data.shipping = shippingParam;
+
+          setloading(true);
+          WooCommerce.post("customers/" + user.id, data)
+            .then(res => {
+              setloading(false);
+              if (res.status == 200) {
+                console.log(res);
+                dispatch(updateBilling(billingParam));
+                dispatch(updateShipping(shippingParam));
+              } else {
+                Toast.show("Nothing to update", Toast.LONG);
+              }
+            })
+            .catch(error => {
+              setloading(false);
+            });
+        } else {
+          let param = {
+            first_name: shipping.first_name,
+            last_name: shipping.last_name,
+            company: shipping.company,
+            city: shipping.city,
+            state: shipping.state,
+            postcode: shipping.postcode,
+            address_1: shipping.address_1,
+            address_2: shipping.address_2,
+            country: shipping.country,
+          };
+          console.log(param);
+
+          let data = {};
+          data.shipping = param;
+          setloading(true);
+          WooCommerce.post("customers/" + user.id, data)
+            .then(res => {
+              setloading(false);
+              console.log(res);
+              if (res.status == 200) {
+                dispatch(updateShipping(param));
+              } else {
+                Toast.show("Nothing to update", Toast.LONG);
+              }
+            })
+            .catch(error => {
+              setloading(false);
+            });
+        }
         setStepPos(3);
       }
     } else if (stepPos == 0) {
@@ -190,6 +267,37 @@ function CheckoutScreen({navigation}) {
       } else if (pincode_active) {
         ApiCall(user.billing.postcode, 2);
       } else {
+        let param = {
+          first_name: billing.first_name,
+          last_name: billing.last_name,
+          company: billing.company,
+          email: billing.email,
+          phone: billing.phone,
+          city: billing.city,
+          state: billing.state,
+          postcode: billing.postcode,
+          address_1: billing.address_1,
+          address_2: billing.address_2,
+          country: billing.country,
+        };
+        // console.log(param);
+
+        let data = {};
+        data.billing = param;
+
+        const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if (!reg.test(billing.email)) {
+          Toast.show("Your email address is not correct", Toast.LONG);
+          return;
+        }
+        WooCommerce.post("customers/" + user.id, data).then(res => {
+          if (res.status == 200) {
+            console.log(res);
+            dispatch(updateBilling(param));
+          } else {
+            Toast.show("Nothing to update", Toast.LONG);
+          }
+        });
         setStepPos(2);
       }
     }

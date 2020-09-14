@@ -1,11 +1,11 @@
-import React, { useState, useCallback, useEffect, useReducer } from "react";
-import { View, ScrollView, StyleSheet } from "react-native";
-import { Text, Toolbar, FloatingTextinput, Button } from "components";
-import { useTranslation } from "react-i18next";
-import { useSelector, useDispatch } from "react-redux";
-import { CustomPicker } from "react-native-custom-picker";
-import { WooCommerce } from "service";
-import { updateShipping } from "../../store/actions";
+import React, {useState, useCallback, useEffect, useReducer} from "react";
+import {View, ScrollView, StyleSheet, ActivityIndicator} from "react-native";
+import {Text, Toolbar, FloatingTextinput, Button} from "components";
+import {useTranslation} from "react-i18next";
+import {useSelector, useDispatch} from "react-redux";
+import {CustomPicker} from "react-native-custom-picker";
+import {WooCommerce} from "service";
+import {updateShipping} from "../../store/actions";
 import Toast from "react-native-simple-toast";
 
 const initialState = {
@@ -23,39 +23,40 @@ const initialState = {
 function reducer(state = initialState, action) {
   switch (action.type) {
     case "changeFirstname":
-      return { ...state, first_name: action.payload };
+      return {...state, first_name: action.payload};
     case "changeLastname":
-      return { ...state, last_name: action.payload };
+      return {...state, last_name: action.payload};
     case "changeCompany":
-      return { ...state, company: action.payload };
+      return {...state, company: action.payload};
     case "changeCity":
-      return { ...state, city: action.payload };
+      return {...state, city: action.payload};
     case "changePostcode":
-      return { ...state, postcode: action.payload };
+      return {...state, postcode: action.payload};
     case "changeAddress1":
-      return { ...state, address_1: action.payload };
+      return {...state, address_1: action.payload};
     case "changeAddress2":
-      return { ...state, address_2: action.payload };
+      return {...state, address_2: action.payload};
     case "changeCountry":
-      return { ...state, country: action.payload };
+      return {...state, country: action.payload};
     case "changeState":
-      return { ...state, state: action.payload };
+      return {...state, state: action.payload};
     default:
       return state;
   }
 }
 
 function ShippingAddress() {
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const user = useSelector(state => state.user);
   const appSettings = useSelector(state => state.appSettings);
   const dispatchAction = useDispatch();
 
   const [state, dispatch] = useReducer(reducer, user.shipping);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let arr = [];
-    for (let i in appSettings.countries) arr.push({ id: i, name: appSettings.countries[i] });
+    for (let i in appSettings.countries) arr.push({id: i, name: appSettings.countries[i]});
     setCountry(arr);
   }, []);
 
@@ -64,33 +65,33 @@ function ShippingAddress() {
   const [stateData, setStateData] = useState([]);
 
   const onChangeFirstname = text => {
-    dispatch({ type: "changeFirstname", payload: text });
+    dispatch({type: "changeFirstname", payload: text});
   };
   const onChangeLastname = text => {
-    dispatch({ type: "changeLastname", payload: text });
+    dispatch({type: "changeLastname", payload: text});
   };
   const onChangeCompany = text => {
-    dispatch({ type: "changeAddress2", payload: text });
+    dispatch({type: "changeCompany", payload: text});
   };
   const onChangeCity = text => {
-    dispatch({ type: "changeAddress2", payload: text });
+    dispatch({type: "changeCity", payload: text});
   };
   const onChangePostcode = text => {
-    dispatch({ type: "changeAddress2", payload: text });
+    dispatch({type: "changePostcode", payload: text});
   };
   const onChangeAddress1 = text => {
-    dispatch({ type: "changeAddress2", payload: text });
+    dispatch({type: "changeAddress1", payload: text});
   };
   const onChangeAddress2 = text => {
-    dispatch({ type: "changeAddress2", payload: text });
+    dispatch({type: "changeAddress2", payload: text});
   };
 
   const onChangeCountry = text => {
-    dispatch({ type: "changeCountry", payload: text });
+    dispatch({type: "changeCountry", payload: text});
   };
 
   const onChangeState = text => {
-    dispatch({ type: "changeState", payload: text });
+    dispatch({type: "changeState", payload: text});
   };
 
   const _UpdateAddress = () => {
@@ -124,38 +125,44 @@ function ShippingAddress() {
     ) {
       Toast.show("Please fill all the fields");
     } else {
-      WooCommerce.post("customers/" + user.id, data).then(res => {
-        console.log(res);
-        if (res.status == 200) {
-          dispatchAction(updateShipping(param));
-        } else {
-          Toast.show("Nothing to update", Toast.LONG);
-        }
-      });
+      setLoading(true);
+      WooCommerce.post("customers/" + user.id, data)
+        .then(res => {
+          console.log(res);
+          setLoading(false);
+          if (res.status == 200) {
+            dispatchAction(updateShipping(param));
+          } else {
+            Toast.show("Nothing to update", Toast.LONG);
+          }
+        })
+        .catch(error => {
+          setLoading(false);
+        });
     }
   };
 
   const renderOption = settings => {
-    const { item, getLabel } = settings;
+    const {item, getLabel} = settings;
     return (
       <View style={styles.optionContainer}>
         <View style={styles.innerContainer}>
-          <View style={[styles.box, { backgroundColor: item.color }]} />
-          <Text style={{ color: item.color, alignSelf: "flex-start" }}>{getLabel(item)}</Text>
+          <View style={[styles.box, {backgroundColor: item.color}]} />
+          <Text style={{color: item.color, alignSelf: "flex-start"}}>{getLabel(item)}</Text>
         </View>
       </View>
     );
   };
 
   const renderField = settings => {
-    const { selectedItem, defaultText, getLabel, clear } = settings;
+    const {selectedItem, defaultText, getLabel, clear} = settings;
     return (
       <View style={styles.container}>
         <View>
-          {!selectedItem && <Text style={[styles.text, { color: "#000000" }]}>{defaultText}</Text>}
+          {!selectedItem && <Text style={[styles.text, {color: "#000000"}]}>{defaultText}</Text>}
           {selectedItem && (
             <View style={{}}>
-              <Text style={[styles.text, { color: selectedItem.color }]}>
+              <Text style={[styles.text, {color: selectedItem.color}]}>
                 {getLabel(selectedItem)}
               </Text>
             </View>
@@ -169,7 +176,7 @@ function ShippingAddress() {
     onChangeCountry(text.name);
     let arr = [];
     let obj = appSettings.county_states[text.id];
-    for (let i in obj) arr.push({ id: i, name: obj[i] });
+    for (let i in obj) arr.push({id: i, name: obj[i]});
     setStateData(arr);
   };
 
@@ -180,87 +187,95 @@ function ShippingAddress() {
   return (
     <>
       <Toolbar backButton title={t("SHIPPING") + " " + t("ADDRESS")} />
-      <ScrollView contentContainerStyle={{ marginHorizontal: 16, marginTop: 16 }}>
-        <FloatingTextinput
-          label={t("FIRST_NAME")}
-          labelColor="#000000"
-          style={{ color: "#000000" }}
-          value={state.first_name}
-          onChangeText={onChangeFirstname}
-        />
-        <FloatingTextinput
-          label={t("LAST_NAME")}
-          labelColor="#000000"
-          style={{ color: "#000000" }}
-          value={state.last_name}
-          onChangeText={onChangeLastname}
-        />
-        <FloatingTextinput
-          label={t("COMPANY")}
-          labelColor="#000000"
-          style={{ color: "#000000" }}
-          value={state.company}
-          onChangeText={onChangeCompany}
-        />
+      {loading ? (
+        <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+          <ActivityIndicator size={"large"} />
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={{marginHorizontal: 16, marginTop: 16}}>
+          <FloatingTextinput
+            label={t("FIRST_NAME")}
+            labelColor="#000000"
+            style={{color: "#000000"}}
+            value={state.first_name}
+            onChangeText={onChangeFirstname}
+          />
+          <FloatingTextinput
+            label={t("LAST_NAME")}
+            labelColor="#000000"
+            style={{color: "#000000"}}
+            value={state.last_name}
+            onChangeText={onChangeLastname}
+          />
+          <FloatingTextinput
+            label={t("COMPANY")}
+            labelColor="#000000"
+            style={{color: "#000000"}}
+            value={state.company}
+            onChangeText={onChangeCompany}
+          />
 
-        <FloatingTextinput
-          label={t("CITY")}
-          labelColor="#000000"
-          style={{ color: "#000000" }}
-          value={state.city}
-          onChangeText={onChangeCity}
-        />
-        <FloatingTextinput
-          label={t("POSTCODE")}
-          labelColor="#000000"
-          style={{ color: "#000000" }}
-          value={state.postcode}
-          onChangeText={onChangePostcode}
-        />
-        <FloatingTextinput
-          label={t("ADDRESS_1")}
-          labelColor="#000000"
-          style={{ color: "#000000" }}
-          value={state.address_1}
-          onChangeText={onChangeAddress1}
-        />
-        <FloatingTextinput
-          label={t("ADDRESS_2")}
-          labelColor="#000000"
-          style={{ color: "#000000" }}
-          value={state.address_2}
-          onChangeText={onChangeAddress2}
-        />
-        <>
-          <Text style={{ fontSize: 12, color: appSettings.accent_color, marginTop: 10 }}>
-            {t("COUNTRY")}
-          </Text>
-          <CustomPicker
-            options={arrCountry}
-            placeholder={state.country}
-            getLabel={item => item.name}
-            optionTemplate={renderOption}
-            fieldTemplate={renderField}
-            onValueChange={value => setCount(value)}
+          <FloatingTextinput
+            label={t("CITY")}
+            labelColor="#000000"
+            style={{color: "#000000"}}
+            value={state.city}
+            onChangeText={onChangeCity}
           />
-        </>
-        <>
-          <Text style={{ fontSize: 12, color: appSettings.accent_color, marginTop: 10 }}>{t("STATE")}</Text>
-          <CustomPicker
-            options={stateData}
-            placeholder={state.state}
-            getLabel={item => item.name}
-            optionTemplate={renderOption}
-            fieldTemplate={renderField}
-            onValueChange={value => setStateD(value)}
+          <FloatingTextinput
+            label={t("POSTCODE")}
+            labelColor="#000000"
+            style={{color: "#000000"}}
+            value={state.postcode}
+            onChangeText={onChangePostcode}
           />
-        </>
-      </ScrollView>
+          <FloatingTextinput
+            label={t("ADDRESS_1")}
+            labelColor="#000000"
+            style={{color: "#000000"}}
+            value={state.address_1}
+            onChangeText={onChangeAddress1}
+          />
+          <FloatingTextinput
+            label={t("ADDRESS_2")}
+            labelColor="#000000"
+            style={{color: "#000000"}}
+            value={state.address_2}
+            onChangeText={onChangeAddress2}
+          />
+          <>
+            <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 10}}>
+              {t("COUNTRY")}
+            </Text>
+            <CustomPicker
+              options={arrCountry}
+              placeholder={state.country}
+              getLabel={item => item.name}
+              optionTemplate={renderOption}
+              fieldTemplate={renderField}
+              onValueChange={value => setCount(value)}
+            />
+          </>
+          <>
+            <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 10}}>
+              {t("STATE")}
+            </Text>
+            <CustomPicker
+              options={stateData}
+              placeholder={state.state}
+              getLabel={item => item.name}
+              optionTemplate={renderOption}
+              fieldTemplate={renderField}
+              onValueChange={value => setStateD(value)}
+            />
+          </>
+        </ScrollView>
+      )}
       <View style={styles.footer}>
         <Button
-          style={[styles.footerButton, { backgroundColor: appSettings.accent_color }]}
+          style={[styles.footerButton, {backgroundColor: appSettings.accent_color}]}
           onPress={_UpdateAddress}>
-          <Text style={{ color: "white", marginEnd: 5 }}>{t("SAVE")}</Text>
+          <Text style={{color: "white", marginEnd: 5}}>{t("SAVE")}</Text>
         </Button>
       </View>
     </>
