@@ -1,5 +1,5 @@
 import React from "react";
-import {TouchableOpacity, ImageBackground} from "react-native";
+import {TouchableOpacity, Image} from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import {useNavigation} from "react-navigation-hooks";
 import {Text} from "components";
@@ -14,11 +14,14 @@ function CategoryItem({item, index}) {
   return (
     <TouchableOpacity
       style={[
-        {width: 80, height: 60, borderRadius: 3, marginTop: 5, marginBottom: 15},
-        index == 0 ? {marginStart: 12, marginEnd: 10} : {marginEnd: 10},
+        {
+          marginTop: 10,
+          marginBottom: 15,
+        },
+        index == 0 ? {marginStart: 18, marginEnd: 16} : {marginEnd: 16},
       ]}
       onPress={goToProductScreen}>
-      <ImageBackground
+      <Image
         source={{
           uri: item.image
             ? typeof item.image == "string"
@@ -26,23 +29,20 @@ function CategoryItem({item, index}) {
               : item.image.src
             : "https://source.unsplash.com/1600x900/?" + item.name,
         }}
-        style={{width: 80, height: 60, flex: 1, borderRadius: 3}}
-        resizeMode="cover">
-        <LinearGradient
-          colors={["#afafaf5e", "#000000ff"]}
-          style={{position: "absolute", width: "100%", bottom: 0}}>
-          <Text
-            style={{
-              color: "white",
-              textAlign: "center",
-              fontSize: 10,
-              paddingVertical: 2,
-              fontWeight: "700",
-            }}>
-            {item.name.toUpperCase()}
-          </Text>
-        </LinearGradient>
-      </ImageBackground>
+        style={{width: 60, height: 60, borderRadius: 30}}
+        resizeMode="cover"
+      />
+      <Text
+        style={{
+          color: "black",
+          textAlign: "center",
+          fontSize: 10,
+          width: 60,
+          paddingVertical: 2,
+          fontWeight: "700",
+        }}>
+        {item.name.toUpperCase()}
+      </Text>
     </TouchableOpacity>
   );
 }

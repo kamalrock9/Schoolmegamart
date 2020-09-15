@@ -1,14 +1,15 @@
 import React from "react";
-import {View, Dimensions} from "react-native";
+import {View, Dimensions, Image} from "react-native";
 import SwiperFlatList from "react-native-swiper-flatlist";
 import FitImage from "react-native-fit-image";
 
 const {width} = Dimensions.get("window");
 
 const renderItem = ({item, index}) => (
-  <View style={{width}}>
-    <FitImage source={{uri: item.banner_url || item.src}} />
-  </View>
+  <Image
+    style={{width, height: 120, resizeMode: "cover"}}
+    source={{uri: item.banner_url || item.src}}
+  />
 );
 
 const keyExtractor = item => item.id.toString();
@@ -28,7 +29,7 @@ function Slider({data, ...props}) {
       }}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
-      style={{width}}
+      style={{width, marginHorizontal: 16}}
     />
   );
 }

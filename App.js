@@ -34,11 +34,11 @@ import PaymentPage from "./src/pages/checkout/PaymentPage";
 import Auth from "./src/pages/auth/Login";
 import Reviews from "./src/pages/product/Reviews";
 import AddReview from "./src/pages/product/AddReview";
+import Tabs from "./src/pages/Tabs";
 //Redux
 import {persistor, store} from "./src/store";
 import {Provider} from "react-redux";
 import {PersistGate} from "redux-persist/lib/integration/react";
-
 function App() {
   return (
     <Provider store={store}>
@@ -128,6 +128,7 @@ const WalletStack = createStackNavigator(
 
 const DrawerNavigator = createDrawerNavigator(
   {
+    Tabs,
     HomeStack,
     ProductStack,
     CategoryStack,

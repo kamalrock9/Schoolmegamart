@@ -145,7 +145,7 @@ class Drawer extends React.PureComponent {
                   <Text style={styles.text}>{t("NOTIFICATIONS")}</Text>
                 </Button>
                 <Button style={styles.button} onPress={this.navigateToScreen("Download")}>
-                  <Icon name="download" type="Entypo" style={styles.icon} />
+                  <Image source={require("../../assets/imgs/download.png")} style={styles.img} />
                   <Text style={styles.text}>{t("DOWNLOAD")}</Text>
                 </Button>
                 {wallet_active && (
@@ -162,7 +162,7 @@ class Drawer extends React.PureComponent {
               <Button
                 style={styles.button}
                 onPress={this.navigateToScreen("TawkToChat", {uri: direct_tawk_id})}>
-                <Icon name="chat" type="Entypo" style={styles.icon} />
+                <Image source={require("../../assets/imgs/chat.png")} style={styles.img} />
                 <Text style={styles.text}>{t("CHAT_SUPPORT")}</Text>
               </Button>
             )}
@@ -175,7 +175,8 @@ class Drawer extends React.PureComponent {
               <Text style={styles.text}>{t("TOS")}</Text>
             </Button>
             <Button style={styles.button} onPress={this.navigateToScreen("giveFeedback")}>
-              <Icon name="feedback" type="MaterialIcons" style={styles.icon} />
+              <Image source={require("../../assets/imgs/review.png")} style={styles.img} />
+
               <Text style={styles.text}>{t("GIVE_FEEDBACK")}</Text>
             </Button>
             {!isEmpty(user) && (
