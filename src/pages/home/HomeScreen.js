@@ -34,14 +34,17 @@ import Carousel, {Pagination} from "react-native-snap-carousel";
 import StarRating from "react-native-star-rating";
 import {FlatGrid} from "react-native-super-grid";
 import ProductItem from "../product/ProductItem";
+import {useNavigation} from "react-navigation-hooks";
 
 const {width} = Dimensions.get("window");
-function HomeScreen({navigation}) {
+function HomeScreen() {
   const [loading, setLoading] = useState(false);
   const layout = useSelector(state => state.homeLayout);
   const {t} = useTranslation();
   const dispatch = useDispatch();
   const [index, setIndex] = useState(0);
+
+  const navigation = useNavigation();
 
   const _categoryKeyExtractor = (item, index) => item.id + "category_" + index;
 
@@ -96,7 +99,7 @@ function HomeScreen({navigation}) {
   };
 
   const goToPage = (route, params = {}) => () => {
-    navigation.push(route, params);
+    navigation.navigate(route, params);
   };
 
   const openCategories = () => {
@@ -108,7 +111,7 @@ function HomeScreen({navigation}) {
   const gotoProductPage = item => () => {
     console.log("banner");
     let params = {category_id: null, id: item.id, name: item.name};
-    navigation.push("ProductScreen", params);
+    navigation.navigate("ProductScreen", params);
   };
 
   const _renderItemCrousel = ({item, index}) => {
@@ -129,7 +132,7 @@ function HomeScreen({navigation}) {
   const {accent_color} = useSelector(state => state.appSettings);
 
   const goToProductDetails = item => () => {
-    navigation.push("ProductDetailScreen", item);
+    navigation.navigate("ProductDetailScreen", item);
   };
 
   const _renderFlatItem = ({item, index}) => {
@@ -204,7 +207,7 @@ function HomeScreen({navigation}) {
     var discount = Math.ceil(((item.regular_price - item.price) / item.regular_price) * 100);
 
     return (
-      <TouchableWithoutFeedback onPress={goToProductDetails}>
+      <TouchableWithoutFeedback onPress={goToProductDetails(item)}>
         <>
           <View
             style={[

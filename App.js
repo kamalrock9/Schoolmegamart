@@ -64,6 +64,7 @@ const HomeStack = createStackNavigator(
     Auth,
     Reviews,
     AddReview,
+    CategoryScreen,
   },
   {
     defaultNavigationOptions: {
@@ -79,7 +80,6 @@ const CategoryStack = createStackNavigator(
     CheckoutScreen,
     WishlistScreen,
     Search,
-    CheckoutScreen,
     Auth,
   },
   {
@@ -91,6 +91,7 @@ const CategoryStack = createStackNavigator(
 
 const ProductStack = createStackNavigator(
   {
+    CategoryScreen,
     ProductScreen,
     ProductDetailScreen,
     CheckoutScreen,

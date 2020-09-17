@@ -1,5 +1,5 @@
 import {View, StyleSheet, StatusBar, TextInput, FlatList, TouchableOpacity} from "react-native";
-import {Text, Icon, Button, HTMLRender} from "components";
+import {Text, Icon, Button, HTMLRender, Toolbar} from "components";
 import React, {useState, useCallback} from "react";
 import {useSelector} from "react-redux";
 import {ApiClient} from "service";
@@ -55,14 +55,14 @@ function Search({navigation}) {
         onPress={goToPage("ProductDetailScreen", item)}>
         <FitImage
           source={{uri: item.images[0].src}}
-          style={{width: 60, height: 60}}
+          style={{width: 60, height: 50, borderRadius: 4}}
           resizeMode="contain"
         />
         <View style={{marginStart: 10}}>
           <Text style={{fontWeight: "400", lineHeight: 16, fontSize: 12}}>{item.name}</Text>
           <HTMLRender
             html={item.price_html || "<b></b>"}
-            baseFontStyle={{fontSize: 10, lineHeight: 16}}
+            baseFontStyle={{fontSize: 10, lineHeight: 16, fontWeight: "700"}}
           />
         </View>
       </TouchableOpacity>
@@ -85,12 +85,31 @@ function Search({navigation}) {
     <View>
       <StatusBar backgroundColor={primary_color_dark} barStyle="light-content" />
       <View style={[styles.view, {backgroundColor: primary_color}]}>
-        <Button onPress={goBack} style={styles.menuButton}>
+        {/* <Button onPress={goBack} style={styles.menuButton}>
           <Icon color={primary_color_text} name="md-arrow-back" size={24} />
-        </Button>
-        <View style={styles.textinputview}>
-          <Icon color={"grey"} name="md-search" size={20} />
-          <TextInput style={styles.input} placeholder="search" onChangeText={onChangeText} />
+        </Button> */}
+        <Toolbar backButton title={"SEARCH"} />
+        <View style={[styles.textinputview, {backgroundColor: primary_color, marginTop: 16}]}>
+          <View
+            style={[
+              styles.view,
+              {
+                alignItems: "center",
+                backgroundColor: "#fff",
+                //  paddingTop: 8,
+                flexDirection: "row",
+                borderRadius: 4,
+                elevation: 2,
+                height: 40,
+              },
+            ]}>
+            <TextInput
+              style={[styles.input, {height: 28}]}
+              placeholder="search"
+              onChangeText={onChangeText}
+            />
+            <Icon color={"grey"} name="md-search" size={20} />
+          </View>
         </View>
       </View>
       <View style={{marginHorizontal: 16}}>
@@ -129,7 +148,7 @@ const styles = StyleSheet.create({
   view: {
     backgroundColor: "#000",
     width: "100%",
-    flexDirection: "row",
+    //flexDirection: "row",
     paddingVertical: 10,
     paddingRight: 10,
   },
@@ -147,7 +166,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "#fff",
     alignItems: "center",
-    flex: 1,
     paddingStart: 10,
     borderRadius: 2,
   },

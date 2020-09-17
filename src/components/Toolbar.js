@@ -149,6 +149,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 16,
     paddingHorizontal: 16,
+    flex: 1,
   },
   right: {
     flexDirection: "row",

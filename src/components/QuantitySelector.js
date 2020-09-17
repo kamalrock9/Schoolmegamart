@@ -17,17 +17,19 @@ class QuantitySelector extends Component {
             height: 30,
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "#f6f6f6",
-            borderWidth: 1,
+            // backgroundColor: "#f6f6f6",
+            borderWidth: 1.5,
+            borderRadius: 4,
             borderColor: "#efefef",
           }}
           onPress={this.props.minusClick}>
-          <Text style={{fontSize: 25}}>-</Text>
+          <Text style={{fontSize: 22}}>-</Text>
         </TouchableOpacity>
         <Text
           style={{
-            fontSize: 20,
+            fontSize: 16,
             width: 30,
+            fontWeight: "600",
             textAlign: "center",
           }}>
           {this.props.quantity}
@@ -38,12 +40,13 @@ class QuantitySelector extends Component {
             height: 30,
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "#f6f6f6",
-            borderWidth: 1,
+            //backgroundColor: "#f6f6f6",
+            borderWidth: 1.5,
+            borderRadius: 4,
             borderColor: "#efefef",
           }}
           onPress={this.props.plusClick}>
-          <Text style={{fontSize: 25}}>+</Text>
+          <Text style={{fontSize: 22}}>+</Text>
         </TouchableOpacity>
       </View>
     );

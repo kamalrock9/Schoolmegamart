@@ -125,17 +125,22 @@ const renderScene = SceneMap({
 
 const renderTabBar = props => (
   <View>
-    {/* <Image
-      source={require("../assets/imgs/homeBottom.png")}
+    <Image
+      source={require("../assets/imgs/top_shadow.png")}
       style={{height: 20, width: "100%", position: "absolute", top: -20}}
-    /> */}
+    />
     <TabBar
       {...props}
       renderIndicator={() => <View />}
       onTabLongPress={({route}) => props.jumpTo(route.key)}
       activeColor="#fd3462"
       inactiveColor="#999999"
-      style={{backgroundColor: "#FFFFFF"}}
+      style={{
+        backgroundColor: "#ffffff",
+        elevation: 2,
+        borderTopLeftRadius: 12,
+        borderTopRightRadius: 12,
+      }}
       tabStyle={{paddingHorizontal: 4, paddingVertical: 5}}
       renderLabel={renderLabel}
       renderIcon={renderIcon}

@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {View} from "react-native";
-import {TouchableOpacity} from "react-native-gesture-handler";
+import {View, Image, Dimensions, TouchableOpacity, FlatList} from "react-native";
 import {withNavigation} from "react-navigation";
 import FastImage from "react-native-fast-image";
 import Text from "./Text";
@@ -24,6 +23,7 @@ const makeCollapsed = (data, childrenKey) => {
   });
 };
 
+const {width} = Dimensions.get("window");
 class TreeView extends React.PureComponent {
   static propTypes = {
     data: PropTypes.array.isRequired,
@@ -147,62 +147,114 @@ class TreeView extends React.PureComponent {
     this.props.onpress && this.props.onpress(id);
   };
 
-  renderTree(data, level) {
-    return data.map(children => {
-      const hasChildren =
-        children[this.props.childrenKey] && children[this.props.childrenKey].length > 0;
+  _renderItem = ({item, index}) => {
+    return (
+      <TouchableOpacity
+        style={{
+          flex: 1,
+          marginTop: index > 1 ? 24 : 8,
+          marginEnd: index % 2 == 0 ? 8 : 0,
+          marginBottom: this.state.data.length - 2 ? 16 : 0,
+          alignItems: "center",
+        }}
+        key={item + "sap" + index}
+        onPress={this.gotoPage(item.id)}>
+        <Image
+          style={{width: width / 2 - 16, height: 150, resizeMode: "contain", borderRadius: 16}}
+          source={{
+            uri:
+              item.image != null
+                ? item.image.src
+                : "https://user-images.githubusercontent.com/2351721/31314483-7611c488-ac0e-11e7-97d1-3cfc1c79610e.png",
+          }}
+        />
+        <Text style={{fontSize: 14, paddingStart: 10, fontWeight: "600"}}>{item.name}</Text>
+      </TouchableOpacity>
+    );
+  };
 
-      return (
-        <View
-          key={children[this.props.idKey]}
-          style={{
-            height: children.collapsed ? this.props.collapsedItemHeight : "auto",
-            zIndex: 1,
-            marginVertical: 10,
-            overflow: "hidden",
-          }}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginStart: 25 * level,
-              //height: 40
-            }}>
-            <View style={{flexDirection: "row", alignItems: "center"}}>
-              <FastImage
-                source={{
-                  uri:
-                    children.image != null
-                      ? children.image.src
-                      : "https://user-images.githubusercontent.com/2351721/31314483-7611c488-ac0e-11e7-97d1-3cfc1c79610e.png",
-                }}
-                style={{width: 36, height: 36}}
-              />
-              <TouchableOpacity onPress={this.gotoPage(children.id)}>
-                <Text style={{fontSize: 14, paddingStart: 10, fontWeight: "400"}}>
-                  {children.name + " (" + children.count + ")"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-            {children.collapsed !== null &&
-              children[this.props.childrenKey] &&
-              children[this.props.childrenKey].length > 0 && (
-                <Button
-                  style={{padding: 8}}
-                  onPress={() => this.handleNodePressed(children, level)}>
-                  <Icon name={children.collapsed ? "ios-add" : "ios-remove"} size={24} />
-                </Button>
-              )}
-          </View>
-          {hasChildren && this.renderTree(children[this.props.childrenKey], level + 1)}
-        </View>
-      );
-    });
-  }
+  _keyextractor = (item, index) => item + "sap" + index;
+
+  // renderTree(data, level) {
+  //   return data.map(children => {
+  //     const hasChildren =
+  //       children[this.props.childrenKey] && children[this.props.childrenKey].length > 0;
+
+  //     return (
+  //       <View
+  //         key={children[this.props.idKey]}
+  //         style={{
+  //           height: children.collapsed ? this.props.collapsedItemHeight : "auto",
+  //           zIndex: 1,
+  //           marginVertical: 10,
+  //           overflow: "hidden",
+  //         }}>
+  //         <View style={{flexDirection: "row"}}>
+  //           <Image
+  //             style={{width: width / 2, height: 150}}
+  //             source={{
+  //               uri:
+  //                 children.image != null
+  //                   ? children.image.src
+  //                   : "https://user-images.githubusercontent.com/2351721/31314483-7611c488-ac0e-11e7-97d1-3cfc1c79610e.png",
+  //             }}
+  //           />
+  //         </View>
+  //         {/* <FlatList
+  //           numColumns={2}
+  //           data={children}
+  //           renderItem={this._renderItem}
+  //           keyExtractor={this._keyextractor}
+  //         /> */}
+  //         {/* <View
+  //           style={{
+  //             flexDirection: "row",
+  //             justifyContent: "space-between",
+  //             alignItems: "center",
+  //             marginStart: 25 * level,
+  //             //height: 40
+  //           }}>
+  //           <View style={{flexDirection: "row", alignItems: "center"}}>
+  //             <FastImage
+  //               source={{
+  //                 uri:
+  //                   children.image != null
+  //                     ? children.image.src
+  //                     : "https://user-images.githubusercontent.com/2351721/31314483-7611c488-ac0e-11e7-97d1-3cfc1c79610e.png",
+  //               }}
+  //               style={{width: 36, height: 36}}
+  //             />
+  //             <TouchableOpacity onPress={this.gotoPage(children.id)}>
+  //               <Text style={{fontSize: 14, paddingStart: 10, fontWeight: "400"}}>
+  //                 {children.name + " (" + children.count + ")"}
+  //               </Text>
+  //             </TouchableOpacity>
+  //           </View>
+  //           {children.collapsed !== null &&
+  //             children[this.props.childrenKey] &&
+  //             children[this.props.childrenKey].length > 0 && (
+  //               <Button
+  //                 style={{padding: 8}}
+  //                 onPress={() => this.handleNodePressed(children, level)}>
+  //                 <Icon name={children.collapsed ? "ios-add" : "ios-remove"} size={24} />
+  //               </Button>
+  //             )}
+  //         </View>
+  //         {hasChildren && this.renderTree(children[this.props.childrenKey], level + 1)} */}
+  //       </View>
+  //     );
+  //   });
+  // }
 
   render() {
-    return this.renderTree(this.state.data, 0);
+    return (
+      <FlatList
+        numColumns={2}
+        data={this.state.data}
+        renderItem={this._renderItem}
+        keyExtractor={this._keyextractor}
+      />
+    );
   }
 }
 

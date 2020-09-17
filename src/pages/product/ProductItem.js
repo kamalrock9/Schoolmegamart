@@ -10,7 +10,7 @@ function ProductItem({containerStyle, width: width, item}) {
   const {accent_color} = useSelector(state => state.appSettings);
 
   const goToProductDetails = () => {
-    navigation.push("ProductDetailScreen", item);
+    navigation.navigate("ProductDetailScreen", item);
   };
 
   var discount = Math.ceil(((item.regular_price - item.price) / item.regular_price) * 100);
