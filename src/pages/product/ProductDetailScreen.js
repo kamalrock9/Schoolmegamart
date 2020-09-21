@@ -716,7 +716,7 @@ class ProductDetailScreen extends React.PureComponent {
                       html={product.description}
                       containerStyle={[styles.cardItem, {marginTop: 30}]}
                     />
-                  ) : (
+                  ) : index == 2 ? (
                     <View style={[styles.cardItem, {marginTop: 30}]}>
                       <SpecificationRow
                         leftContent="Categories"
@@ -730,7 +730,7 @@ class ProductDetailScreen extends React.PureComponent {
                         />
                       )}
 
-                      {product.stock_quantity && (
+                      {product.hasOwnProperty("stock_quantity") && (
                         <SpecificationRow
                           leftContent="Stock Quantity"
                           rightContent={product.stock_quantity}
@@ -757,6 +757,8 @@ class ProductDetailScreen extends React.PureComponent {
                         />
                       ))}
                     </View>
+                  ) : (
+                    ""
                   )}
                 </View>
               )}

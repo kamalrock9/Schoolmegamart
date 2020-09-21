@@ -357,6 +357,7 @@ function Auth({navigation}) {
               />
 
               <TextInput
+                caretHidden
                 placeholder="Email"
                 style={[styles.textinput, {marginTop: 3}]}
                 value={state.loginEmail}
@@ -464,6 +465,7 @@ function Auth({navigation}) {
               />
 
               <TextInput
+                caretHidden
                 placeholder="Email"
                 style={[styles.textinput, {marginTop: 10, marginBottom: 7}]}
                 value={state.signUpEmail}

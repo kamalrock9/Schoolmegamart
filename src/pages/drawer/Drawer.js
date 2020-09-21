@@ -207,7 +207,14 @@ class Drawer extends React.PureComponent {
           hasBackdrop
           useNativeDriver
           hideModalContentWhileAnimating>
-          <View style={{backgroundColor: "#FFF", padding: 10}}>
+          <View
+            style={{
+              backgroundColor: "#FFF",
+              paddingVertical: 10,
+              alignItems: "center",
+              borderTopRightRadius: 8,
+              borderTopLeftRadius: 8,
+            }}>
             <Text style={{fontSize: 20}}>Contact Us</Text>
             <View
               style={{
@@ -217,14 +224,16 @@ class Drawer extends React.PureComponent {
                 marginVertical: 10,
               }}
             />
-            <View style={{flexDirection: "row"}}>
+            <View style={{}}>
               <Button
-                style={[styles.contact_btn, {backgroundColor: primary_color}]}
+                style={[styles.contact_btn, {backgroundColor: accent_color}]}
                 onPress={openEmail}>
-                <Text style={{color: "#fff"}}>{t("EMAIL").toUpperCase()}</Text>
+                <Text style={{color: "#fff"}}>{t("EMAIL")}</Text>
               </Button>
-              <Button style={[styles.contact_btn, {backgroundColor: accent_color}]} onPress={call}>
-                <Text style={{color: "#fff"}}>{t("CALL")}</Text>
+              <Button
+                style={[styles.contact_btn, {backgroundColor: accent_color, marginTop: 10}]}
+                onPress={call}>
+                <Text style={{color: "#fff"}}>Call</Text>
               </Button>
             </View>
           </View>
@@ -311,11 +320,13 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
   },
   contact_btn: {
-    flex: 1,
+    //  flex: 1,
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 14,
-    borderRadius: 2,
+    borderRadius: 4,
+    height: 40,
+    paddingHorizontal: 60,
   },
   img: {height: 22, width: 22, resizeMode: "contain", marginHorizontal: 16},
 });

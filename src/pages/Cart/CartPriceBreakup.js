@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {View, StyleSheet, Dimensions} from "react-native";
+import {View, StyleSheet, Dimensions, Image} from "react-native";
 import {Button, Text, Icon, HTMLRender} from "components";
 import Modal from "react-native-modal";
 import Coupon from "./Coupon";
@@ -36,8 +36,12 @@ function CartPriceBreakup({applyCoupon, data, removeCoupon, shippingMethod}) {
             width: "100%",
           }}
           onPress={toggleCouponModal}>
-          <Icon name="brightness-percent" type="MaterialCommunityIcons" size={24} />
-          <Text>Apply Promo Code/Vouncher</Text>
+          {/* <Icon name="brightness-percent" type="MaterialCommunityIcons" size={24} /> */}
+          <Image
+            source={require("../../assets/imgs/coupon.png")}
+            style={{width: 25, height: 25, resizeMode: "contain", marginEnd: 16}}
+          />
+          <Text style={{fontWeight: "600"}}>Apply Promo Code/Vouncher</Text>
           <Icon name="ios-arrow-forward" size={24} style={{marginStart: "auto"}} />
         </Button>
 
@@ -67,9 +71,10 @@ function CartPriceBreakup({applyCoupon, data, removeCoupon, shippingMethod}) {
                 <View
                   key={item.method_id}
                   style={{flexDirection: "row", width: "100%", alignItems: "center"}}>
-                  <Text style={{flex: 1}}>{item.shipping_method_name}</Text>
+                  <Text style={{flex: 1, fontWeight: "600"}}>{item.shipping_method_name}</Text>
                   <HTMLRender
                     html={item.shipping_method_price ? item.shipping_method_price : <b />}
+                    baseFontStyle={{fontWeight: "600"}}
                   />
                   <Button onPress={selectShippingMethod(item)} style={{paddingVertical: 4}}>
                     <Icon
@@ -99,8 +104,8 @@ function CartPriceBreakup({applyCoupon, data, removeCoupon, shippingMethod}) {
       <View style={[styles.card, {marginBottom: 8}]}>
         <Text style={styles.heading}>Order Summary</Text>
         <View style={[styles.view, {marginTop: 5}]}>
-          <Text>Subtotal</Text>
-          <HTMLRender html={data.cart_subtotal} />
+          <Text style={{fontWeight: "600"}}>Subtotal</Text>
+          <HTMLRender html={data.cart_subtotal} baseFontStyle={{fontWeight: "600"}} />
         </View>
         {data.hasOwnProperty("shipping_method") && (
           <View style={styles.view}>
@@ -110,21 +115,25 @@ function CartPriceBreakup({applyCoupon, data, removeCoupon, shippingMethod}) {
                 data.shipping_method.find(item => item.id == data.chosen_shipping_method)
                   .shipping_method_price
               }
+              baseFontStyle={{fontWeight: "600"}}
             />
           </View>
         )}
         <View style={styles.view}>
-          <Text>Tax</Text>
-          <HTMLRender html={data.taxes} />
+          <Text style={{fontWeight: "600"}}>Tax</Text>
+          <HTMLRender html={data.taxes} baseFontStyle={{fontWeight: "600"}} />
         </View>
         <View style={styles.view}>
-          <Text style={{color: "green"}}>Total Discount</Text>
-          <HTMLRender html={data.discount_total} baseFontStyle={{color: "green"}} />
+          <Text style={{color: "green", fontWeight: "600"}}>Total Discount</Text>
+          <HTMLRender
+            html={data.discount_total}
+            baseFontStyle={{color: "green", fontWeight: "600"}}
+          />
         </View>
         <View style={[styles.line, {marginVertical: 3}]} />
         <View style={styles.view}>
-          <Text style={[styles.heading, {marginBottom: 0}]}>Total</Text>
-          <HTMLRender html={data.total} />
+          <Text style={[styles.heading, {marginBottom: 0, fontWeight: "600"}]}>Total</Text>
+          <HTMLRender html={data.total} baseFontStyle={{fontWeight: "600"}} />
         </View>
       </View>
 
@@ -163,11 +172,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowOffset: {width: 0, height: 1},
     backgroundColor: "#fff",
-    marginHorizontal: 16,
+    //  marginHorizontal: 16,
     marginTop: 16,
-    borderRadius: 5,
-    width: width - 32,
-    paddingHorizontal: 8,
+    borderRadius: 8,
+    width: width,
+    paddingHorizontal: 16,
     paddingVertical: 16,
   },
   couponContainer: {

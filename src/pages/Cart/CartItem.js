@@ -53,19 +53,19 @@ function CartItem({item, index, manageQuanity, deleteCartItem}) {
           flexDirection: "row",
           alignItems: "flex-start",
           width: "100%",
-          paddingTop: index == 0 ? 16 : 0,
+          paddingTop: index == 0 ? 16 : 16,
+          paddingBottom: 16,
           paddingHorizontal: 16,
         }}>
         <Image style={{height: 70, width: 70}} source={{uri: item.image}} />
         <View style={{marginStart: 16, flex: 1}}>
           <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-            <Text style={{fontWeight: "700", flex: 1}}>{item.name}</Text>
-            <Button onPress={openModal}>
-              <Icon type="MaterialIcons" name="delete" size={22} />
-            </Button>
+            <Text style={{fontWeight: "600", flex: 1}}>{item.name.toUpperCase()}</Text>
           </View>
-          <HTMLRender html={item.product_desc} />
-          <HTMLRender html={item.varitions} />
+          <HTMLRender baseFontStyle={{fontWeight: "700"}} html={item.subtotal} />
+
+          {/* <HTMLRender html={item.product_desc} /> */}
+          {/* <HTMLRender html={item.varitions} /> */}
           <View
             style={{
               justifyContent: "space-between",
@@ -73,17 +73,22 @@ function CartItem({item, index, manageQuanity, deleteCartItem}) {
               marginTop: 10,
               flex: 1,
             }}>
-            <Text>Price:</Text>
-            <HTMLRender html={item.subtotal} />
             <View style={{flexDirection: "row"}}>
               <Button style={styles.btn} onPress={decrement}>
                 <Icon name="minus" type="Entypo" size={16} color="#757575" />
               </Button>
-              <Text style={{paddingHorizontal: 8}}>{item.quantity}</Text>
+              <Text style={{paddingHorizontal: 8, fontWeight: "600"}}>{item.quantity}</Text>
               <Button style={styles.btn} onPress={increment}>
                 <Icon name="plus" type="Entypo" size={16} color="#757575" />
               </Button>
             </View>
+            <Button onPress={openModal}>
+              {/* <Icon type="MaterialIcons" name="delete" size={22} /> */}
+              <Image
+                source={require("../../assets/imgs/deleteCart.png")}
+                style={{width: 25, height: 25, resizeMode: "contain"}}
+              />
+            </Button>
           </View>
         </View>
       </View>
@@ -117,8 +122,10 @@ const styles = StyleSheet.create({
   },
   btn: {
     borderWidth: 1,
+    borderRadius: 4,
+    padding: 2,
     borderColor: "#dedede",
-    backgroundColor: "#EFEFEF",
+    //backgroundColor: "#EFEFEF",
     alignItems: "center",
     justifyContent: "center",
   },

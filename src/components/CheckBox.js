@@ -20,7 +20,7 @@ class CheckBox extends React.PureComponent {
         }}>
         <Icon
           type="MaterialCommunityIcons"
-          color={checked ? appSettings.primary_color : "#00000099"}
+          color={checked ? appSettings.accent_color : "#000000"}
           size={styleIcon ? 24 : 30}
           name={checked ? "checkbox-marked" : "checkbox-blank-outline"}
         />

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import {View, StatusBar, StyleSheet, Platform, ScrollView} from "react-native";
+import {View, StatusBar, StyleSheet, Platform, ScrollView, Image} from "react-native";
 import {Text, Icon, Button, CheckBox, Container} from "components";
 import {useSelector, useDispatch} from "react-redux";
 import {useTranslation} from "react-i18next";
@@ -80,21 +80,34 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
   return (
     <Container>
       <StatusBar backgroundColor={primary_color_dark} barStyle="light-content" />
-      <View style={[styles.toolbar, {backgroundColor: primary_color}]}>
-        <Text style={[styles.title, {color: primary_color_text}]}>{t("FILTER")}</Text>
+      <View style={[styles.toolbar, {backgroundColor: primary_color, paddingStart: 8}]}>
+        <Button style={{marginStart: 8}} onPress={reset}>
+          <Image
+            resizeMode="contain"
+            source={require("../../assets/imgs/refresh.png")}
+            style={{width: 25, height: 25}}
+          />
+        </Button>
+        <Text style={[styles.title, {color: "#000"}]}>FILTER</Text>
 
         <Button onPress={onBackPress} style={styles.menuButton}>
-          <Icon color={primary_color_text} type="Entypo" name="cross" size={24} />
+          <Icon color={"#000"} type="Entypo" name="cross" size={24} />
         </Button>
       </View>
       <View style={{flex: 1, flexDirection: "row"}}>
         <ScrollView style={{flex: 2, backgroundColor: "#E8EEF6"}}>
           {filterTabs.map((item, index) => (
             <Button
-              style={[styles.filterTabs, {backgroundColor: index === tabIndex ? "#FFFFFF" : null}]}
+              style={[
+                styles.filterTabs,
+                {backgroundColor: index === tabIndex ? "#FFFFFF" : null},
+                {marginStart: 12, marginTop: 4},
+              ]}
               key={"filter_" + item + index}
               onPress={onChangeIndex(index)}>
-              <Text>{item}</Text>
+              <Text style={{fontWeight: "500", color: index === tabIndex ? accent_color : "#000"}}>
+                {item}
+              </Text>
             </Button>
           ))}
         </ScrollView>
@@ -177,13 +190,13 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
         </ScrollView>
       </View>
       <View style={styles.footer}>
-        <Button style={[styles.applyButton, {backgroundColor: primary_color}]} onPress={reset}>
+        {/* <Button style={[styles.applyButton, {backgroundColor: accent_color}]} onPress={reset}>
           <Text style={{color: "#FFFFFF", fontWeight: "700"}}>RESET</Text>
-        </Button>
+        </Button> */}
         <Button
           style={[styles.applyButton, {backgroundColor: accent_color, flex: 3}]}
           onPress={filter}>
-          <Text style={{color: "#FFFFFF", fontWeight: "700"}}>APPLY</Text>
+          <Text style={{color: "#FFFFFF", fontWeight: "700"}}>Show Result</Text>
         </Button>
       </View>
     </Container>
@@ -206,21 +219,26 @@ const styles = StyleSheet.create({
   menuButton: {padding: 16},
   filterTabs: {
     width: "100%",
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderTopStartRadius: 24,
+    borderBottomStartRadius: 24,
   },
   footer: {
     flexDirection: "row",
     width: "100%",
-    padding: 8,
+    // padding: 8,
     backgroundColor: "#FFFFFF",
   },
   applyButton: {
     flex: 1,
-    height: 40,
+    height: 48,
     justifyContent: "center",
-    borderRadius: 20,
+    //  borderRadius: 20,
     alignItems: "center",
-    marginHorizontal: 10,
+    borderTopStartRadius: 8,
+    borderTopEndRadius: 8,
+    // marginHorizontal: 10,
   },
 });
 

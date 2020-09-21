@@ -1,6 +1,15 @@
 import React from "react";
-import {StyleSheet, View, FlatList, ActivityIndicator} from "react-native";
-import {Toolbar, Container, Text, Button, Icon, EmptyList} from "components";
+import {StyleSheet, View, FlatList, ActivityIndicator, Image, TouchableOpacity} from "react-native";
+import {
+  Toolbar,
+  Container,
+  Text,
+  Button,
+  Icon,
+  EmptyList,
+  WishlistIcon,
+  HTMLRender,
+} from "components";
 import {connect} from "react-redux";
 import Toast from "react-native-simple-toast";
 import ProductItem from "./ProductItem";
@@ -11,6 +20,7 @@ import Modal from "react-native-modal";
 import {isEmpty} from "lodash";
 import CategoryItem from "../home/CategoryItem";
 import SortOptions from "./SortOptions";
+import StarRating from "react-native-star-rating";
 
 class ProductScreen extends React.PureComponent {
   static navigationOptions = {
@@ -137,7 +147,67 @@ class ProductScreen extends React.PureComponent {
     );
   };
 
-  _renderItem = ({item, index}) => <ProductItem item={item} />;
+  goToProductDetails = item => () => {
+    this.props.navigation.navigate("ProductDetailScreen", item);
+  };
+
+  _renderItem = ({item, index}) => {
+    var discount = Math.ceil(((item.regular_price - item.price) / item.regular_price) * 100);
+    const {
+      appSettings: {accent_color},
+    } = this.props;
+    return (
+      <TouchableOpacity onPress={this.goToProductDetails(item)}>
+        <View
+          style={[
+            styles.containerProduct,
+            {alignItems: "center", paddingHorizontal: 4, paddingVertical: 16},
+          ]}>
+          {item.images.length > 0 && (
+            <Image
+              resizeMode="contain"
+              style={{width: 100, height: 80, borderRadius: 8}}
+              source={{uri: item.images[0].src}}
+              indicatorColor={accent_color}
+            />
+          )}
+          <View style={{flex: 1, marginEnd: 16}}>
+            <Text
+              style={[styles.itemMargin, {fontWeight: "600", fontSize: 12, marginBottom: 4}]}
+              numberOfLines={1}>
+              {item.name.toUpperCase()}
+            </Text>
+            <StarRating
+              disabled
+              maxStars={5}
+              rating={parseInt(item.average_rating)}
+              containerStyle={[styles.itemMargin, styles.star, {marginVertical: 4}]}
+              starStyle={{marginEnd: 5}}
+              starSize={10}
+              halfStarEnabled
+              emptyStarColor={accent_color}
+              fullStarColor={accent_color}
+              halfStarColor={accent_color}
+            />
+            <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+              {item.price_html != "" && (
+                <HTMLRender
+                  html={item.price_html}
+                  containerStyle={styles.itemMargin}
+                  baseFontStyle={{fontSize: 12, fontWeight: "700"}}
+                />
+              )}
+              <Image
+                resizeMode="contain"
+                source={require("../../assets/imgs/cart.png")}
+                style={{width: 25, height: 25}}
+              />
+            </View>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   getToProductPage = param => {
     this.params.category = param;
@@ -164,6 +234,14 @@ class ProductScreen extends React.PureComponent {
 
   _keyExtractor = item => "products_" + item.id;
 
+  goBack = () => {
+    this.props.navigation.goBack(null);
+  };
+
+  gotoSeperate = () => {
+    return <View style={{borderBottomWidth: 2, borderColor: "#EEEEEE", marginHorizontal: 16}} />;
+  };
+
   render() {
     const {products, loading, showFilter, showFilterSort, attributes} = this.state;
     const {
@@ -172,22 +250,65 @@ class ProductScreen extends React.PureComponent {
 
     return (
       <Container>
-        <Toolbar backButton title="PRODUCTS" />
-        <View style={styles.filterContainer}>
+        <View style={{width: "100%", flexDirection: "row", alignItems: "center"}}>
+          <Button onPress={this.goBack} style={{padding: 16}}>
+            <Icon color={"#000"} name="keyboard-backspace" type="MaterialIcons" size={24} />
+          </Button>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flex: 1,
+            }}>
+            <Text
+              style={{
+                fontWeight: "600",
+                fontSize: 16,
+                paddingHorizontal: 16,
+                color: "#000",
+              }}>
+              Product
+            </Text>
+            <View style={{flexDirection: "row"}}>
+              <Button onPress={this.openSort}>
+                <Image
+                  style={{width: 30, height: 30, resizeMode: "contain"}}
+                  source={require("../../assets/imgs/sort.png")}
+                />
+              </Button>
+              <Button onPress={this.openFilter}>
+                <Image
+                  style={{width: 30, height: 30, marginHorizontal: 10, resizeMode: "contain"}}
+                  source={require("../../assets/imgs/filter.png")}
+                />
+              </Button>
+            </View>
+          </View>
+        </View>
+        {/* <Toolbar backButton title="PRODUCTS" /> */}
+        {/* <View style={styles.filterContainer}>
           <Button style={styles.button} onPress={this.openFilter}>
             <Icon name="menu-unfold" type="AntDesign" size={20} />
             <Text style={styles.btntext}>Categories</Text>
           </Button>
-          <Button style={styles.button} onPress={this.openSort}>
-            <Icon name="swap" type="AntDesign" size={20} />
-            <Text style={styles.btntext}>Sort By</Text>
-          </Button>
-          <Button style={styles.button} onPress={this.openFilter}>
-            <Icon name="filter" type="AntDesign" size={20} />
-            <Text style={styles.btntext}>Filter</Text>
-          </Button>
-        </View>
-        <FlatGrid
+        </View> */}
+        <FlatList
+          data={products}
+          renderItem={this._renderItem}
+          keyExtractor={this._keyExtractor}
+          ListEmptyComponent={<EmptyList loading={loading} label="Products not available" />}
+          ListFooterComponent={
+            products.length > 0 && loading ? (
+              <ActivityIndicator color={accent_color} size="large" style={{padding: 16}} />
+            ) : null
+          }
+          ListHeaderComponent={this.listHeaderComponent}
+          showsVerticalScrollIndicator={!loading}
+          onEndReached={this.onEndReached}
+          ItemSeparatorComponent={this.gotoSeperate}
+        />
+        {/* <FlatGrid
           items={products}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
@@ -205,7 +326,7 @@ class ProductScreen extends React.PureComponent {
               <ActivityIndicator color={accent_color} size="large" style={{padding: 16}} />
             ) : null
           }
-        />
+        /> */}
         <Modal
           animationType="slide"
           isVisible={showFilter}
@@ -265,6 +386,26 @@ const styles = StyleSheet.create({
   },
   btntext: {
     marginStart: 5,
+  },
+  containerProduct: {
+    borderRadius: 3,
+    // borderWidth: 0.5,
+    //borderColor: "#bdbdbd",
+    paddingBottom: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  star: {
+    justifyContent: "flex-start",
+  },
+  itemMargin: {
+    marginStart: 8,
+    marginTop: 4,
+  },
+  right: {
+    position: "absolute",
+    end: 0,
+    top: 0,
   },
 });
 

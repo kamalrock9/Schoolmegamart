@@ -52,45 +52,40 @@ function Toolbar({
       <View style={[styles.container, {backgroundColor: primary_color}]}>
         {menuButton && (
           <Button onPress={navigation.openDrawer} style={styles.menuButton}>
-            <Icon color={primary_color_text} name="md-menu" size={24} />
+            <Icon color={"#000"} name="md-menu" size={24} />
           </Button>
         )}
         {backButton && (
           <Button onPress={goBack} style={styles.menuButton}>
-            <Icon
-              color={primary_color_text}
-              name="keyboard-backspace"
-              type="MaterialIcons"
-              size={24}
-            />
+            <Icon color={"#000"} name="keyboard-backspace" type="MaterialIcons" size={24} />
           </Button>
         )}
         {paymentpage && (
           <Button onPress={goTo("HomeScreen")} style={styles.menuButton}>
-            <Icon color={primary_color_text} name="md-arrow-back" size={24} />
+            <Icon color={"#000"} name="md-arrow-back" size={24} />
           </Button>
         )}
         {cancelButton && (
           <Button onPress={onCancel} style={styles.menuButton}>
-            <Icon color={primary_color_text} name="cross" type="Entypo" size={24} />
+            <Icon color={"#000"} name="cross" type="Entypo" size={24} />
           </Button>
         )}
 
-        <Text style={[styles.title, {color: primary_color_text}]}>{t(title) || t(routeName)}</Text>
+        <Text style={[styles.title, {color: "#000"}]}>{t(title) || t(routeName)}</Text>
 
         <View style={styles.right}>
           {searchButton && (
             <Button
               style={[styles.right, {paddingVertical: 16, paddingHorizontal: 10}]}
               onPress={goTo("Search")}>
-              <Icon color={primary_color_text} name="md-search" size={24} />
+              <Icon color={"#000"} name="md-search" size={24} />
             </Button>
           )}
           {wishListButton && (
             <Button
               onPress={goTo("WishlistScreen")}
               style={[styles.menuButton, {paddingVertical: 16, paddingHorizontal: 10}]}>
-              <Icon color={primary_color_text} name="md-heart" size={24} />
+              <Icon color={"#000"} name="md-heart" size={24} />
               {isArray(wishlist) && !isEmpty(wishlist) && (
                 <View style={[styles.badge, {backgroundColor: toolbarbadgecolor || accent_color}]}>
                   <Text style={styles.badgeText}>{wishlist.length}</Text>
@@ -102,7 +97,7 @@ function Toolbar({
             <Button
               onPress={goTo("Cart")}
               style={[styles.menuButton, {paddingVertical: 16, paddingHorizontal: 10}]}>
-              <Icon color={primary_color_text} name="md-cart" size={24} />
+              <Icon color={"#000"} name="md-cart" size={24} />
               {count > 0 && (
                 <View style={[styles.badge, {backgroundColor: toolbarbadgecolor || accent_color}]}>
                   <Text style={styles.badgeText}>{count}</Text>
@@ -113,7 +108,7 @@ function Toolbar({
           {!isEmpty(walletBalance) && (
             <HTMLRender
               html={walletBalance}
-              baseFontStyle={{color: primary_color_text}}
+              baseFontStyle={{color: "#000"}}
               containerStyle={{paddingEnd: 10}}
             />
           )}

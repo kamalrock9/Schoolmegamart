@@ -218,6 +218,7 @@ function HomeScreen() {
                 paddingVertical: 20,
                 borderRadius: 8,
                 marginTop: 8,
+                alignItems: "center",
               },
             ]}>
             {item.images.length > 0 && (

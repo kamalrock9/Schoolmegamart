@@ -59,7 +59,7 @@ function Search({navigation}) {
           resizeMode="contain"
         />
         <View style={{marginStart: 10}}>
-          <Text style={{fontWeight: "400", lineHeight: 16, fontSize: 12}}>{item.name}</Text>
+          <Text style={{fontWeight: "600", lineHeight: 16, fontSize: 12}}>{item.name}</Text>
           <HTMLRender
             html={item.price_html || "<b></b>"}
             baseFontStyle={{fontSize: 10, lineHeight: 16, fontWeight: "700"}}
@@ -99,7 +99,7 @@ function Search({navigation}) {
                 //  paddingTop: 8,
                 flexDirection: "row",
                 borderRadius: 4,
-                elevation: 2,
+                elevation: 4,
                 height: 40,
               },
             ]}>

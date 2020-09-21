@@ -1,6 +1,6 @@
 import {View, StyleSheet} from "react-native";
 import {Text, Toolbar, Icon, Button} from "components";
-import React from "react";
+import React, {useState} from "react";
 import {useTranslation} from "react-i18next";
 import {useSelector, useDispatch} from "react-redux";
 import {isArray, isEmpty} from "lodash";
@@ -11,6 +11,13 @@ import NotificationItem from "./NotificationItem";
 function Notification() {
   const dispatch = useDispatch();
   const notification = useSelector(state => state.saveNotification);
+  // const [notification] = useState([
+  //   {title: "Notification", body: "dsjkho8asd mngfeiagnekasdkhkqgwkusuoyawdbnsahjgadsj"},
+  //   {title: "Notification", body: "dsjkho8asd mngfeiagnekasdkhkqgwkusuoyawdbnsahjgadsj"},
+  //   {title: "Notification", body: "dsjkho8asd mngfeiagnekasdkhkqgwkusuoyawdbnsahjgadsj"},
+  //   {title: "Notification", body: "dsjkho8asd mngfeiagnekasdkhkqgwkusuoyawdbnsahjgadsj"},
+  //   {title: "Notification", body: "dsjkho8asd mngfeiagnekasdkhkqgwkusuoyawdbnsahjgadsj"},
+  // ]);
   const appSettings = useSelector(state => state.appSettings);
   const {t} = useTranslation();
 
@@ -40,10 +47,12 @@ function Notification() {
           color="#fff"
           style={{marginRight: 10}}
         />
-        <Text style={{color: "#fff", fontWeight: "300"}}>Remove</Text>
+        <Text style={{color: "#fff", fontWeight: "500"}}>Remove</Text>
       </Button>
     );
   };
+
+  const _sectionSeperate = () => <View style={{height: 1, flex: 1, backgroundColor: "grey"}} />;
 
   return (
     <View style={{flex: 1}}>
@@ -72,6 +81,7 @@ function Notification() {
           renderItem={_renderItem}
           renderHiddenItem={_renderItemActions}
           disableRightSwipe
+          SectionSeparatorComponent={_sectionSeperate}
           rightOpenValue={-75}
         />
       )}

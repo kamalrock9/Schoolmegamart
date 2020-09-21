@@ -121,14 +121,28 @@ class Cart extends React.PureComponent {
     this.props.navigation.goBack(null);
   };
 
-  renderItem = ({item, index}) => (
-    <CartItem
-      item={item}
-      index={index}
-      manageQuanity={this.manageQuanity}
-      deleteCartItem={this.deleteCartItem}
-    />
-  );
+  renderItem = ({item, index}) => {
+    return (
+      <View
+        style={{
+          elevation: 2,
+          backgroundColor: "white",
+          //marginHorizontal: 16,
+          marginTop: index == 0 ? 16 : 0,
+          borderTopLeftRadius: index == 0 ? 8 : 0,
+          borderTopRightRadius: index == 0 ? 8 : 0,
+          borderBottomLeftRadius: this.state.cart_data.cart_data.length - 1 == index ? 8 : 0,
+          borderBottomRightRadius: this.state.cart_data.cart_data.length - 1 == index ? 8 : 0,
+        }}>
+        <CartItem
+          item={item}
+          index={index}
+          manageQuanity={this.manageQuanity}
+          deleteCartItem={this.deleteCartItem}
+        />
+      </View>
+    );
+  };
 
   renderFooter = () => (
     <CartPriceBreakup
@@ -147,14 +161,16 @@ class Cart extends React.PureComponent {
     return (
       <>
         <Container>
-          <Toolbar backButton title="Cart" />
-
+          <Toolbar backButton title="CART" />
           <FlatList
             data={cart_data.cart_data}
             renderItem={this.renderItem}
             keyExtractor={keyExtractor}
             ItemSeparatorComponent={ItemSeparatorComponent}
-            contentContainerStyle={{flexGrow: 1}}
+            contentContainerStyle={{
+              flexGrow: 1,
+              backgroundColor: "#FAFAFA",
+            }}
             ListFooterComponent={isListAvailable && this.renderFooter}
             ListEmptyComponent={
               <EmptyList
@@ -220,7 +236,7 @@ class Cart extends React.PureComponent {
 const keyExtractor = item => item.cart_item_key;
 
 function ItemSeparatorComponent() {
-  return <View style={[styles.line, {margin: 16}]} />;
+  return <View style={[styles.line, {marginHorizontal: 24, paddingHorizontal: 16}]} />;
 }
 
 const styles = StyleSheet.create({
@@ -254,7 +270,7 @@ const styles = StyleSheet.create({
   },
   line: {
     height: 1,
-    width: "100%",
+    flex: 1,
     backgroundColor: "#F1F1F1",
   },
   btnTxt: {

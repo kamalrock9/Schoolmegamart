@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import {View, StyleSheet, FlatList, TextInput} from "react-native";
+import {View, StyleSheet, FlatList, TextInput, Image} from "react-native";
 import {Toolbar, Button, Text, Icon, Container, EmptyList} from "components";
 import {useSelector} from "react-redux";
 import Toast from "react-native-simple-toast";
@@ -18,6 +18,7 @@ function Coupon({onBackButtonPress, applyCoupon}) {
     WooCommerce.get("coupons")
       .then(({data}) => {
         setLoding(false);
+        console.log(data);
         setCoupons(data);
       })
       .catch(error => {
@@ -35,7 +36,8 @@ function Coupon({onBackButtonPress, applyCoupon}) {
       .then(({data}) => {
         if (data.code) {
           if (data.message && data.message.length > 0) {
-            Toast.show(data.message.join());
+            //Toast.show(data.message.join());
+            Toast.show(data.message[0].notice);
           } else if (data.message && data.message !== "") {
             Toast.show(data.message);
           } else {
@@ -55,19 +57,51 @@ function Coupon({onBackButtonPress, applyCoupon}) {
 
   const _renderItem = ({item, index}) => {
     return (
-      <View style={styles.itemContainer}>
-        <View>
-          <Text style={{fontWeight: "700", fontSize: 18}}>{item.code.toUpperCase()}</Text>
-          <Text>{item.description}</Text>
-          <Text>
-            Valid till{" - "}
-            {item.date_expires ? moment(item.date_expires).format("MMM DD,YYYY") : "no limit"}
-          </Text>
+      <View style={[styles.itemContainer, {marginTop: index > 0 ? 8 : 0, flex: 1}]}>
+        <View style={{flex: 1}}>
+          <Text style={{fontWeight: "600", fontSize: 14}}> {item.code.toUpperCase()}</Text>
+          {/* <Text style={{fontWeight: "700", fontSize: 18}}>{item.code.toUpperCase()}</Text> */}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              flex: 1,
+              paddingEnd: 8,
+              alignItems: "flex-end",
+            }}>
+            <Text
+              style={{
+                backgroundColor: "#FEB5B5",
+                borderRadius: 12,
+                paddingHorizontal: 8,
+                color: "red",
+                height: 20,
+                fontSize: 10,
+                paddingTop: 2,
+              }}>
+              {item.code.toUpperCase()}
+            </Text>
+            <View>
+              <Text style={{fontSize: 12, color: "grey"}}>Validity:</Text>
+              <Text style={{fontSize: 12, color: "grey"}}>
+                {item.date_expires ? moment(item.date_expires).format("MMMM DD,YYYY") : "no limit"}
+              </Text>
+            </View>
+          </View>
         </View>
-        <Button
-          style={[styles.itemApplyButton, {backgroundColor: appSettings.accent_color}]}
-          onPress={() => setCouponCode(item.code)}>
-          <Text style={{color: "#fff"}}>Apply</Text>
+        <View
+          style={{
+            height: 70,
+            //width: 1,
+            borderStyle: "dashed",
+            borderTopWidth: 1,
+            borderLeftWidth: 1,
+            borderColor: "gray",
+            borderRadius: 5,
+          }}
+        />
+        <Button style={[styles.itemApplyButton]} onPress={() => setCouponCode(item.code)}>
+          <Text style={{fontWeight: "600"}}>Apply</Text>
         </Button>
       </View>
     );
@@ -79,21 +113,25 @@ function Coupon({onBackButtonPress, applyCoupon}) {
     <Container style={{backgroundColor: "#FFF"}}>
       <Toolbar onCancel={onBackButtonPress} cancelButton title="Apply Coupon" />
       <View style={styles.headerContainer}>
-        <Icon
+        {/* <Icon
           name="brightness-percent"
           type="MaterialCommunityIcons"
           style={{paddingHorizontal: 5, fontSize: 24}}
+        /> */}
+        <Image
+          source={require("../../assets/imgs/coupon.png")}
+          style={{width: 25, height: 25, resizeMode: "contain", marginStart: 8}}
         />
         <TextInput
           underlineColorAndroid="transparent"
           onChangeText={text => setText(text)}
-          style={{height: 44}}
+          style={{height: 44, marginStart: -20}}
           placeholder="Apply Promo Code/Voucher"
         />
         <Button
           style={[styles.headerApplyButton, {backgroundColor: appSettings.accent_color}]}
           onPress={setData}>
-          <Text style={{color: "#fff"}}>Apply</Text>
+          <Text style={{color: "#fff", fontWeight: "600"}}>Apply</Text>
         </Button>
       </View>
       <FlatList
@@ -135,14 +173,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 8,
+    borderRadius: 8,
+    marginHorizontal: 8,
   },
   itemApplyButton: {
-    elevation: 2,
+    // elevation: 2,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 2,
     paddingHorizontal: 5,
     paddingBottom: 3,
+    marginHorizontal: 16,
   },
 });
 
