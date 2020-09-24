@@ -75,8 +75,10 @@ function Review({cartData, orderData}) {
   const _renderItem = ({item}) => {
     return (
       <View style={styles.flexdirection}>
-        <Text>{item.name + " x" + item.quantity}</Text>
-        <HTMLRender html={item.subtotal || "<b></b>"} />
+        <Text style={{flex: 1, paddingEnd: 16, fontWeight: "500"}}>
+          {item.name + " x" + item.quantity}
+        </Text>
+        <HTMLRender html={item.subtotal || "<b></b>"} baseFontStyle={{fontWeight: "500"}} />
       </View>
     );
   };
@@ -115,25 +117,29 @@ function Review({cartData, orderData}) {
       <View style={styles.card}>
         <Text style={styles.heading}>Order Summary</Text>
         <FlatList data={data.cart_data} renderItem={_renderItem} keyExtractor={_keyExtractor} />
-        <Text style={{color: "green"}}>You Save</Text>
+        {/* <Text style={{color: "green"}}>You Save</Text> */}
         <View style={styles.flexdirection}>
-          <Text>Subtotal</Text>
-          <HTMLRender html={data.cart_subtotal || "<b></b>"} />
+          <Text style={{fontWeight: "500"}}>Subtotal</Text>
+          <HTMLRender html={data.cart_subtotal || "<b></b>"} baseFontStyle={{fontWeight: "500"}} />
         </View>
         {data.hasOwnProperty("chosen_shipping_method") && (
           <View style={styles.flexdirection}>
-            <Text>Shipping Charge</Text>
+            <Text style={{fontWeight: "500"}}>Shipping Charge</Text>
             <HTMLRender
               html={
                 data.shipping_method.find(item => item.id == data.chosen_shipping_method)
                   .shipping_method_price
               }
+              baseFontStyle={{fontWeight: "500"}}
             />
           </View>
         )}
         <View style={styles.flexdirection}>
-          <Text style={{color: "green"}}>Total Discount</Text>
-          <HTMLRender html={data.discount_total || "<b></b>"} baseFontStyle={{color: "green"}} />
+          <Text style={{color: "green", fontWeight: "500"}}>Total Discount</Text>
+          <HTMLRender
+            html={data.discount_total || "<b></b>"}
+            baseFontStyle={{color: "green", fontWeight: "500"}}
+          />
         </View>
         <View style={{height: 1.35, backgroundColor: "#d2d2d2", marginVertical: 10}} />
         <View style={styles.flexdirection}>
@@ -160,7 +166,7 @@ function Review({cartData, orderData}) {
                 }}
                 key={item.gateway_id}
                 onPress={selectPaymentMethod(item)}>
-                <Text>{item.gateway_title}</Text>
+                <Text style={{flex: 1, fontWeight: "500"}}>{item.gateway_title}</Text>
                 <Button onPress={selectPaymentMethod(item)}>
                   <Icon
                     name={

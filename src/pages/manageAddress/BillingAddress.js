@@ -1,6 +1,6 @@
 import React, {useState, useCallback, useEffect, useReducer} from "react";
-import {View, ScrollView, StyleSheet, ActivityIndicator} from "react-native";
-import {Text, Toolbar, FloatingTextinput, Button} from "components";
+import {View, ScrollView, StyleSheet, ActivityIndicator, TextInput} from "react-native";
+import {Text, Toolbar, FloatingTextinput, Button, CustomTextInputAddress} from "components";
 import {useTranslation} from "react-i18next";
 import {useSelector, useDispatch} from "react-redux";
 import {CustomPicker} from "react-native-custom-picker";
@@ -213,74 +213,77 @@ function BillingAddress() {
         </View>
       ) : (
         <ScrollView contentContainerStyle={{marginHorizontal: 16, marginTop: 16}}>
-          <FloatingTextinput
+          <CustomTextInputAddress
+            label={"Fisrt Name*"}
+            value={state.first_name}
+            onChangeText={onChangeFirstname}
+          />
+          <CustomTextInputAddress
+            viewstyle={{marginTop: 24}}
+            label={"Last Name*"}
+            value={state.last_name}
+            onChangeText={onChangeLastname}
+          />
+
+          <CustomTextInputAddress
+            viewstyle={{marginTop: 24}}
+            label={"Company*"}
+            value={state.company}
+            onChangeText={onChangeCompany}
+          />
+
+          <CustomTextInputAddress
+            viewstyle={{marginTop: 24}}
+            label={"Email*"}
+            value={state.email}
+            onChangeText={onChangeEmail}
+          />
+
+          <CustomTextInputAddress
+            viewstyle={{marginTop: 24}}
+            label={"Phone Number*"}
+            value={state.phone}
+            onChangeText={onChangePhone}
+          />
+
+          <CustomTextInputAddress
+            viewstyle={{marginTop: 24}}
+            label={"City*"}
+            value={state.city}
+            onChangeText={onChangeCity}
+          />
+
+          <CustomTextInputAddress
+            viewstyle={{marginTop: 24}}
+            label={"Postcode*"}
+            value={state.postcode}
+            onChangeText={onChangePostcode}
+          />
+
+          <CustomTextInputAddress
+            viewstyle={{marginTop: 24}}
+            label={"Address Line 1*"}
+            value={state.address_1}
+            onChangeText={onChangeAddress1}
+          />
+
+          <CustomTextInputAddress
+            viewstyle={{marginTop: 24}}
+            label={"Address Line 2"}
+            value={state.address_2}
+            onChangeText={onChangeAddress2}
+          />
+
+          {/* <FloatingTextinput
             label={t("FIRST_NAME")}
             labelColor="#000000"
             style={{color: "#000000"}}
             value={state.first_name}
             onChangeText={onChangeFirstname}
-          />
-          <FloatingTextinput
-            label={t("LAST_NAME")}
-            labelColor="#000000"
-            style={{color: "#000000"}}
-            value={state.last_name}
-            onChangeText={onChangeLastname}
-          />
-          <FloatingTextinput
-            label={t("COMPANY")}
-            labelColor="#000000"
-            style={{color: "#000000"}}
-            value={state.company}
-            onChangeText={onChangeCompany}
-          />
-          <FloatingTextinput
-            caretHidden
-            label={t("EMAIL")}
-            labelColor="#000000"
-            style={{color: "#000000"}}
-            value={state.email}
-            onChangeText={onChangeEmail}
-          />
-          <FloatingTextinput
-            label={t("PHONE_NUMBER")}
-            labelColor="#000000"
-            style={{color: "#000000"}}
-            value={state.phone}
-            onChangeText={onChangePhone}
-          />
-          <FloatingTextinput
-            label={t("CITY")}
-            labelColor="#000000"
-            style={{color: "#000000"}}
-            value={state.city}
-            onChangeText={onChangeCity}
-          />
-          <FloatingTextinput
-            label={t("POSTCODE")}
-            labelColor="#000000"
-            style={{color: "#000000"}}
-            value={state.postcode}
-            onChangeText={onChangePostcode}
-          />
-          <FloatingTextinput
-            label={t("ADDRESS_1")}
-            labelColor="#000000"
-            style={{color: "#000000"}}
-            value={state.address_1}
-            onChangeText={onChangeAddress1}
-          />
-          <FloatingTextinput
-            label={t("ADDRESS_2")}
-            labelColor="#000000"
-            style={{color: "#000000"}}
-            value={state.address_2}
-            onChangeText={onChangeAddress2}
-          />
+          /> */}
+
           <>
-            <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 10}}>
-              {t("COUNTRY")}
-            </Text>
+            <Text style={{fontSize: 12, color: "grey", marginTop: 10}}>{t("COUNTRY")}</Text>
             <CustomPicker
               options={allCountry}
               placeholder={state.country}
@@ -290,10 +293,8 @@ function BillingAddress() {
               onValueChange={value => setCount(value)}
             />
           </>
-          <>
-            <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 10}}>
-              {t("STATE")}
-            </Text>
+          <View style={{marginBottom: 20}}>
+            <Text style={{fontSize: 12, color: "grey", marginTop: 10}}>{t("STATE")}</Text>
             <CustomPicker
               options={stateData}
               placeholder={state.state}
@@ -302,14 +303,14 @@ function BillingAddress() {
               fieldTemplate={renderField}
               onValueChange={value => setStateD(value)}
             />
-          </>
+          </View>
         </ScrollView>
       )}
       <View style={styles.footer}>
         <Button
           style={[styles.footerButton, {backgroundColor: appSettings.accent_color}]}
           onPress={_UpdateAddress}>
-          <Text style={{color: "white", marginEnd: 5}}>{t("SAVE")}</Text>
+          <Text style={{color: "white", marginEnd: 5, fontWeight: "600"}}>{t("SAVE")}</Text>
         </Button>
       </View>
     </>
@@ -324,13 +325,15 @@ const styles = StyleSheet.create({
   footerButton: {
     flex: 1,
     height: 40,
-    margin: 5,
+    //margin: 5,
+    borderTopStartRadius: 8,
+    borderTopEndRadius: 8,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
   },
   container: {
-    borderBottomColor: "#EDEBF2",
+    borderBottomColor: "grey",
     borderBottomWidth: 1,
     paddingBottom: 10,
   },

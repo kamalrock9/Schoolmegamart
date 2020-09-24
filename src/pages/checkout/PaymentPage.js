@@ -218,7 +218,7 @@ function PaymentPage({navigation}) {
       <ScrollView>
         {(data.status == "processing" || data.status == "on-hold") && (
           <View style={styles.card}>
-            <Text>{t("ORDER_CREATED_THANKYOU_MESSAGE")}</Text>
+            <Text style={styles.fontweight}>{t("ORDER_CREATED_THANKYOU_MESSAGE")}</Text>
           </View>
         )}
         {data.status == "failed" && (
@@ -230,21 +230,23 @@ function PaymentPage({navigation}) {
           <Text style={styles.heading}>{t("ORDER_DETAILS")}</Text>
 
           <View style={styles.view}>
-            <Text>{t("ORDER_ID")}</Text>
-            <Text>275</Text>
+            <Text style={styles.fontweight}>{t("ORDER_ID")}</Text>
+            <Text style={styles.fontweight}>{data.id}</Text>
           </View>
           {data.line_items.map(item => {
             return (
               <View style={styles.view} key={item.id}>
-                <Text>{item.name + " x" + item.quantity}</Text>
-                <Text>{item.total}</Text>
+                <Text style={[styles.fontweight, {flex: 1}]}>
+                  {item.name + " x" + item.quantity}
+                </Text>
+                <Text style={styles.fontweight}>{item.total}</Text>
               </View>
             );
           })}
 
           <View style={styles.view}>
-            <Text>{t("DATE")}</Text>
-            <Text>
+            <Text style={styles.fontweight}>{t("DATE")}</Text>
+            <Text style={styles.fontweight}>
               {moment(data.date_created).format("MMM DD,YYYY") +
                 " " +
                 moment(data.date_created).format("hh:mm A")}
@@ -252,54 +254,60 @@ function PaymentPage({navigation}) {
           </View>
           {!isEmpty(data.shipping_lines) && (
             <View style={styles.view}>
-              <Text>{t("SHIPPING")}</Text>
-              <Text>{data.shipping_lines[0].method_title}</Text>
+              <Text style={styles.fontweight}>{t("SHIPPING")}</Text>
+              <Text style={styles.fontweight}>{data.shipping_lines[0].method_title}</Text>
             </View>
           )}
           <View style={styles.view}>
-            <Text>{t("PAYMENT_METHODS")}</Text>
-            <Text>{data.payment_method_title || datas.payment_method}</Text>
+            <Text style={styles.fontweight}>{t("PAYMENT_METHODS")}</Text>
+            <Text style={styles.fontweight}>
+              {data.payment_method_title || datas.payment_method}
+            </Text>
           </View>
           <View style={styles.view}>
-            <Text>{t("STATUS")}</Text>
-            <Text>{data.status}</Text>
+            <Text style={styles.fontweight}>{t("STATUS")}</Text>
+            <Text style={styles.fontweight}>{data.status}</Text>
           </View>
           <View style={styles.view}>
-            <Text>{t("TOTAL_AMOUNT")}</Text>
-            <Text>
+            <Text style={styles.fontweight}>{t("TOTAL_AMOUNT")}</Text>
+            <Text style={styles.fontweight}>
               {data.prices_include_tax
                 ? data.total + " (inc. taxes)"
                 : (Number(data.total) + Number(data.total_tax)).toFixed(2) + " (inc. taxes)"}
             </Text>
           </View>
         </View>
-        <View style={[styles.card, {alignItems: "flex-start", marginBottom: 20}]}>
+        <View style={[styles.card, {alignItems: "flex-start", marginBottom: 10}]}>
           <Text style={styles.heading}>{t("CUSTOMER_DETAILS")}</Text>
           <View style={styles.view}>
-            <Text>{t("NAME")}</Text>
-            <Text>{data.billing.first_name + " " + data.billing.last_name}</Text>
+            <Text style={styles.fontweight}>{t("NAME")}</Text>
+            <Text style={styles.fontweight}>
+              {data.billing.first_name + " " + data.billing.last_name}
+            </Text>
           </View>
           <View style={styles.view}>
-            <Text>{t("EMAIL")}</Text>
-            <Text>{data.billing.email}</Text>
+            <Text style={styles.fontweight}>{t("EMAIL")}</Text>
+            <Text style={styles.fontweight}>{data.billing.email}</Text>
           </View>
           <View style={styles.view}>
-            <Text>{t("PHONE_NUMBER")}</Text>
-            <Text>{data.billing.phone}</Text>
+            <Text style={styles.fontweight}>{t("PHONE_NUMBER")}</Text>
+            <Text style={styles.fontweight}>{data.billing.phone}</Text>
           </View>
         </View>
-        {(data.status == "processing" || data.status == "on-hold") && (
-          <View style={styles.footer}>
-            <View style={{flexDirection: "row", width: "100%"}}>
-              <Button
-                style={[styles.footerButton, {backgroundColor: accent_color}]}
-                onPress={gotoHome}>
-                <Text style={{color: "white", marginEnd: 5}}>{t("CONTINUE_SHOPPING")}</Text>
-              </Button>
-            </View>
-          </View>
-        )}
       </ScrollView>
+      {(data.status == "processing" || data.status == "on-hold") && (
+        <View style={styles.footer}>
+          <View style={{flexDirection: "row", width: "100%"}}>
+            <Button
+              style={[styles.footerButton, {backgroundColor: accent_color}]}
+              onPress={gotoHome}>
+              <Text style={{color: "white", marginEnd: 5, fontWeight: "500"}}>
+                {t("CONTINUE_SHOPPING")}
+              </Text>
+            </Button>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -318,24 +326,27 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
-    marginVertical: 13,
+    marginVertical: 12,
   },
   heading: {fontWeight: "500", fontSize: 16},
   footer: {
     width: "100%",
-    borderTopColor: "#dedede",
-    borderTopWidth: 1,
-    //position: "relative",
-    //bottom: 0,
+    //borderTopColor: "#dedede",
+    //borderTopWidth: 1,
+    position: "absolute",
+    bottom: 0,
   },
   footerButton: {
     flex: 1,
     height: 40,
-    margin: 5,
+    // margin: 5,
+    borderTopStartRadius: 8,
+    borderTopEndRadius: 8,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
   },
+  fontweight: {fontWeight: "500"},
 });
 
 export default PaymentPage;

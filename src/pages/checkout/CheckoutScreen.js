@@ -8,7 +8,7 @@ import Review from "../Review";
 import StepIndicator from "react-native-step-indicator";
 import SwiperFlatList from "react-native-swiper-flatlist";
 import Toast from "react-native-simple-toast";
-import {ApiClient} from "service";
+import {ApiClient, WooCommerce} from "service";
 import {isEmpty} from "lodash";
 import {updateBilling, updateShipping} from "../../store/actions";
 import Constants from "../../service/Config";
@@ -375,22 +375,25 @@ function CheckoutScreen({navigation}) {
               padding: 16,
               alignItems: "center",
             }}>
-            <Text>Same For Shipping</Text>
+            <Text style={{fontWeight: "500"}}>Same For Shipping</Text>
             <Switch onChange={onChangeShipToDifferent} value={shipToDifferent} />
           </View>
         )}
         <View style={{flexDirection: "row", width: "100%"}}>
           {stepPos != 0 && (
             <Button
-              style={[styles.footerButton, {marginEnd: -10, backgroundColor: primary_color}]}
+              style={[styles.footerButton, {marginEnd: -10, backgroundColor: accent_color}]}
               onPress={goBack}>
-              <Text style={{color: "white", marginEnd: 5}}>PREVIOUS</Text>
+              <Text style={{color: "white", marginEnd: 5, fontWeight: "600"}}>PREVIOUS</Text>
             </Button>
           )}
           <Button
-            style={[styles.footerButton, {backgroundColor: accent_color}]}
+            style={[
+              styles.footerButton,
+              {backgroundColor: accent_color, borderTopStartRadius: stepPos != 0 ? 0 : 8},
+            ]}
             onPress={gotoShipping}>
-            <Text style={{color: "white", marginEnd: 5}}>
+            <Text style={{color: "white", marginEnd: 5, fontWeight: "600"}}>
               {stepPos == 3 ? "PLACE ORDER" : "NEXT"}
             </Text>
           </Button>
@@ -414,7 +417,9 @@ const styles = StyleSheet.create({
   footerButton: {
     flex: 1,
     height: 40,
-    margin: 5,
+    // margin: 5,
+    borderTopStartRadius: 8,
+    borderTopEndRadius: 8,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

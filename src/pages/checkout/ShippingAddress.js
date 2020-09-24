@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback} from "react";
 import {View, StyleSheet, ScrollView} from "react-native";
-import {Text, Toolbar, FloatingTextinput, Button} from "components";
+import {Text, Toolbar, FloatingTextinput, CustomTextInputAddress} from "components";
 import {useSelector, useDispatch} from "react-redux";
 import {useTranslation} from "react-i18next";
 import {CustomPicker} from "react-native-custom-picker";
@@ -127,22 +127,22 @@ function ShippingAddresss(props) {
   return (
     <View style={{flex: 1}}>
       <ScrollView style={{paddingHorizontal: 16}}>
-        <FloatingTextinput
+        <CustomTextInputAddress
+          textColor={{color: appSettings.accent_color}}
           label={t("FIRST_NAME")}
-          labelColor="#000000"
-          style={{color: "#000000"}}
           value={firstname}
           onChangeText={onChangeFirstname}
         />
-        <FloatingTextinput
+        <CustomTextInputAddress
+          viewstyle={{marginTop: 24}}
+          textColor={{color: appSettings.accent_color}}
           label={t("LAST_NAME")}
-          labelColor="#000000"
-          style={{color: "#000000"}}
           value={lastname}
           onChangeText={onChangeLastname}
         />
+
         <>
-          <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 10}}>
+          <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 24}}>
             {t("COUNTRY")}
           </Text>
           <CustomPicker
@@ -155,7 +155,7 @@ function ShippingAddresss(props) {
           />
         </>
         <>
-          <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 10}}>
+          <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 24}}>
             {t("STATE")}
           </Text>
           <CustomPicker
@@ -167,31 +167,33 @@ function ShippingAddresss(props) {
             onValueChange={value => setStateD(value)}
           />
         </>
-        <FloatingTextinput
+
+        <CustomTextInputAddress
+          viewstyle={{marginTop: 24}}
+          textColor={{color: appSettings.accent_color}}
           label={t("CITY")}
-          labelColor="#000000"
-          style={{color: "#000000"}}
           value={city}
           onChangeText={onChangeCity}
         />
-        <FloatingTextinput
+
+        <CustomTextInputAddress
+          viewstyle={{marginTop: 24}}
+          textColor={{color: appSettings.accent_color}}
           label={t("POSTCODE")}
-          labelColor="#000000"
-          style={{color: "#000000"}}
           value={postcode}
           onChangeText={onChangePostcode}
         />
-        <FloatingTextinput
+        <CustomTextInputAddress
+          viewstyle={{marginTop: 24}}
+          textColor={{color: appSettings.accent_color}}
           label={t("ADDRESS_1")}
-          labelColor="#000000"
-          style={{color: "#000000"}}
           value={address1}
           onChangeText={onChangeAddress1}
         />
-        <FloatingTextinput
+        <CustomTextInputAddress
+          viewstyle={{marginTop: 24}}
+          textColor={{color: appSettings.accent_color}}
           label={t("ADDRESS_2")}
-          labelColor="#000000"
-          style={{color: "#000000"}}
           value={address2}
           onChangeText={onChangeAddress2}
         />
@@ -234,7 +236,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   container: {
-    borderBottomColor: "#EDEBF2",
+    borderBottomColor: "grey",
     borderBottomWidth: 1,
     paddingBottom: 10,
   },

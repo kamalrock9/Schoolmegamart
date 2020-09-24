@@ -13,6 +13,8 @@ import FloatingTextinput from "./FloatingTextinput";
 import Container from "./Container";
 import CheckBox from "./CheckBox";
 import ProgressDialog from "./ProgressDialog";
+import CustomTextInput from "./CustomTextInput";
+import CustomTextInputAddress from "./CustomTextInputAddress";
 
 export {
   Text,
@@ -30,4 +32,6 @@ export {
   Container,
   CheckBox,
   ProgressDialog,
+  CustomTextInput,
+  CustomTextInputAddress,
 };

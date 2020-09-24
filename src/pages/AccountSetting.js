@@ -1,6 +1,6 @@
 import React, {useState, useCallback} from "react";
-import {View, StyleSheet, KeyboardAvoidingView, ScrollView} from "react-native";
-import {Text, Toolbar, FloatingTextinput, Button} from "components";
+import {View, StyleSheet, Image, ScrollView, TextInput} from "react-native";
+import {Text, Toolbar, FloatingTextinput, Button, CustomTextInput} from "components";
 import {useTranslation} from "react-i18next";
 import {useSelector, useDispatch} from "react-redux";
 import Toast from "react-native-simple-toast";
@@ -92,7 +92,31 @@ function AccountSetting() {
         <View style={styles.card}>
           <Text style={{fontWeight: "600"}}>{t("INFORMATION")}</Text>
 
-          <FloatingTextinput
+          <CustomTextInput
+            secureTextEntry={false}
+            image={require("../assets/imgs/user.png")}
+            placeholder={t("FIRST_NAME")}
+            value={firstname}
+            onChangeText={onChangeFirstname}
+          />
+
+          <CustomTextInput
+            secureTextEntry={false}
+            image={require("../assets/imgs/user.png")}
+            placeholder={t("LAST_NAME")}
+            value={lastname}
+            onChangeText={onChangeLastname}
+          />
+
+          <CustomTextInput
+            secureTextEntry={false}
+            image={require("../assets/imgs/email.png")}
+            placeholder={t("Email")}
+            value={email}
+            onChangeText={onChangeEmail}
+          />
+
+          {/* <FloatingTextinput
             label={t("FIRST_NAME")}
             labelColor="#000000"
             style={{color: "#000000"}}
@@ -113,19 +137,40 @@ function AccountSetting() {
             style={{color: "#000000"}}
             value={email}
             onChangeText={onChangeEmail}
-          />
+          /> */}
         </View>
         <View style={styles.card}>
           <Text style={{fontWeight: "600"}}>Leave Blank To Leave Unchanged</Text>
-          <FloatingTextinput
+          <CustomTextInput
+            secureTextEntry={true}
+            image={require("../assets/imgs/key.png")}
+            placeholder={t("OLD") + " " + t("PASSWORD")}
+            value={old}
+            onChangeText={onChangeOld}
+          />
+          <CustomTextInput
+            secureTextEntry={true}
+            image={require("../assets/imgs/key.png")}
+            placeholder={t("NEW") + " " + t("PASSWORD")}
+            value={newP}
+            onChangeText={onChangeNewp}
+          />
+          <CustomTextInput
+            secureTextEntry={true}
+            image={require("../assets/imgs/key.png")}
+            placeholder={t("CONFIRM_PASSWORD")}
+            value={confirm}
+            onChangeText={onChangeConfirm}
+          />
+          {/* <FloatingTextinput
             secureTextEntry={true}
             label={t("OLD") + " " + t("PASSWORD")}
             labelColor="#000000"
             style={{color: "#000000"}}
             value={old}
             onChangeText={onChangeOld}
-          />
-          <FloatingTextinput
+          /> */}
+          {/* <FloatingTextinput
             secureTextEntry={true}
             label={t("NEW") + " " + t("PASSWORD")}
             labelColor="#000000"
@@ -140,14 +185,14 @@ function AccountSetting() {
             style={{color: "#000000"}}
             value={confirm}
             onChangeText={onChangeConfirm}
-          />
+          /> */}
         </View>
       </ScrollView>
       <View style={styles.footer}>
         <Button
           style={[styles.footerButton, {backgroundColor: appSettings.accent_color}]}
           onPress={_UpdateProfile}>
-          <Text style={{color: "white", marginEnd: 5}}>{t("SAVE")}</Text>
+          <Text style={{color: "white", marginEnd: 5, fontWeight: "600"}}>{t("SAVE")}</Text>
         </Button>
       </View>
     </>
@@ -156,14 +201,14 @@ function AccountSetting() {
 
 const styles = StyleSheet.create({
   card: {
-    elevation: 2,
-    shadowRadius: 2,
+    //elevation: 2,
+    // shadowRadius: 2,
     padding: 10,
     marginTop: 16,
     marginHorizontal: 16,
-    shadowOpacity: 0.5,
-    shadowOffset: {width: 0, height: 2},
-    backgroundColor: "#fff",
+    //shadowOpacity: 0.5,
+    //shadowOffset: {width: 0, height: 2},
+    //backgroundColor: "#fff",
   },
   footer: {
     width: "100%",
@@ -172,7 +217,9 @@ const styles = StyleSheet.create({
   footerButton: {
     flex: 1,
     height: 40,
-    margin: 5,
+    //margin: 5,
+    borderTopStartRadius: 8,
+    borderTopEndRadius: 8,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

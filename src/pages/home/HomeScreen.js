@@ -207,7 +207,7 @@ function HomeScreen() {
     var discount = Math.ceil(((item.regular_price - item.price) / item.regular_price) * 100);
 
     return (
-      <TouchableWithoutFeedback onPress={goToProductDetails(item)}>
+      <TouchableOpacity onPress={goToProductDetails(item)}>
         <>
           <View
             style={[
@@ -291,7 +291,7 @@ function HomeScreen() {
             </View>
           </View>
         </>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
     );
   };
 

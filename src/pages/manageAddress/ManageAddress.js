@@ -17,7 +17,7 @@ function ManageAddress() {
 
   return (
     <View>
-      <Toolbar backButton title={t("ADDRESS")} />
+      <Toolbar backButton title={"Manage Address"} />
       <View style={styles.view}>
         <View style={{flexDirection: "row", justifyContent: "space-between"}}>
           <Text style={[styles.heading, {color: appSettings.accent_color, marginBottom: 12}]}>
@@ -32,34 +32,44 @@ function ManageAddress() {
             />
           </Button>
         </View>
-        {user.billing.company != "" && (
-          <Text style={styles.txt}>{user.billing.company ? user.billing.company : null}</Text>
+        {user.billing.first_name == "" ? (
+          <Text style={{fontSize: 12}}>You have not saved any address yet.</Text>
+        ) : (
+          <>
+            {user.billing.company != "" && (
+              <Text style={styles.txt}>{user.billing.company ? user.billing.company : null}</Text>
+            )}
+            <Text style={styles.txt}>
+              {user.billing.first_name && user.billing.last_name
+                ? user.billing.first_name + " " + user.billing.last_name
+                : user.billing.first_name
+                ? user.billing.first_name
+                : null}
+            </Text>
+            {user.billing.email != "" && (
+              <Text style={styles.txt}>{user.billing.email ? user.billing.email : null}</Text>
+            )}
+            {user.billing.phone != "" && (
+              <Text style={styles.txt}>{user.billing.phone ? user.billing.phone : null}</Text>
+            )}
+            {user.billing.address_1 != "" && (
+              <Text style={styles.txt}>
+                {user.billing.address_1 ? user.billing.address_1 : null}
+              </Text>
+            )}
+            {user.billing.address_2 != "" && (
+              <Text style={styles.txt}>
+                {user.billing.address_2 ? user.billing.address_2 : null}
+              </Text>
+            )}
+            <Text style={styles.txt}>
+              {user.billing.city ? user.billing.city + " - " + user.billing.postcode : null}
+            </Text>
+            <Text style={styles.txt}>
+              {user.billing.state ? user.billing.state + " \u2022 " + user.billing.country : null}
+            </Text>
+          </>
         )}
-        <Text style={styles.txt}>
-          {user.billing.first_name && user.billing.last_name
-            ? user.billing.first_name + " " + user.billing.last_name
-            : user.billing.first_name
-            ? user.billing.first_name
-            : null}
-        </Text>
-        {user.billing.email != "" && (
-          <Text style={styles.txt}>{user.billing.email ? user.billing.email : null}</Text>
-        )}
-        {user.billing.phone != "" && (
-          <Text style={styles.txt}>{user.billing.phone ? user.billing.phone : null}</Text>
-        )}
-        {user.billing.address_1 != "" && (
-          <Text style={styles.txt}>{user.billing.address_1 ? user.billing.address_1 : null}</Text>
-        )}
-        {user.billing.address_2 != "" && (
-          <Text style={styles.txt}>{user.billing.address_2 ? user.billing.address_2 : null}</Text>
-        )}
-        <Text style={styles.txt}>
-          {user.billing.city ? user.billing.city + " - " + user.billing.postcode : null}
-        </Text>
-        <Text style={styles.txt}>
-          {user.billing.state ? user.billing.state + " \u2022 " + user.billing.country : null}
-        </Text>
       </View>
 
       <View style={styles.line} />
@@ -78,31 +88,43 @@ function ManageAddress() {
             />
           </Button>
         </View>
-        {user.shipping.company != "" && (
-          <Text style={styles.txt}>{user.shipping.company ? user.shipping.company : null}</Text>
-        )}
-        <Text style={styles.txt}>
-          {user.shipping.first_name && user.shipping.last_name
-            ? user.shipping.first_name + " " + user.shipping.last_name
-            : user.shipping.first_name
-            ? user.shipping.first_name
-            : null}
-        </Text>
-        {user.shipping.address_1 != "" && (
-          <Text style={styles.txt}>{user.shipping.address_1 ? user.shipping.address_1 : null}</Text>
-        )}
-        {user.shipping.address_2 != "" && (
-          <Text style={styles.txt}>{user.shipping.address_2 ? user.shipping.address_2 : null}</Text>
-        )}
-        {user.shipping.city != "" && (
-          <Text style={styles.txt}>
-            {user.shipping.city ? user.shipping.city + " - " + user.shipping.postcode : null}
-          </Text>
-        )}
-        {user.shipping.state != "" && (
-          <Text style={styles.txt}>
-            {user.shipping.state ? user.shipping.state + " \u2022 " + user.shipping.country : null}
-          </Text>
+        {user.shipping.first_name == "" ? (
+          <Text style={{fontSize: 12}}>You have not saved any address yet.</Text>
+        ) : (
+          <>
+            {user.shipping.company != "" && (
+              <Text style={styles.txt}>{user.shipping.company ? user.shipping.company : null}</Text>
+            )}
+            <Text style={styles.txt}>
+              {user.shipping.first_name && user.shipping.last_name
+                ? user.shipping.first_name + " " + user.shipping.last_name
+                : user.shipping.first_name
+                ? user.shipping.first_name
+                : null}
+            </Text>
+            {user.shipping.address_1 != "" && (
+              <Text style={styles.txt}>
+                {user.shipping.address_1 ? user.shipping.address_1 : null}
+              </Text>
+            )}
+            {user.shipping.address_2 != "" && (
+              <Text style={styles.txt}>
+                {user.shipping.address_2 ? user.shipping.address_2 : null}
+              </Text>
+            )}
+            {user.shipping.city != "" && (
+              <Text style={styles.txt}>
+                {user.shipping.city ? user.shipping.city + " - " + user.shipping.postcode : null}
+              </Text>
+            )}
+            {user.shipping.state != "" && (
+              <Text style={styles.txt}>
+                {user.shipping.state
+                  ? user.shipping.state + " \u2022 " + user.shipping.country
+                  : null}
+              </Text>
+            )}
+          </>
         )}
       </View>
 

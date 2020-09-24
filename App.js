@@ -91,7 +91,7 @@ const CategoryStack = createStackNavigator(
 
 const ProductStack = createStackNavigator(
   {
-    CategoryScreen,
+    //CategoryScreen,
     ProductScreen,
     ProductDetailScreen,
     CheckoutScreen,

@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback} from "react";
 import {View, StyleSheet, ScrollView, Switch} from "react-native";
-import {Text, FloatingTextinput, Button} from "components";
+import {Text, FloatingTextinput, CustomTextInputAddress} from "components";
 import {useSelector, useDispatch} from "react-redux";
 import {useTranslation} from "react-i18next";
 import {CustomPicker} from "react-native-custom-picker";
@@ -116,32 +116,39 @@ function BillingAddresss({}) {
   return (
     <View style={{flex: 1}}>
       <ScrollView style={{paddingHorizontal: 16}}>
-        <FloatingTextinput
+        <CustomTextInputAddress
+          textColor={{color: appSettings.accent_color}}
           label={t("FIRST_NAME")}
-          labelColor="#757575"
           value={firstname}
           onChangeText={onChangeFirstname}
         />
-        <FloatingTextinput
+
+        <CustomTextInputAddress
+          viewstyle={{marginTop: 24}}
+          textColor={{color: appSettings.accent_color}}
           label={t("LAST_NAME")}
-          labelColor="#000000"
           value={lastname}
           onChangeText={onChangeLastname}
         />
-        <FloatingTextinput
+
+        <CustomTextInputAddress
+          viewstyle={{marginTop: 24}}
+          textColor={{color: appSettings.accent_color}}
           label={t("EMAIL")}
-          labelColor="#000000"
           value={email}
           onChangeText={onChangeEmail}
         />
-        <FloatingTextinput
+
+        <CustomTextInputAddress
+          viewstyle={{marginTop: 24}}
+          textColor={{color: appSettings.accent_color}}
           label={t("PHONE_NUMBER")}
-          labelColor="#000000"
           value={phone}
           onChangeText={onChangePhone}
         />
+
         <>
-          <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 10}}>
+          <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 24}}>
             Country
           </Text>
           <CustomPicker
@@ -154,7 +161,7 @@ function BillingAddresss({}) {
           />
         </>
         <>
-          <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 10}}>
+          <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 24}}>
             {t("STATE")}
           </Text>
           <CustomPicker
@@ -166,27 +173,35 @@ function BillingAddresss({}) {
             onValueChange={value => setStateD(value)}
           />
         </>
-        <FloatingTextinput
+
+        <CustomTextInputAddress
+          viewstyle={{marginTop: 24}}
+          textColor={{color: appSettings.accent_color}}
           label={t("CITY")}
-          labelColor="#000000"
           value={city}
           onChangeText={onChangeCity}
         />
-        <FloatingTextinput
+
+        <CustomTextInputAddress
+          viewstyle={{marginTop: 24}}
+          textColor={{color: appSettings.accent_color}}
           label={t("POSTCODE")}
-          labelColor="#000000"
           value={postcode}
           onChangeText={onChangePostcode}
         />
-        <FloatingTextinput
+
+        <CustomTextInputAddress
+          viewstyle={{marginTop: 24}}
+          textColor={{color: appSettings.accent_color}}
           label={t("ADDRESS_1")}
-          labelColor="#000000"
           value={address1}
           onChangeText={onChangeAddress1}
         />
-        <FloatingTextinput
+
+        <CustomTextInputAddress
+          viewstyle={{marginTop: 24}}
+          textColor={{color: appSettings.accent_color}}
           label={t("ADDRESS_2")}
-          labelColor="#000000"
           value={address2}
           onChangeText={onChangeAddress2}
         />
@@ -197,7 +212,7 @@ function BillingAddresss({}) {
 
 const styles = StyleSheet.create({
   container: {
-    borderBottomColor: "#EDEBF2",
+    borderBottomColor: "grey",
     borderBottomWidth: 1,
     paddingBottom: 10,
   },
