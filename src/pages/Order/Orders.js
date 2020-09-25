@@ -5,8 +5,9 @@ import {WooCommerce} from "service";
 import {useSelector} from "react-redux";
 import moment from "moment";
 import {useTranslation} from "react-i18next";
+import {useNavigation} from "react-navigation-hooks";
 
-function Orders({navigation}) {
+function Orders() {
   const {t} = useTranslation();
   const user = useSelector(state => state.user);
   const {accent_color} = useSelector(state => state.appSettings);
@@ -14,8 +15,13 @@ function Orders({navigation}) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(true);
   const [page, setpage] = useState(1);
+  const navigation = useNavigation();
 
   useEffect(() => {
+    const subs = navigation.addListener("didFocus", () => {
+      loadOrder();
+    });
+    subs.remove();
     loadOrder();
   }, []);
 
@@ -64,11 +70,15 @@ function Orders({navigation}) {
       <TouchableOpacity
         style={[styles.card, {marginTop: index == 0 ? 8 : 4}, {marginBottom: 4}]}
         onPress={gotoOrderDetailsPage(item)}>
-        <View style={styles.view}>
+        <View
+          style={[
+            styles.view,
+            {borderBottomWidth: 1, paddingBottom: 12, paddingTop: 8, borderColor: "#d2d2d2"},
+          ]}>
           <Text style={styles.font}>{t("ORDER_ID") + item.id}</Text>
           <Text
             style={{
-              color:
+              backgroundColor:
                 item.status == "processing"
                   ? "#76A42E"
                   : item.status == "cancelled" || item.status == "failed"
@@ -81,32 +91,42 @@ function Orders({navigation}) {
                   ? "#D0C035"
                   : "#FDB82B",
               fontWeight: "600",
-              fontSize: 14,
+              fontSize: 12,
+              color: "#fff",
+              paddingHorizontal: 8,
+              borderRadius: 4,
             }}>
-            {item.status.toUpperCase()}
+            {item.status}
           </Text>
         </View>
-        <View style={[styles.view, {marginTop: 5}]}>
-          <Text style={styles.smalltxt}>{t("NO_OF_ITEMS")}</Text>
-          <Text style={styles.smalltxt}>{t("TOTAL")}</Text>
+        <View style={{marginTop: 5}}>
+          <Text style={styles.smalltxt}>ITEMS</Text>
+          <Text style={{fontWeight: "500"}}>{item.line_items.length}</Text>
         </View>
-        <View style={styles.view}>
-          <Text style={[styles.text, styles.font, {color: "#757575"}]}>
-            {item.line_items.length} items(s)
-          </Text>
-          <Text style={[styles.text, styles.font, {color: "#757575"}]}>{item.total}</Text>
+        <View style={{marginTop: 5}}>
+          <Text style={styles.smalltxt}>TOTAL AMOUNT</Text>
+          <Text style={[styles.text, styles.font]}>{item.total}</Text>
         </View>
-        <View style={[styles.view, {marginTop: 10}]}>
-          <Text style={styles.smalltxt}>{t("ORDER_DATE")}</Text>
-          <Text style={styles.smalltxt}>{t("BUYER")}</Text>
-        </View>
-        <View style={styles.view}>
-          <Text style={[styles.text, styles.font, {color: "#757575"}]}>
+        <View style={{marginTop: 10}}>
+          <Text style={styles.smalltxt}>ORDERED ON</Text>
+          <Text style={[styles.text, styles.font]}>
             {moment(item.date_created).format("MMM DD,YYYY") +
               " " +
               moment(item.date_created).format("hh:mm A")}
           </Text>
-          <Text style={[styles.text, styles.font, {color: "#757575"}]}>
+        </View>
+        <View
+          style={{
+            borderTopWidth: 1,
+            borderColor: "#d2d2d2",
+            paddingTop: 12,
+            marginTop: 8,
+            paddingBottom: 4,
+            flexDirection: "row",
+            alignItems: "center",
+          }}>
+          <Text style={[styles.smalltxt, {flex: 0, fontSize: 12}]}>Buyer: </Text>
+          <Text style={[styles.text, styles.font, {paddingTop: 2}]}>
             {item.billing.first_name + " " + item.billing.last_name}
           </Text>
         </View>
@@ -117,10 +137,11 @@ function Orders({navigation}) {
   const _keyExtractor = item => item.id;
 
   return (
-    <View>
+    <View style={{backgroundColor: "#F9F9F9", flex: 1}}>
       <Toolbar backButton title={t("ORDERS")} />
       <FlatList
         data={orders}
+        contentContainerStyle={{backgroundColor: "#F9F9F9"}}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.33}
         renderItem={_renderItem}
@@ -161,11 +182,11 @@ const styles = StyleSheet.create({
     flex: 1,
     lineHeight: 18,
   },
-  font: {fontWeight: "600", fontSize: 14},
+  font: {fontWeight: "600", fontSize: 13},
   smalltxt: {
     flex: 1,
     lineHeight: 18,
-    fontSize: 14,
+    fontSize: 10,
     color: "#adadad",
     fontWeight: "400",
   },

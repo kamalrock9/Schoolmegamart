@@ -151,7 +151,7 @@ class TreeView extends React.PureComponent {
     return (
       <TouchableOpacity
         style={{
-          flex: 1,
+          width: width / 2 - 16,
           marginTop: index > 1 ? 24 : 8,
           marginEnd: index % 2 == 0 ? 8 : 0,
           marginBottom: this.state.data.length - 2 ? 16 : 0,

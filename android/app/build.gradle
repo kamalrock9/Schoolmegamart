@@ -151,10 +151,10 @@ android {
             keyPassword 'android'
         }
         release{
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            storeFile file('schoolmegamart.jks')
+            storePassword 'Schoolmegamart@123'
+            keyAlias 'phoeniixx'
+            keyPassword 'Schoolmegamart@123'
          }
     }
     buildTypes {

@@ -133,7 +133,7 @@ const renderTabBar = props => (
       {...props}
       renderIndicator={() => <View />}
       onTabLongPress={({route}) => props.jumpTo(route.key)}
-      activeColor="#fd3462"
+      activeColor="#f28529"
       inactiveColor="#999999"
       style={{
         backgroundColor: "#ffffff",

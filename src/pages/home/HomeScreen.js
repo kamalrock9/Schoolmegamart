@@ -358,7 +358,7 @@ function HomeScreen() {
               sliderHeight={200}
               itemWidth={300}
               itemHeight={180}
-              pagingEnabled={true}
+              // pagingEnabled={true}
               renderItem={_renderItemCrousel}
               onSnapToItem={index => setactiveIndex(index)}
             />
