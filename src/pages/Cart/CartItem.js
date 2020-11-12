@@ -57,7 +57,7 @@ function CartItem({item, index, manageQuanity, deleteCartItem}) {
           paddingBottom: 16,
           paddingHorizontal: 16,
         }}>
-        <Image style={{height: 70, width: 70}} source={{uri: item.image}} />
+        <Image style={{height: 70, width: 70, resizeMode: "contain"}} source={{uri: item.image}} />
         <View style={{marginStart: 16, flex: 1}}>
           <View style={{flexDirection: "row", justifyContent: "space-between"}}>
             <Text style={{fontWeight: "600", flex: 1}}>{item.name.toUpperCase()}</Text>

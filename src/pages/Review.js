@@ -9,7 +9,7 @@ function Review({cartData, orderData}) {
   const CartData = cartData;
   //console.log(CartData);
 
-  const appSettings = useSelector(state => state.appSettings);
+  const {accent_color} = useSelector(state => state.appSettings);
 
   const cartdata = Object.assign({}, cartData);
   const [data, setCart] = useState(cartdata);
@@ -181,7 +181,13 @@ function Review({cartData, orderData}) {
             );
           })}
       </View>
-      {loading && <ActivityIndicator />}
+      {loading && (
+        <ActivityIndicator
+          color={accent_color}
+          size="large"
+          style={{alignItems: "center", justifyContent: "center"}}
+        />
+      )}
     </View>
   );
 }

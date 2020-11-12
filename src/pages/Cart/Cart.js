@@ -218,7 +218,7 @@ class Cart extends React.PureComponent {
               <Button
                 style={[styles.contact_btn, {backgroundColor: appSettings.primary_color}]}
                 onPress={this.gotoAuth(true, false)}>
-                <Text style={{color: "#fff"}}>LOGIN</Text>
+                <Text style={{color: "#000"}}>LOGIN</Text>
               </Button>
               <Button
                 style={[styles.contact_btn, {backgroundColor: appSettings.accent_color}]}

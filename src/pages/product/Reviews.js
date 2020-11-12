@@ -130,6 +130,7 @@ function Reviews({navigation}) {
 const styles = StyleSheet.create({
   txt: {
     fontSize: 16,
+    marginHorizontal: 16,
   },
   fabIcon: {
     position: "absolute",

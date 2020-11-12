@@ -125,7 +125,10 @@ function CheckoutScreen({navigation}) {
         let p = "&payment_method=" + orderdata.chosen_gateway;
         let c = "&shipping_method=" + orderdata.chosen_shipping_method;
         //let pw = pay_via_wallet ? "&pay_via_wallet=" + pay_via_wallet : "";
-
+        console.log(u);
+        console.log(p);
+        console.log(c);
+        console.log(data);
         setloading(true);
         ApiClient.post("/checkout/new-order" + u + p + c, data)
           .then(resp => {

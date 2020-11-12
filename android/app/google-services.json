@@ -1,50 +1,51 @@
 {
   "project_info": {
-    "project_number": "303250729052",
-    "firebase_url": "https://wooapp-1f1a6.firebaseio.com",
-    "project_id": "wooapp-1f1a6",
-    "storage_bucket": "wooapp-1f1a6.appspot.com"
+    "project_number": "470894361113",
+    "firebase_url": "https://schoole-mega-mart.firebaseio.com",
+    "project_id": "schoole-mega-mart",
+    "storage_bucket": "schoole-mega-mart.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:303250729052:android:f71c4549d1bb7abe",
+        "mobilesdk_app_id": "1:470894361113:android:8777896bb09c73cd484888",
         "android_client_info": {
-          "package_name": "com.phoeniixx.wooapp"
+          "package_name": "com.schoolmegamart"
         }
       },
       "oauth_client": [
         {
-          "client_id": "303250729052-hm8kq1ej42p4c616cnmng9mkv2j136a6.apps.googleusercontent.com",
+          "client_id": "470894361113-jdrglqm76dmfn670v2hoadauj1dls4rs.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.phoeniixx.wooapp",
-            "certificate_hash": "eb411e81e94d0517e7ffade9c4e56837a58cc479"
+            "package_name": "com.schoolmegamart",
+            "certificate_hash": "ecf95e00a132a865be68ab335e826b620fda84d5"
           }
         },
         {
-          "client_id": "303250729052-jinti63hib1kcgb2sklrreruskke729q.apps.googleusercontent.com",
+          "client_id": "470894361113-5lstj3av06rr0el40pe0t9ftplcjfgc8.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.phoeniixx.wooapp",
-            "certificate_hash": "815ebcb147839c47ee8624811d61693b1b7e754a"
+            "package_name": "com.schoolmegamart",
+            "certificate_hash": "2a3b14b79bc300fe2e6443cbfd2937654bb065ce"
           }
+        },
+        {
+          "client_id": "470894361113-0831gfb1kl4550601gnft7ehrsdmmdfo.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBf0vg9fbi7ZlcKlG2zpobHF7U87fQnIqI"
+          "current_key": "AIzaSyBjW4vEmy8scddQEf5_IA7Od1FQ9GB00IA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "303250729052-1u11sp9liidpo0rqa4vi1ps01jenqc8q.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.phoeniixx.wooapp"
-              }
+              "client_id": "470894361113-0831gfb1kl4550601gnft7ehrsdmmdfo.apps.googleusercontent.com",
+              "client_type": 3
             }
           ]
         }

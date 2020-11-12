@@ -19,6 +19,7 @@ import {user, saveShipping} from "store/actions";
 import Toast from "react-native-simple-toast";
 import {GoogleSignin} from "@react-native-community/google-signin";
 import {LoginManager, AccessToken, GraphRequest, GraphRequestManager} from "react-native-fbsdk";
+import {useSelector} from "react-redux";
 
 const {width, height} = Dimensions.get("window");
 
@@ -63,6 +64,7 @@ function Auth({navigation}) {
   console.log(NeedRegister);
   const {t} = useTranslation();
   const dispatchAction = useDispatch();
+  const {accent_color} = useSelector(state => state.appSettings);
   const [state, dispatch] = useReducer(reducer, initialState);
   const scrollRef = useRef(null);
 
@@ -124,6 +126,7 @@ function Auth({navigation}) {
       setLoading(true);
       GoogleSignin.signIn()
         .then(res => {
+          console.log(res);
           let details = res.user;
           details.mode = "google";
           ApiClient.post("/social-login", details).then(({data}) => {
@@ -229,6 +232,10 @@ function Auth({navigation}) {
     }
   };
 
+  const gotoPassword = () => {
+    navigation.navigate("ForgetPassword");
+  };
+
   const _register = () => {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     var bodyFormData = new FormData();
@@ -284,6 +291,10 @@ function Auth({navigation}) {
         state: data.shipping.state,
       }),
     );
+  };
+
+  const navigateToScreen = key => () => {
+    navigation.navigate("PostRegisterOTP", {key: key});
   };
 
   return (
@@ -379,10 +390,14 @@ function Auth({navigation}) {
             </View>
 
             <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-              <Button style={{alignSelf: "flex-end", marginTop: 16, paddingVertical: 8}}>
+              <Button
+                style={{alignSelf: "flex-end", marginTop: 16, paddingVertical: 8}}
+                onPress={navigateToScreen("Login")}>
                 <Text style={[styles.socialBtnText, {color: "#F47C20"}]}>Login with OTP</Text>
               </Button>
-              <Button style={{alignSelf: "flex-end", marginTop: 16, paddingVertical: 8}}>
+              <Button
+                style={{alignSelf: "flex-end", marginTop: 16, paddingVertical: 8}}
+                onPress={gotoPassword}>
                 <Text style={[styles.socialBtnText, {color: "#F47C20"}]}>{t("FORGOT")}</Text>
               </Button>
             </View>
@@ -418,6 +433,13 @@ function Auth({navigation}) {
                 </Text>
               </Button>
             </View>
+            {loading && (
+              <ActivityIndicator
+                color={accent_color}
+                size="large"
+                style={{alignItems: "center", justifyContent: "center"}}
+              />
+            )}
           </ScrollView>
           <ScrollView
             contentContainerStyle={{
@@ -491,17 +513,24 @@ function Auth({navigation}) {
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                justifyContent: "flex-end",
+                justifyContent: "space-between",
                 marginTop: 20,
               }}>
-              <Text style={[styles.btnText, {color: "#000", marginRight: 8}]}>Create</Text>
+              <Button
+                style={{alignSelf: "flex-end", marginTop: 16, paddingVertical: 8}}
+                onPress={navigateToScreen("Register")}>
+                <Text style={[styles.socialBtnText, {color: "#F47C20"}]}>Register with OTP</Text>
+              </Button>
+              <View style={{flexDirection: "row", alignItems: "center"}}>
+                <Text style={[styles.btnText, {color: "#000", marginRight: 8}]}>Create</Text>
 
-              <TouchableOpacity onPress={_register}>
-                <Image
-                  source={require("../../assets/imgs/signIn.png")}
-                  style={{width: 60, resizeMode: "contain"}}
-                />
-              </TouchableOpacity>
+                <TouchableOpacity onPress={_register}>
+                  <Image
+                    source={require("../../assets/imgs/signIn.png")}
+                    style={{width: 60, resizeMode: "contain"}}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
 
             <Text
@@ -549,11 +578,15 @@ function Auth({navigation}) {
               </Button>
             </View>
             {/* </View> */}
+            {loading && (
+              <ActivityIndicator
+                color={accent_color}
+                size="large"
+                style={{alignItems: "center", justifyContent: "center"}}
+              />
+            )}
           </ScrollView>
         </SwiperFlatList>
-        {loading && (
-          <ActivityIndicator style={{alignItems: "center", justifyContent: "center", flex: 1}} />
-        )}
       </View>
     </View>
   );

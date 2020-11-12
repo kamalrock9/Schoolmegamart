@@ -8,11 +8,11 @@ import Constants from "../../service/Config";
 import {WooCommerce} from "../../service";
 import RazorpayCheckout from "react-native-razorpay";
 import {ApiClient} from "service";
-import axios from "axios";
 import InAppBrowser from "react-native-inappbrowser-reborn";
 import Paytm from "react-native-paytm";
 import {isEmpty} from "lodash";
-
+import PayuMoney, {HashGenerator} from "react-native-payumoney";
+import axios from "axios";
 function PaymentPage({navigation}) {
   console.log(navigation.state.params);
 
@@ -81,6 +81,46 @@ function PaymentPage({navigation}) {
         } catch (error) {
           Alert.alert(error.message);
         }
+
+      case "payumbolt":
+        let hash = HashGenerator({
+          key: "bwvmg5wR",
+          amount: data.total,
+          email: user.billing.email,
+          txnId: data.id,
+          productName: "product_info",
+          firstName: user.billing.first_name,
+          salt: "q7V4lJXKZr",
+        });
+        console.log(hash);
+
+        const payData = {
+          amount: data.total,
+          txnId: data.id,
+          productName: "product_info",
+          firstName: user.billing.first_name,
+          email: user.billing.email,
+          phone: user.billing.phone,
+          merchantId: "bwvmg5wR",
+          key: "bwvmg5wR",
+          successUrl: "https://www.payumoney.com/mobileapp/payumoney/success.php",
+          failedUrl: "https://www.payumoney.com/mobileapp/payumoney/failure.php",
+          isDebug: true,
+          hash: hash,
+        };
+
+        PayuMoney(payData)
+          .then(data => {
+            // Payment Success
+            console.log(data);
+            if (data.success) {
+              refreshPage(data.response.result.paymentId);
+            }
+          })
+          .catch(e => {
+            // Payment Failed
+            console.log(e);
+          });
     }
   };
 
@@ -178,15 +218,16 @@ function PaymentPage({navigation}) {
     //this.loader.show();
     if (payment_id) {
       var param = {
+        order_id: id,
         status: "processing",
         transaction_id: payment_id || "",
       };
       console.log(id, param);
-      WooCommerce.put("orders/" + id, param)
+      ApiClient.post("/checkout/update-order", param)
         .then(res => {
           console.log(res);
           if (res.status == 200) {
-            Setdata(res.data);
+            Setdata(res.data.data);
           }
         })
         .catch(error => {
@@ -261,7 +302,7 @@ function PaymentPage({navigation}) {
           <View style={styles.view}>
             <Text style={styles.fontweight}>{t("PAYMENT_METHODS")}</Text>
             <Text style={styles.fontweight}>
-              {data.payment_method_title || datas.payment_method}
+              {data.payment_method_title || data.payment_method}
             </Text>
           </View>
           <View style={styles.view}>

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {View, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator} from "react-native";
-import {Text, Toolbar} from "components";
+import {Text, Toolbar, EmptyList} from "components";
 import {WooCommerce} from "service";
 import {useSelector} from "react-redux";
 import moment from "moment";
@@ -105,7 +105,7 @@ function Orders() {
         </View>
         <View style={{marginTop: 5}}>
           <Text style={styles.smalltxt}>TOTAL AMOUNT</Text>
-          <Text style={[styles.text, styles.font]}>{item.total}</Text>
+          <Text style={[styles.text, styles.font]}>{item.currency_symbol + "" + item.total}</Text>
         </View>
         <View style={{marginTop: 10}}>
           <Text style={styles.smalltxt}>ORDERED ON</Text>
@@ -138,25 +138,40 @@ function Orders() {
 
   return (
     <View style={{backgroundColor: "#F9F9F9", flex: 1}}>
-      <Toolbar backButton title={t("ORDERS")} />
-      <FlatList
-        data={orders}
-        contentContainerStyle={{backgroundColor: "#F9F9F9"}}
-        onEndReached={onEndReached}
-        onEndReachedThreshold={0.33}
-        renderItem={_renderItem}
-        keyExtractor={_keyExtractor}
-        ListFooterComponent={
-          orders.length > 0 && loading ? (
-            <ActivityIndicator
-              color={accent_color}
-              size="large"
-              style={{alignItems: "center", justifyContent: "center"}}
+      <Toolbar menuButton title={t("ORDERS")} />
+      {loading ? (
+        <ActivityIndicator
+          color={accent_color}
+          size="large"
+          style={{alignItems: "center", flex: 1, justifyContent: "center"}}
+        />
+      ) : (
+        <FlatList
+          data={orders}
+          contentContainerStyle={{backgroundColor: "#F9F9F9"}}
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.33}
+          renderItem={_renderItem}
+          keyExtractor={_keyExtractor}
+          ListFooterComponent={
+            orders.length > 0 && loading ? (
+              <ActivityIndicator
+                color={accent_color}
+                size="large"
+                style={{alignItems: "center", justifyContent: "center"}}
+              />
+            ) : null
+          }
+          ListEmptyComponent={
+            <EmptyList
+              loading={loading}
+              label="No Order has been yet."
+              iconName="list-unordered"
+              iconType="Octicons"
             />
-          ) : null
-        }
-      />
-      {loading && <ActivityIndicator style={{alignItems: "center", justifyContent: "center"}} />}
+          }
+        />
+      )}
     </View>
   );
 }

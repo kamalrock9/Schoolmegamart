@@ -49,9 +49,9 @@ function OrderDetails({navigation}) {
         <View style={{marginStart: 10, flex: 1}}>
           <Text style={{fontWeight: "600", fontSize: 14}}>{item.name}</Text>
           <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-            <Text style={styles.txt}>{item.price}</Text>
+            <Text style={styles.txt}>{data.currency_symbol + "" + item.price}</Text>
             <Text style={styles.txt}>{"Qty:" + item.quantity}</Text>
-            <Text style={styles.txt}>{item.subtotal}</Text>
+            <Text style={styles.txt}>{data.currency_symbol + "" + item.subtotal}</Text>
           </View>
         </View>
       </View>
@@ -77,12 +77,16 @@ function OrderDetails({navigation}) {
               <Text style={styles.text}>
                 {t("SHIPPING") + " (" + data.shipping_lines[0].method_title + ")"}
               </Text>
-              <Text style={[styles.text, {color: "#000000"}]}>{data.shipping_lines[0].total}</Text>
+              <Text style={[styles.text, {color: "#000000"}]}>
+                {data.currency_symbol + "" + data.shipping_lines[0].total}
+              </Text>
             </View>
           )}
           <View style={styles.footerSummaryView}>
             <Text style={styles.text}>{t("TAX")}</Text>
-            <Text style={[styles.text, {color: "#000000"}]}>{data.total_tax}</Text>
+            <Text style={[styles.text, {color: "#000000"}]}>
+              {data.currency_symbol + "" + data.total_tax}
+            </Text>
           </View>
           {!isEmpty(data.coupon_lines) &&
             data.coupon_lines.map(item => {
@@ -106,8 +110,11 @@ function OrderDetails({navigation}) {
             <Text style={[styles.text, {fontWeight: "600"}]}>{t("TOTAL") + " Amount"}</Text>
             <Text style={[styles.text, {fontWeight: "600", color: "#000000"}]}>
               {data.prices_include_tax
-                ? data.total + "(Inc. Taxes)"
-                : (Number(data.total) + Number(data.total_tax)).toFixed(2) + "(Inc. Taxes)"}
+                ? data.currency_symbol + "" + data.total + "(Inc. Taxes)"
+                : data.currency_symbol +
+                  "" +
+                  (Number(data.total) + Number(data.total_tax)).toFixed(2) +
+                  "(Inc. Taxes)"}
             </Text>
           </View>
         </View>

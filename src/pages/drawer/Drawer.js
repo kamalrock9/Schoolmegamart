@@ -36,7 +36,7 @@ class Drawer extends React.PureComponent {
     switch (route) {
       case "giveFeedback":
         Alert.alert(
-          "Do You like using WooApp",
+          "Do You like using Schoolmegamart",
           null,
           [
             {text: "NOT REALLY", onPress: () => console.log("Cancel Pressed"), style: "cancel"},
@@ -44,12 +44,12 @@ class Drawer extends React.PureComponent {
               text: "YES!",
               onPress: () => {
                 if (Platform.OS != "ios") {
-                  Linking.openURL(`market://details?id=${"com.phoeniixx.wooapp"}`).catch(err =>
+                  Linking.openURL(`market://details?id=${"com.schoolmegamart"}`).catch(err =>
                     alert("Please check for the Google Play Store"),
                   );
                 } else {
                   Linking.openURL(
-                    `itms://itunes.apple.com/in/app/apple-store/${APPLE_STORE_ID}`,
+                    `itms://itunes.apple.com/in/app/apple-store/${com.schoolmegamart}`,
                   ).catch(err => alert("Please check for the App Store"));
                 }
               },
@@ -92,7 +92,7 @@ class Drawer extends React.PureComponent {
               style={{fontSize: 54, marginEnd: 10}}
             />
             {isEmpty(user) ? (
-              <Text style={{fontSize: 16}} onPress={this.openModal}>
+              <Text style={{fontSize: 16, fontWeight: "500"}} onPress={this.openModal}>
                 {t("LOGIN/REGISTER")}
               </Text>
             ) : (
@@ -123,7 +123,7 @@ class Drawer extends React.PureComponent {
 
             <Button style={styles.button} onPress={this.navigateToScreen("CategoryScreen")}>
               <Image source={require("../../assets/imgs/category.png")} style={styles.img} />
-              <Text style={styles.text}>Shop by caregory</Text>
+              <Text style={styles.text}>Shop by category</Text>
             </Button>
             <View style={styles.divider} />
             {!isEmpty(user) && (
@@ -143,6 +143,10 @@ class Drawer extends React.PureComponent {
                 <Button style={styles.button} onPress={this.navigateToScreen("Notification")}>
                   <Image source={require("../../assets/imgs/bell.png")} style={styles.img} />
                   <Text style={styles.text}>{t("NOTIFICATIONS")}</Text>
+                </Button>
+                <Button style={styles.button} onPress={this.navigateToScreen("WishlistScreen")}>
+                  <Image source={require("../../assets/imgs/love.png")} style={styles.img} />
+                  <Text style={styles.text}>Wishlist</Text>
                 </Button>
                 <Button style={styles.button} onPress={this.navigateToScreen("Download")}>
                   <Image source={require("../../assets/imgs/download.png")} style={styles.img} />
@@ -244,7 +248,7 @@ class Drawer extends React.PureComponent {
 }
 
 const call = () => {
-  let phoneNumber = 8860617526;
+  let phoneNumber = 8077499184;
   if (Platform.OS === "ios") {
     phoneNumber = `telprompt:${phoneNumber}`;
   } else {
@@ -262,7 +266,7 @@ const call = () => {
 };
 
 const openEmail = () => {
-  let email = "mailto:www.phoeniixx.com";
+  let email = "mailto:support@schoolmegamart.com";
   Linking.canOpenURL(email)
     .then(supported => {
       if (!supported) {

@@ -1,10 +1,11 @@
 import React from "react";
-import {View, StyleSheet, ActivityIndicator} from "react-native";
+import {View, StyleSheet, ActivityIndicator, Dimensions} from "react-native";
 import PropTypes from "prop-types";
 import {useSelector} from "react-redux";
 import Text from "./Text";
 import Icon from "./IconNB";
 
+const {height} = Dimensions.get("window");
 function EmptyList({iconName, iconType, loading, label, enabled}) {
   const {accent_color} = useSelector(state => state.appSettings);
 
@@ -59,6 +60,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 64,
+    height: height - 168,
   },
   icon: {
     fontSize: 48,

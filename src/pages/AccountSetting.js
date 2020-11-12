@@ -1,5 +1,5 @@
 import React, {useState, useCallback} from "react";
-import {View, StyleSheet, Image, ScrollView, TextInput} from "react-native";
+import {View, StyleSheet, Image, ScrollView, ActivityIndicator} from "react-native";
 import {Text, Toolbar, FloatingTextinput, Button, CustomTextInput} from "components";
 import {useTranslation} from "react-i18next";
 import {useSelector, useDispatch} from "react-redux";
@@ -20,7 +20,7 @@ function AccountSetting() {
   const [old, setOld] = useState("");
   const [newP, setNewp] = useState("");
   const [confirm, setConfirm] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const onChangeFirstname = useCallback(text => {
     setFirstname(text);
   });
@@ -75,19 +75,28 @@ function AccountSetting() {
     } else if (confirm !== newP) {
       Toast.show("New password and confirm password can't different.", Toast.LONG);
     } else {
-      WooCommerce.post("customers/" + user.id, param).then(res => {
-        if (res.status == 200) {
-          dispatch(updateUser(redux));
-        } else {
-          Toast.show("Nothing to update", Toast.LONG);
-        }
-      });
+      setLoading(true);
+      WooCommerce.post("customers/" + user.id, param)
+        .then(res => {
+          console.log(res);
+          setLoading(false);
+          if (res.status == 200) {
+            Toast.show("Your account has been updated.", Toast.LONG);
+            dispatch(updateUser(redux));
+          } else {
+            Toast.show("Nothing to update", Toast.LONG);
+          }
+        })
+        .catch(error => {
+          setLoading(false);
+          console.log(error);
+        });
     }
   };
 
   return (
     <>
-      <Toolbar backButton title={t("ACCOUNT") + " " + t("SETTING")} />
+      <Toolbar menuButton title={t("ACCOUNT") + " " + t("SETTING")} />
       <ScrollView>
         <View style={styles.card}>
           <Text style={{fontWeight: "600"}}>{t("INFORMATION")}</Text>
@@ -187,6 +196,7 @@ function AccountSetting() {
             onChangeText={onChangeConfirm}
           /> */}
         </View>
+        {loading && <ActivityIndicator />}
       </ScrollView>
       <View style={styles.footer}>
         <Button

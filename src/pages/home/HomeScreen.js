@@ -37,6 +37,9 @@ import ProductItem from "../product/ProductItem";
 import {useNavigation} from "react-navigation-hooks";
 
 const {width} = Dimensions.get("window");
+
+const aspectHeight = (nWidth, oHeight, oWidth) => (nWidth * oHeight) / oWidth;
+
 function HomeScreen() {
   const [loading, setLoading] = useState(false);
   const layout = useSelector(state => state.homeLayout);
@@ -118,7 +121,7 @@ function HomeScreen() {
     return (
       <TouchableOpacity onPress={gotoProductPage(item)}>
         <Image
-          style={{width: "100%", height: 120, borderRadius: 4}}
+          style={{width: "100%", height: aspectHeight(width - 16, 500, 500), borderRadius: 4}}
           source={{uri: item.banner_url}}
           resizeMode={"cover"}
         />
@@ -356,7 +359,7 @@ function HomeScreen() {
               data={layout.banner}
               sliderWidth={width}
               sliderHeight={200}
-              itemWidth={300}
+              itemWidth={width - 32}
               itemHeight={180}
               // pagingEnabled={true}
               renderItem={_renderItemCrousel}
@@ -417,19 +420,34 @@ function HomeScreen() {
 
           <Image
             source={require("../../assets/imgs/homePageBanner.png")}
-            style={{width: width - 32, marginStart: 16, marginTop: 25}}
+            style={{
+              width: width - 32,
+              height: aspectHeight(width - 32, 149, 343),
+              marginStart: 16,
+              marginTop: 25,
+            }}
           />
 
           <Image
             source={require("../../assets/imgs/homePageBanner1.png")}
-            style={{width: width - 32, marginStart: 16, marginTop: 25}}
+            style={{
+              width: width - 32,
+              height: aspectHeight(width - 32, 325, 343),
+              marginStart: 16,
+              marginTop: 25,
+            }}
           />
 
           <Image
             source={require("../../assets/imgs/homePageBanner2.png")}
-            style={{width: width - 32, marginStart: 16, marginTop: 25}}
+            style={{
+              width: width - 32,
+              height: aspectHeight(width - 32, 325, 343),
+              marginStart: 16,
+              marginTop: 25,
+            }}
           />
-
+          {/* 
           {layout.top_rated_products && layout.top_rated_products.length > 0 && (
             <>
               <SectonHeader
@@ -464,7 +482,7 @@ function HomeScreen() {
               />
               <ProductsRow keyPrefix="topseller" products={layout.top_seller} />
             </>
-          )}
+          )} */}
           <View
             style={{
               flexDirection: "row",

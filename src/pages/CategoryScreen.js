@@ -41,7 +41,7 @@ class CategoryScreen extends React.PureComponent {
   render() {
     return (
       <>
-        <Toolbar title="Categories" backButton />
+        <Toolbar title="Categories" menuButton cartButton wishListButton searchButton />
         <ScrollView style={{paddingHorizontal: 10}}>
           {this.props.categories.data != undefined && (
             <TreeView

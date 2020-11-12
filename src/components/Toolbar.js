@@ -71,7 +71,9 @@ function Toolbar({
           </Button>
         )}
 
-        <Text style={[styles.title, {color: "#000"}]}>{t(title) || t(routeName)}</Text>
+        <Text style={[styles.title, {color: "#000"}]} numberOfLines={1} ellipsizeMode="tail">
+          {t(title) || t(routeName)}
+        </Text>
 
         <View style={styles.right}>
           {searchButton && (

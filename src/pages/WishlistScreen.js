@@ -5,15 +5,18 @@ import {useSelector} from "react-redux";
 import {useTranslation} from "react-i18next";
 import WishListItem from "./WishListItem";
 import {isArray, isEmpty} from "lodash";
+import {useNavigation} from "react-navigation-hooks";
 
-function WishlistScreen({navigation}) {
+function WishlistScreen() {
   const {t} = useTranslation();
   const wishlist = useSelector(state => state.wishlist);
   const {accent_color} = useSelector(state => state.appSettings);
+  const navigation = useNavigation();
+
   console.log(wishlist);
 
   const gotoProduct = () => {
-    navigation.navigate("ProductStack");
+    navigation.navigate("ProductScreen", {category_id: "", sortby: "popularity"});
   };
 
   const _renderItem = ({item, index}) => <WishListItem item={item} index={index} />;

@@ -60,6 +60,12 @@ class ProductDetailScreen extends React.PureComponent {
       loading: false,
       checked: false,
       index: 0,
+      isOpenModal: false,
+      name: "",
+      email: "",
+      phone: "",
+      qty: "",
+      enquiry: "",
     };
   }
   componentDidMount() {
@@ -77,6 +83,23 @@ class ProductDetailScreen extends React.PureComponent {
       this.submitPostcode();
     }
   }
+
+  onchangename = text => {
+    this.setState({name: text});
+  };
+  onchangeemail = text => {
+    this.setState({email: text});
+  };
+  onchangephone = text => {
+    this.setState({phone: text});
+  };
+  onchangequantity = text => {
+    this.setState({qty: text});
+  };
+  onchangeenquiry = text => {
+    this.setState({enquiry: text});
+  };
+
   setup = () => {
     if (this.state.product.upsell_ids.length > 0) {
       ApiClient.get("/get-products-by-id", {include: this.state.product.upsell_ids.join()})
@@ -113,9 +136,10 @@ class ProductDetailScreen extends React.PureComponent {
   };
 
   shareProduct = () => {
+    console.log("hey kamal");
     RNFetchBlob.fetch("GET", this.state.product.images[0].src)
       .then(resp => {
-        console.log("response : ", resp);
+        alert("response : ", resp.info());
         let base64image = resp.data;
         this.share("data:image/png;base64," + base64image);
       })
@@ -125,7 +149,7 @@ class ProductDetailScreen extends React.PureComponent {
   share = base64image => {
     let shareOptions = {
       title: "Share " + this.state.product.name,
-      url: base64image,
+      url: this.state.product.images[0].src,
       message: this.state.product.permalink,
       subject: this.state.product.name,
     };
@@ -161,7 +185,7 @@ class ProductDetailScreen extends React.PureComponent {
     }
   };
 
-  _increaseCounter = i => () => {
+  _increaseCounter = i => {
     const {variation, product} = this.state;
     let quantity = this.state.quantity;
 
@@ -339,6 +363,40 @@ class ProductDetailScreen extends React.PureComponent {
     this.setState({modalVisible: false});
   };
 
+  closeModal = () => {
+    this.setState({isOpenModal: false});
+  };
+
+  _submitEnquiry = () => {
+    const {id} = this.props.user;
+    const {qty, enquiry, phone, product, name, email} = this.state;
+    if (qty == "" || enquiry == "" || phone == "" || name == "" || email == "") {
+      Toast.show("Enter all the fields");
+      return;
+    }
+    let param = {
+      user_id: id,
+      product_id: product.id,
+      enquery: enquiry,
+      mobile: phone,
+      qty: qty,
+    };
+    console.log(param);
+    this.setState({loading: true});
+    ApiClient.post("/bulk-enqury", param)
+      .then(({data}) => {
+        this.setState({loading: false, isOpenModal: false});
+        console.log(data);
+        if (data.status) {
+          Toast.show(data.message, Toast.LONG);
+        }
+      })
+      .catch(error => {
+        this.setState({loading: false});
+        console.log(error);
+      });
+  };
+
   gotoReviews = product => () => {
     this.props.navigation.navigate("Reviews", product);
   };
@@ -506,7 +564,21 @@ class ProductDetailScreen extends React.PureComponent {
                 </Text>
               </View>
             )}
-            <WishlistIcon style={styles.right} item={item} />
+            <WishlistIcon
+              style={{
+                position: "absolute",
+                end: 0,
+                top: 0,
+                width: 30,
+                height: 30,
+                borderRadius: 15,
+                alignItems: "center",
+                justifyContent: "center",
+                marginEnd: 4,
+                marginTop: 4,
+              }}
+              item={item}
+            />
           </View>
           <View style={{marginStart: 8}}>
             <Text
@@ -572,14 +644,8 @@ class ProductDetailScreen extends React.PureComponent {
     return (
       <>
         <Container style={styles.container}>
-          <Toolbar backButton title={product.name} cartButton />
+          <Toolbar backButton title={product.name} cartButton wishListButton searchButton />
           <ScrollView contentContainerStyle={{flexGrow: 1}}>
-            <Button
-              style={{position: "absolute", right: 0, top: 0, marginTop: 20, marginEnd: 20}}
-              transparent
-              onPress={this.shareProduct}>
-              <Icon color={accent_color} name="md-share" size={24} />
-            </Button>
             <SwiperFlatList
               data={variation.image ? variation.image : product.images}
               nestedScrollEnabled={true}
@@ -594,6 +660,19 @@ class ProductDetailScreen extends React.PureComponent {
               renderItem={this.renderItemSlider}
               style={{width, height: width}}
             />
+            <WishlistIcon style={[styles.right, {backgroundColor: "transparent"}]} item={product} />
+            <Button
+              style={{
+                position: "absolute",
+                top: 0,
+                end: 0,
+                marginTop: 20,
+                marginEnd: 20,
+              }}
+              transparent
+              onPress={this.share}>
+              <Icon color={accent_color} name="md-share" size={24} />
+            </Button>
             <View style={[styles.card, {marginTop: 0, paddingHorizontal: 16}]}>
               <Text style={{fontSize: 16, color: "#000000", fontWeight: "700"}}>
                 {product.name.toUpperCase()}
@@ -650,7 +729,8 @@ class ProductDetailScreen extends React.PureComponent {
                     borderRadius: 4,
                     paddingHorizontal: 8,
                     paddingVertical: 4,
-                  }}>
+                  }}
+                  onPress={() => this.setState({isOpenModal: true})}>
                   <Text style={{color: "#fff", fontSize: 12}}>Bulk Inquiry ?</Text>
                 </Button>
               </View>
@@ -928,6 +1008,89 @@ class ProductDetailScreen extends React.PureComponent {
           style={{marginHorizontal: 0, marginBottom: 0, justifyContent: "flex-end"}}>
           <MiniCart data={this.state} close={this._closeModal} message={this.state.cartMsg} />
         </Modal>
+        <Modal
+          backdropOpacity={0.5}
+          isVisible={this.state.isOpenModal}
+          style={{margin: 0}}
+          onBackButtonPress={this.closeModal}
+          useNativeDriver
+          hideModalContentWhileAnimating>
+          <View
+            style={{
+              backgroundColor: "#FFF",
+              paddingVertical: 10,
+              marginHorizontal: 16,
+              marginVertical: 16,
+              paddingHorizontal: 16,
+              borderRadius: 8,
+            }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                borderBottomWidth: 1,
+                paddingBottom: 8,
+                marginVertical: 16,
+              }}>
+              <Text style={{fontWeight: "600", fontSize: 14}}>Bulk Enquiry</Text>
+              <Button onPress={this.closeModal}>
+                <Icon name="cross" type="Entypo" size={24} color="#757575" />
+              </Button>
+            </View>
+            <View style={styles.view}>
+              <Text style={styles.txt}>Name*</Text>
+              <TextInput
+                style={styles.textinput}
+                value={this.state.name}
+                onChangeText={this.onchangename}
+              />
+            </View>
+            <View style={styles.view}>
+              <Text style={[styles.txt, {width: 52}]}>Email*</Text>
+              <TextInput
+                style={styles.textinput}
+                value={this.state.email}
+                onChangeText={this.onchangeemail}
+              />
+            </View>
+            <View style={styles.view}>
+              <Text style={[styles.txt, {width: 58}]}>Phone*</Text>
+              <TextInput
+                style={styles.textinput}
+                value={this.state.phone}
+                onChangeText={this.onchangephone}
+              />
+            </View>
+            <View style={styles.view}>
+              <Text style={[styles.txt, {width: 74}]}>Qunatity*</Text>
+              <TextInput
+                style={styles.textinput}
+                value={this.state.qty}
+                onChangeText={this.onchangequantity}
+              />
+            </View>
+            <View style={styles.view}>
+              <Text style={[styles.txt, {width: 102}]}>Your Enquiry*</Text>
+              <TextInput
+                style={styles.textinput}
+                value={this.state.enquiry}
+                onChangeText={this.onchangeenquiry}
+              />
+            </View>
+            <Button
+              style={{
+                backgroundColor: accent_color,
+                justifyContent: "center",
+                alignItems: "center",
+                borderRadius: 4,
+                paddingVertical: 8,
+                marginVertical: 12,
+              }}
+              onPress={this._submitEnquiry}>
+              <Text style={{fontWeight: "600", color: "#fff"}}>Submit</Text>
+            </Button>
+          </View>
+        </Modal>
       </>
     );
   }
@@ -1019,18 +1182,32 @@ const styles = StyleSheet.create({
   },
   right: {
     position: "absolute",
-    end: 0,
+    start: 0,
     top: 0,
-    marginTop: 10,
-    marginEnd: 10,
+    marginTop: 20,
+    marginStart: 20,
     borderRadius: 4,
     backgroundColor: "#fff",
   },
+  txt: {
+    backgroundColor: "#fff",
+    width: 56,
+    marginStart: 5,
+    paddingHorizontal: 4,
+    marginTop: -10,
+  },
+  view: {
+    borderWidth: 1,
+    borderRadius: 4,
+    marginTop: 20,
+  },
+  textinput: {paddingVertical: 4, paddingStart: 8},
 });
 
 const mapStateToProps = state => ({
   appSettings: state.appSettings,
   shipping: state.shipping,
+  user: state.user,
 });
 const mapDispatchToProps = {
   getCartCount,

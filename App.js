@@ -35,6 +35,9 @@ import Auth from "./src/pages/auth/Login";
 import Reviews from "./src/pages/product/Reviews";
 import AddReview from "./src/pages/product/AddReview";
 import Tabs from "./src/pages/Tabs";
+import ForgetPassword from "./src/pages/auth/ForgetPassword";
+import PostRegisterOTPVerify from "./src/pages/auth/PostRegisterOTPVerify";
+import PostRegisterOTP from "./src/pages/auth/PostRegisterOtp";
 //Redux
 import {persistor, store} from "./src/store";
 import {Provider} from "react-redux";
@@ -65,6 +68,9 @@ const HomeStack = createStackNavigator(
     Reviews,
     AddReview,
     CategoryScreen,
+    ForgetPassword,
+    PostRegisterOTP,
+    PostRegisterOTPVerify,
   },
   {
     defaultNavigationOptions: {
@@ -81,6 +87,9 @@ const CategoryStack = createStackNavigator(
     WishlistScreen,
     Search,
     Auth,
+    ForgetPassword,
+    PostRegisterOTP,
+    PostRegisterOTPVerify,
   },
   {
     defaultNavigationOptions: {
@@ -101,6 +110,9 @@ const ProductStack = createStackNavigator(
     Auth,
     Reviews,
     AddReview,
+    ForgetPassword,
+    PostRegisterOTP,
+    PostRegisterOTPVerify,
   },
   {
     defaultNavigationOptions: {
