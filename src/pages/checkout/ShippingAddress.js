@@ -92,7 +92,7 @@ function ShippingAddresss(props) {
 
   const setCount = text => {
     setCountryy(text.name);
-    dispatchAction(updateShipping({...user.shipping, country: text.name}));
+    dispatchAction(updateShipping({...user.shipping, country: text.id}));
 
     let arr = [];
     let obj = appSettings.county_states[text.id];
@@ -102,26 +102,7 @@ function ShippingAddresss(props) {
 
   const setStateD = text => {
     setState(text.name);
-    dispatchAction(updateShipping({...user.shipping, state: text.name}));
-  };
-
-  const gotoBack = () => {
-    navigation.goBack(null);
-  };
-
-  const gotoReview = () => {
-    let shipping = {
-      first_name: firstname,
-      last_name: lastname,
-      company: user.shipping.company,
-      city: city,
-      state: state,
-      postcode: postcode,
-      address_1: address1,
-      address_2: address2,
-      country: counrtyy,
-    };
-    navigation.navigate("Review", {...props.navigation.state.params, shipping: shipping});
+    dispatchAction(updateShipping({...user.shipping, state: text.id}));
   };
 
   return (
@@ -198,21 +179,6 @@ function ShippingAddresss(props) {
           onChangeText={onChangeAddress2}
         />
       </ScrollView>
-      {/* <View style={styles.footer}>
-        <Button
-          style={[
-            styles.footerButton,
-            {backgroundColor: appSettings.primary_color, marginRight: -5},
-          ]}
-          onPress={gotoBack}>
-          <Text style={{color: "white"}}>{t("PREVIOUS")}</Text>
-        </Button>
-        <Button
-          style={[styles.footerButton, {backgroundColor: appSettings.accent_color, marginLeft: -5}]}
-          onPress={gotoReview}>
-          <Text style={{color: "white"}}>{t("NEXT")}</Text>
-        </Button>
-      </View> */}
     </View>
   );
 }

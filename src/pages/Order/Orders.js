@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from "react";
 import {View, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator} from "react-native";
 import {Text, Toolbar, EmptyList} from "components";
-import {WooCommerce} from "service";
+import {WooCommerce, ApiClient} from "service";
 import {useSelector} from "react-redux";
 import moment from "moment";
 import {useTranslation} from "react-i18next";
 import {useNavigation} from "react-navigation-hooks";
+import {isEmpty} from "lodash";
 
 function Orders() {
   const {t} = useTranslation();
@@ -35,30 +36,29 @@ function Orders() {
 
   const loadOrder = () => {
     console.log("order");
-    let params = {
-      page: page,
-      per_page: 10,
+    let param = {
+      offset: 0,
+      limit: 10,
     };
 
-    console.log(params);
+    console.log(param);
+    // if (!isEmpty(user)) {
     setLoading(true);
-    WooCommerce.get("orders?customer=" + user.id, {params: params})
-      .then(res => {
-        console.log(orders.concat(res.data));
+    ApiClient.post("/" + user.id + "/order-list", param)
+      .then(({data}) => {
+        console.log(data.data);
         setLoading(false);
-        if (res.status == 200) {
-          setOrders(orders.concat(res.data));
+        if (data.status) {
+          setOrders(data.data);
           setRefreshing(res.data.length == params.per_page);
           setLoading(false);
-          if (page == 1) {
-            setpage(page + 1);
-          }
         }
       })
       .catch(error => {
         setLoading(false);
         console.log(error);
       });
+    // }
   };
 
   const gotoOrderDetailsPage = item => () => {
@@ -81,7 +81,9 @@ function Orders() {
               backgroundColor:
                 item.status == "processing"
                   ? "#76A42E"
-                  : item.status == "cancelled" || item.status == "failed"
+                  : item.status == "cancelled" ||
+                    item.status == "cancel-request" ||
+                    item.status == "failed"
                   ? "#ff0000"
                   : item.status == "completed"
                   ? "#39A3CA"
@@ -134,7 +136,7 @@ function Orders() {
     );
   };
 
-  const _keyExtractor = item => item.id;
+  const _keyExtractor = (item, index) => item + "Sap" + index;
 
   return (
     <View style={{backgroundColor: "#F9F9F9", flex: 1}}>

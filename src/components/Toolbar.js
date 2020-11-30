@@ -1,5 +1,5 @@
 import React from "react";
-import {View, StyleSheet, StatusBar} from "react-native";
+import {View, StyleSheet, StatusBar, Image} from "react-native";
 import Text from "./Text";
 import Button from "./Button";
 import Icon from "./IconNB";
@@ -80,14 +80,19 @@ function Toolbar({
             <Button
               style={[styles.right, {paddingVertical: 16, paddingHorizontal: 10}]}
               onPress={goTo("Search")}>
-              <Icon color={"#000"} name="md-search" size={24} />
+              <Icon color={"#000"} name="md-search" size={34} />
             </Button>
           )}
           {wishListButton && (
             <Button
               onPress={goTo("WishlistScreen")}
               style={[styles.menuButton, {paddingVertical: 16, paddingHorizontal: 10}]}>
-              <Icon color={"#000"} name="md-heart" size={24} />
+              {/* <Icon color={"#000"} name="md-heart" size={24} /> */}
+              <Image
+                resizeMode="contain"
+                source={{width: "100%", height: 15}}
+                source={require("../assets/imgs/wishlist.png")}
+              />
               {isArray(wishlist) && !isEmpty(wishlist) && (
                 <View style={[styles.badge, {backgroundColor: toolbarbadgecolor || accent_color}]}>
                   <Text style={styles.badgeText}>{wishlist.length}</Text>
@@ -99,7 +104,11 @@ function Toolbar({
             <Button
               onPress={goTo("Cart")}
               style={[styles.menuButton, {paddingVertical: 16, paddingHorizontal: 10}]}>
-              <Icon color={"#000"} name="md-cart" size={24} />
+              <Image
+                resizeMode="contain"
+                source={{width: "100%", height: 15}}
+                source={require("../assets/imgs/addToCart.png")}
+              />
               {count > 0 && (
                 <View style={[styles.badge, {backgroundColor: toolbarbadgecolor || accent_color}]}>
                   <Text style={styles.badgeText}>{count}</Text>

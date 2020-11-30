@@ -4,8 +4,8 @@ import {Text, Toolbar, FloatingTextinput, Button, CustomTextInputAddress} from "
 import {useTranslation} from "react-i18next";
 import {useSelector, useDispatch} from "react-redux";
 import {CustomPicker} from "react-native-custom-picker";
-import {WooCommerce} from "service";
-import {updateShipping} from "../../store/actions";
+import {ApiClient} from "service";
+import {updateUser} from "../../store/actions";
 import Toast from "react-native-simple-toast";
 
 const initialState = {
@@ -95,28 +95,40 @@ function ShippingAddress() {
   };
 
   const _UpdateAddress = () => {
+    const {billing} = user;
     let param = {
-      first_name: state.first_name,
-      last_name: state.last_name,
-      company: state.company,
-      city: state.city,
-      state: state.state,
-      postcode: state.postcode,
-      address_1: state.address_1,
-      address_2: state.address_2,
-      country: state.country,
+      user_id: user.id,
+      shipping_first_name: state.first_name,
+      shipping_last_name: state.last_name,
+      shipping_email: "",
+      shipping_phone: "",
+      shipping_company: state.company,
+      shipping_address_1: state.address_1,
+      shipping_address_2: state.address_2,
+      shipping_city: state.city,
+      shipping_state: state.state,
+      shipping_postcode: state.postcode,
+      shipping_country: state.country,
+      billing_first_name: billing.first_name,
+      billing_last_name: billing.last_name,
+      billing_email: billing.email,
+      billing_phone: billing.phone,
+      billing_company: billing.company,
+      billing_address_1: billing.address_1,
+      billing_address_2: billing.address_2,
+      billing_city: billing.city,
+      billing_state: billing.state,
+      billing_postcode: billing.postcode,
+      billing_country: billing.country,
+      checkbox: 0,
     };
     console.log(param);
-
-    let data = {};
-    data.shipping = param;
 
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
     if (
       state.first_name == "" &&
       state.last_name == "" &&
-      state.company == "" &&
       state.city == "" &&
       state.state == "" &&
       state.postcode == "" &&
@@ -125,20 +137,14 @@ function ShippingAddress() {
     ) {
       Toast.show("Please fill all the fields");
     } else {
-      setLoading(true);
-      WooCommerce.post("customers/" + user.id, data)
-        .then(res => {
-          console.log(res);
-          setLoading(false);
-          if (res.status == 200) {
-            dispatchAction(updateShipping(param));
-          } else {
-            Toast.show("Nothing to update", Toast.LONG);
-          }
-        })
-        .catch(error => {
-          setLoading(false);
-        });
+      ApiClient.post("/checkout/update-billing", param).then(res => {
+        console.log(res);
+        if (res.status == 200) {
+          dispatchAction(updateUser(res.data.details));
+        } else {
+          Toast.show("Nothing to update", Toast.LONG);
+        }
+      });
     }
   };
 

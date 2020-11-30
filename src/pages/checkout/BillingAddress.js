@@ -101,7 +101,7 @@ function BillingAddresss({}) {
 
   const setCount = text => {
     setCountryy(text.name);
-    dispatchAction(updateBilling({...user.billing, country: text.name}));
+    dispatchAction(updateBilling({...user.billing, country: text.id}));
     let arr = [];
     let obj = appSettings.county_states[text.id];
     for (let i in obj) arr.push({id: i, name: obj[i]});
@@ -110,7 +110,7 @@ function BillingAddresss({}) {
 
   const setStateD = text => {
     setState(text.name);
-    dispatchAction(updateBilling({...user.billing, state: text.name}));
+    dispatchAction(updateBilling({...user.billing, state: text.id}));
   };
 
   return (

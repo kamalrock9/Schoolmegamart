@@ -8,6 +8,7 @@ import Login from "../auth/Login";
 import {getVersion} from "react-native-device-info";
 import {isEmpty} from "lodash";
 import {logout} from "store/actions";
+import ApiClient from "../../service/ApiClient";
 
 class Drawer extends React.PureComponent {
   constructor(props) {
@@ -61,6 +62,13 @@ class Drawer extends React.PureComponent {
       case "Logout":
         this.props.logout();
         navigation.closeDrawer();
+        ApiClient.get("/logout?user_id=" + this.props.user.id)
+          .then(res => {
+            console.log(res);
+          })
+          .catch(error => {
+            console.log(error);
+          });
         break;
       default:
         navigation.closeDrawer();

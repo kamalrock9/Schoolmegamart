@@ -514,7 +514,8 @@ class ProductDetailScreen extends React.PureComponent {
   };
 
   goToProductDetails = item => () => {
-    navigation.navigate("ProductDetailScreen", item);
+    console.log(item);
+    this.props.navigation.push("ProductDetailScreen", item);
   };
 
   _renderFlatItem = ({item, index}) => {
@@ -725,15 +726,25 @@ class ProductDetailScreen extends React.PureComponent {
                 </Text>
                 <Button
                   style={{
-                    backgroundColor: "#3F849E",
+                    // backgroundColor: "#3F849E",
                     borderRadius: 4,
-                    paddingHorizontal: 8,
+                    // paddingHorizontal: 8,
                     paddingVertical: 4,
                   }}
                   onPress={() => this.setState({isOpenModal: true})}>
-                  <Text style={{color: "#fff", fontSize: 12}}>Bulk Inquiry ?</Text>
+                  <Image
+                    resizeMode="contain"
+                    source={{width: "100%", height: 35}}
+                    source={require("../../assets/imgs/bulk_enquiry.png")}
+                  />
                 </Button>
               </View>
+              {product.hasOwnProperty("product_origin") && product.product_origin != "" && (
+                <View style={[styles.rowCenterSpaced, {marginTop: 10}]}>
+                  <Text style={{fontWeight: "600"}}>Location</Text>
+                  <Text>{product.product_origin}</Text>
+                </View>
+              )}
 
               {/* Footer Content */}
               {(product.purchasable ||

@@ -10,7 +10,7 @@ import SwiperFlatList from "react-native-swiper-flatlist";
 import Toast from "react-native-simple-toast";
 import {ApiClient, WooCommerce} from "service";
 import {isEmpty} from "lodash";
-import {updateBilling, updateShipping} from "../../store/actions";
+import {updateBilling, updateShipping, updateUser} from "../../store/actions";
 import Constants from "../../service/Config";
 
 const {width} = Dimensions.get("window");
@@ -172,48 +172,140 @@ function CheckoutScreen({navigation}) {
       ) {
         Toast.show("Please enter the required filled");
       } else if (pincode_active) {
-        console.log("Shii");
         ApiCall(user.shipping.postcode, 3);
-      } else {
         if (shipToDifferent) {
-          let billingParam = {
-            first_name: billing.first_name,
-            last_name: billing.last_name,
-            company: billing.company,
-            email: billing.email,
-            phone: billing.phone,
-            city: billing.city,
-            state: billing.state,
-            postcode: billing.postcode,
-            address_1: billing.address_1,
-            address_2: billing.address_2,
-            country: billing.country,
+          let data = {
+            user_id: user.id,
+            shipping_first_name: billing.first_name,
+            shipping_last_name: billing.last_name,
+            shipping_email: billing.email,
+            shipping_phone: billing.phone,
+            shipping_company: billing.company,
+            shipping_address_1: billing.address_1,
+            shipping_address_2: billing.address_2,
+            shipping_city: billing.city,
+            shipping_state: billing.state,
+            shipping_postcode: billing.postcode,
+            shipping_country: billing.country,
+            billing_first_name: billing.first_name,
+            billing_last_name: billing.last_name,
+            billing_email: billing.email,
+            billing_phone: billing.phone,
+            billing_company: billing.company,
+            billing_address_1: billing.address_1,
+            billing_address_2: billing.address_2,
+            billing_city: billing.city,
+            billing_state: billing.state,
+            billing_postcode: billing.postcode,
+            billing_country: billing.country,
+            checkbox: 0,
           };
-          let shippingParam = {
-            first_name: billing.first_name,
-            last_name: billing.last_name,
-            company: billing.company,
-            city: billing.city,
-            state: billing.state,
-            postcode: billing.postcode,
-            address_1: billing.address_1,
-            address_2: billing.address_2,
-            country: billing.country,
-          };
-          console.log(billingParam);
-
-          let data = {};
-          data.billing = billingParam;
-          data.shipping = shippingParam;
 
           setloading(true);
-          WooCommerce.post("customers/" + user.id, data)
+          //console.log("Update billing shipping");
+          ApiClient.post("/checkout/update-billing", data)
             .then(res => {
               setloading(false);
+              console.log(res);
               if (res.status == 200) {
-                console.log(res);
-                dispatch(updateBilling(billingParam));
-                dispatch(updateShipping(shippingParam));
+                //console.log(res);
+                dispatch(updateUser(res.data.details));
+                // dispatch(updateBilling(billingParam));
+                //dispatch(updateShipping(shippingParam));
+              } else {
+                Toast.show("Nothing to update", Toast.LONG);
+              }
+            })
+            .catch(error => {
+              setloading(false);
+            });
+        } else {
+          console.log("shipping");
+          let param = {
+            user_id: user.id,
+            shipping_first_name: shipping.first_name,
+            shipping_last_name: shipping.last_name,
+            shipping_email: "",
+            shipping_phone: "",
+            shipping_company: shipping.company,
+            shipping_address_1: shipping.address_1,
+            shipping_address_2: shipping.address_2,
+            shipping_city: shipping.city,
+            shipping_state: shipping.state,
+            shipping_postcode: shipping.postcode,
+            shipping_country: shipping.country,
+            billing_first_name: billing.first_name,
+            billing_last_name: billing.last_name,
+            billing_email: billing.email,
+            billing_phone: billing.phone,
+            billing_company: billing.company,
+            billing_address_1: billing.address_1,
+            billing_address_2: billing.address_2,
+            billing_city: billing.city,
+            billing_state: billing.state,
+            billing_postcode: billing.postcode,
+            billing_country: billing.country,
+            checkbox: 0,
+          };
+          //console.log(param);
+
+          setloading(true);
+          //console.log("Update billing");
+          ApiClient.post("/checkout/update-billing", param)
+            .then(res => {
+              setloading(false);
+              console.log(res);
+              if (res.status == 200) {
+                dispatch(updateUser(res.data.details));
+                //dispatch(updateShipping(param));
+              } else {
+                Toast.show("Nothing to update", Toast.LONG);
+              }
+            })
+            .catch(error => {
+              setloading(false);
+            });
+        }
+      } else {
+        // console.log("hey...");
+        if (shipToDifferent) {
+          let data = {
+            user_id: user.id,
+            shipping_first_name: billing.first_name,
+            shipping_last_name: billing.last_name,
+            shipping_email: billing.email,
+            shipping_phone: billing.phone,
+            shipping_company: billing.company,
+            shipping_address_1: billing.address_1,
+            shipping_address_2: billing.address_2,
+            shipping_city: billing.city,
+            shipping_state: billing.state,
+            shipping_postcode: billing.postcode,
+            shipping_country: billing.country,
+            billing_first_name: billing.first_name,
+            billing_last_name: billing.last_name,
+            billing_email: billing.email,
+            billing_phone: billing.phone,
+            billing_company: billing.company,
+            billing_address_1: billing.address_1,
+            billing_address_2: billing.address_2,
+            billing_city: billing.city,
+            billing_state: billing.state,
+            billing_postcode: billing.postcode,
+            billing_country: billing.country,
+            checkbox: 0,
+          };
+
+          setloading(true);
+          //console.log("Update billing shipping");
+          ApiClient.post("/checkout/update-billing", data)
+            .then(res => {
+              setloading(false);
+              console.log(res);
+              if (res.status == 200) {
+                dispatch(updateUser(res.data.details));
+                // dispatch(updateBilling(billingParam));
+                // dispatch(updateShipping(shippingParam));
               } else {
                 Toast.show("Nothing to update", Toast.LONG);
               }
@@ -223,27 +315,31 @@ function CheckoutScreen({navigation}) {
             });
         } else {
           let param = {
-            first_name: shipping.first_name,
-            last_name: shipping.last_name,
-            company: shipping.company,
-            city: shipping.city,
-            state: shipping.state,
-            postcode: shipping.postcode,
-            address_1: shipping.address_1,
-            address_2: shipping.address_2,
-            country: shipping.country,
+            user_id: user.id,
+            billing_first_name: billing.first_name,
+            billing_last_name: billing.last_name,
+            billing_company: billing.company,
+            billing_email: billing.email,
+            billing_phone: billing.phone,
+            billing_address_1: billing.address_1,
+            billing_address_2: billing.address_2,
+            billing_city: billing.city,
+            billing_state: billing.state,
+            billing_postcode: billing.postcode,
+            billing_country: billing.country,
+            checkbox: 1,
           };
-          console.log(param);
+          //console.log(param);
 
-          let data = {};
-          data.shipping = param;
           setloading(true);
-          WooCommerce.post("customers/" + user.id, data)
+          //console.log("Update billing");
+          ApiClient.post("/checkout/update-billing", param)
             .then(res => {
               setloading(false);
               console.log(res);
               if (res.status == 200) {
-                dispatch(updateShipping(param));
+                dispatch(updateUser(res.data.details));
+                //dispatch(updateShipping(param));
               } else {
                 Toast.show("Nothing to update", Toast.LONG);
               }
@@ -269,38 +365,76 @@ function CheckoutScreen({navigation}) {
         Toast.show("Please enter the required filled");
       } else if (pincode_active) {
         ApiCall(user.billing.postcode, 2);
-      } else {
+        const {billing, shipping} = user;
         let param = {
-          first_name: billing.first_name,
-          last_name: billing.last_name,
-          company: billing.company,
-          email: billing.email,
-          phone: billing.phone,
-          city: billing.city,
-          state: billing.state,
-          postcode: billing.postcode,
-          address_1: billing.address_1,
-          address_2: billing.address_2,
-          country: billing.country,
+          user_id: user.id,
+          billing_first_name: billing.first_name,
+          billing_last_name: billing.last_name,
+          billing_company: billing.company,
+          billing_email: billing.email,
+          billing_phone: billing.phone,
+          billing_address_1: billing.address_1,
+          billing_address_2: billing.address_2,
+          billing_city: billing.city,
+          billing_state: billing.state,
+          billing_postcode: billing.postcode,
+          billing_country: billing.country,
+          checkbox: 1,
         };
-        // console.log(param);
+        //console.log(param);
 
-        let data = {};
-        data.billing = param;
-
-        const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        if (!reg.test(billing.email)) {
-          Toast.show("Your email address is not correct", Toast.LONG);
-          return;
-        }
-        WooCommerce.post("customers/" + user.id, data).then(res => {
-          if (res.status == 200) {
+        setloading(true);
+        //console.log("Update billing");
+        ApiClient.post("/checkout/update-billing", param)
+          .then(res => {
+            setloading(false);
             console.log(res);
-            dispatch(updateBilling(param));
-          } else {
-            Toast.show("Nothing to update", Toast.LONG);
-          }
-        });
+            if (res.status == 200) {
+              dispatch(updateUser(res.data.details));
+              //dispatch(updateShipping(param));
+            } else {
+              Toast.show("Nothing to update", Toast.LONG);
+            }
+          })
+          .catch(error => {
+            setloading(false);
+          });
+      } else {
+        console.log("last");
+        const {billing, shipping} = user;
+        let param = {
+          user_id: user.id,
+          billing_first_name: shipping.first_name,
+          billing_last_name: shipping.last_name,
+          billing_company: shipping.company,
+          billing_email: "",
+          billing_phone: "",
+          billing_address_1: shipping.address_1,
+          billing_address_2: shipping.address_2,
+          billing_city: shipping.city,
+          billing_state: shipping.state,
+          billing_postcode: shipping.postcode,
+          billing_country: shipping.country,
+          checkbox: 1,
+        };
+        //console.log(param);
+
+        setloading(true);
+        //console.log("Update billing");
+        ApiClient.post("/checkout/update-billing", param)
+          .then(res => {
+            setloading(false);
+            console.log(res);
+            if (res.status == 200) {
+              dispatch(updateUser(res.data.details));
+              //dispatch(updateShipping(param));
+            } else {
+              Toast.show("Nothing to update", Toast.LONG);
+            }
+          })
+          .catch(error => {
+            setloading(false);
+          });
         setStepPos(2);
       }
     }

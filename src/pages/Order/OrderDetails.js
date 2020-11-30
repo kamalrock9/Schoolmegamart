@@ -1,13 +1,38 @@
-import React from "react";
+import React, {useState} from "react";
 import {View, Image, FlatList, StyleSheet} from "react-native";
-import {Text, Toolbar} from "components";
+import {Text, Toolbar, Button, ProgressDialog} from "components";
 import {isEmpty} from "lodash";
 import {useTranslation} from "react-i18next";
+import {ApiClient} from "service";
 
 function OrderDetails({navigation}) {
   const {t} = useTranslation();
-  const data = navigation.getParam("item");
-  console.log(data);
+  const [loading, setLoading] = useState(false);
+  const Data = navigation.getParam("item");
+  console.log(Data);
+  const [data, Setdata] = useState(Data);
+
+  const _cancelOrder = () => {
+    var param = {
+      order_id: data.id,
+      status: "cancel-request",
+      transaction_id: data.payment_id != "" ? data.payment_id : "" || "",
+    };
+    console.log(param);
+    setLoading(true);
+    ApiClient.post("/checkout/update-order", param)
+      .then(res => {
+        setLoading(false);
+        console.log(res);
+        if (res.status == 200) {
+          Setdata(res.data.data);
+        }
+      })
+      .catch(error => {
+        setLoading(false);
+        console.log(error);
+      });
+  };
 
   // const _listHeader = () => {
   //   return (
@@ -145,7 +170,7 @@ function OrderDetails({navigation}) {
             {data.billing.state ? data.billing.state + " \u2022 " + data.billing.country : null}
           </Text>
         </View>
-        <View style={[styles.card, {marginTop: 16, marginBottom: 30}]}>
+        <View style={[styles.card, {marginTop: 16}]}>
           <Text style={{fontSize: 14, fontWeight: "600"}}>
             {t("SHIPPING") + " " + t("ADDRESS")}
           </Text>
@@ -172,6 +197,13 @@ function OrderDetails({navigation}) {
             {data.shipping.state ? data.shipping.state + " \u2022 " + data.shipping.country : null}
           </Text>
         </View>
+        {data.status != "cancelled" && (
+          <Button
+            style={[styles.card, {marginTop: 16, alignItems: "center", backgroundColor: "red"}]}
+            onPress={_cancelOrder}>
+            <Text style={{color: "#fff", fontWeight: "600"}}>Cancel Order</Text>
+          </Button>
+        )}
       </View>
     );
   };
@@ -204,6 +236,7 @@ function OrderDetails({navigation}) {
         //    ListHeaderComponent={_listHeader}
         ListFooterComponent={_listFooter}
       />
+      <ProgressDialog loading={loading} />
     </View>
   );
 }

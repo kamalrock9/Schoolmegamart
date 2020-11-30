@@ -4,9 +4,9 @@ import {Text, Toolbar, FloatingTextinput, Button, CustomTextInputAddress} from "
 import {useTranslation} from "react-i18next";
 import {useSelector, useDispatch} from "react-redux";
 import {CustomPicker} from "react-native-custom-picker";
-import {WooCommerce} from "service";
-import {updateBilling} from "../../store/actions";
+import {updateUser} from "../../store/actions";
 import Toast from "react-native-simple-toast";
+import {ApiClient} from "service";
 
 function user() {
   return useSelector(state => state.user);
@@ -109,23 +109,34 @@ function BillingAddress() {
   };
 
   const _UpdateAddress = () => {
+    const {shipping} = user;
     let param = {
-      first_name: state.first_name,
-      last_name: state.last_name,
-      company: state.company,
-      email: state.email,
-      phone: state.phone,
-      city: state.city,
-      state: state.state,
-      postcode: state.postcode,
-      address_1: state.address_1,
-      address_2: state.address_2,
-      country: state.country,
+      user_id: user.id,
+      shipping_first_name: shipping.first_name,
+      shipping_last_name: shipping.last_name,
+      shipping_email: "",
+      shipping_phone: "",
+      shipping_company: shipping.company,
+      shipping_address_1: shipping.address_1,
+      shipping_address_2: shipping.address_2,
+      shipping_city: shipping.city,
+      shipping_state: shipping.state,
+      shipping_postcode: shipping.postcode,
+      shipping_country: shipping.country,
+      billing_first_name: state.first_name,
+      billing_last_name: state.last_name,
+      billing_email: state.email,
+      billing_phone: state.phone,
+      billing_company: state.company,
+      billing_address_1: state.address_1,
+      billing_address_2: state.address_2,
+      billing_city: state.city,
+      billing_state: state.state,
+      billing_postcode: state.postcode,
+      billing_country: state.country,
+      checkbox: 0,
     };
     console.log(param);
-
-    let data = {};
-    data.billing = param;
 
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -145,20 +156,13 @@ function BillingAddress() {
     } else if (!reg.test(state.email)) {
       Toast.show("Your email address is not correct", Toast.LONG);
     } else {
-      setLoading(true);
-      WooCommerce.post("customers/" + user.id, data)
-        .then(res => {
-          console.log(res);
-          setLoading(false);
-          if (res.status == 200) {
-            dispatchAction(updateBilling(param));
-          } else {
-            Toast.show("Nothing to update", Toast.LONG);
-          }
-        })
-        .then(error => {
-          setLoading(false);
-        });
+      ApiClient.post("/checkout/update-billing", param).then(res => {
+        if (res.status == 200) {
+          dispatchAction(updateUser(res.data.details));
+        } else {
+          Toast.show("Nothing to update", Toast.LONG);
+        }
+      });
     }
   };
 

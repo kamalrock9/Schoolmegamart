@@ -5,6 +5,7 @@ import StarRating from "react-native-star-rating";
 import {useSelector} from "react-redux";
 import Toast from "react-native-simple-toast";
 import {WooCommerce} from "../../service";
+import {isEmpty} from "lodash";
 
 function AddReview({navigation}) {
   console.log(navigation.state.params);
@@ -24,6 +25,10 @@ function AddReview({navigation}) {
     }
     if (star == 0) {
       Toast.show("Rating is a required field");
+      return;
+    }
+    if (isEmpty(user)) {
+      Toast.show("Please login/register first.");
       return;
     }
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;

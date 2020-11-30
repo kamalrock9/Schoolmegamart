@@ -134,6 +134,15 @@ function Review({cartData, orderData}) {
             />
           </View>
         )}
+        {data.hasOwnProperty("taxes") && (
+          <View style={styles.flexdirection}>
+            <Text style={{fontWeight: "500"}}>Tax</Text>
+            <HTMLRender
+              html={data.taxes ? data.taxes : <b />}
+              baseFontStyle={{fontWeight: "500"}}
+            />
+          </View>
+        )}
         <View style={styles.flexdirection}>
           <Text style={{color: "green", fontWeight: "500"}}>Total Discount</Text>
           <HTMLRender
