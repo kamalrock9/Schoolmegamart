@@ -4,10 +4,10 @@ import {Text, Toolbar, FloatingTextinput, Button, CustomTextInput} from "compone
 import {useTranslation} from "react-i18next";
 import {useSelector, useDispatch} from "react-redux";
 import Toast from "react-native-simple-toast";
-import {WooCommerce} from "service";
+import {WooCommerce, ApiClient} from "service";
 import {updateUser} from "../store/actions";
 
-function AccountSetting() {
+function AccountSetting({navigation}) {
   const {t} = useTranslation();
 
   const appSettings = useSelector(state => state.appSettings);
@@ -47,6 +47,7 @@ function AccountSetting() {
 
   const _UpdateProfile = () => {
     let param = {
+      user_id: user.id,
       first_name: firstname,
       last_name: lastname,
       email: email,
@@ -76,11 +77,11 @@ function AccountSetting() {
       Toast.show("New password and confirm password can't different.", Toast.LONG);
     } else {
       setLoading(true);
-      WooCommerce.post("customers/" + user.id, param)
-        .then(res => {
-          console.log(res);
+      ApiClient.post("/edit-account", param)
+        .then(({data}) => {
+          console.log(data);
           setLoading(false);
-          if (res.status == 200) {
+          if (data.code) {
             Toast.show("Your account has been updated.", Toast.LONG);
             dispatch(updateUser(redux));
           } else {

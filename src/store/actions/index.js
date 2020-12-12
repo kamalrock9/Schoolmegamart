@@ -93,3 +93,10 @@ export const changeShippingPincode = data => ({
   type: types.CHANGE_SHIPPING_PINCODE,
   payload: data,
 });
+export const clearCartCount = () => ({
+  type: types.CLEAR_CART_COUNT,
+});
+export const deleteItemCart = data => ({
+  type: types.DELETE_ITEM_CART,
+  payload: data,
+});

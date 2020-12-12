@@ -34,20 +34,20 @@ import Carousel, {Pagination} from "react-native-snap-carousel";
 import StarRating from "react-native-star-rating";
 import {FlatGrid} from "react-native-super-grid";
 import ProductItem from "../product/ProductItem";
-import {useNavigation} from "react-navigation-hooks";
+//import {useNavigation} from "react-navigation-hooks";
 
 const {width} = Dimensions.get("window");
 
 const aspectHeight = (nWidth, oHeight, oWidth) => (nWidth * oHeight) / oWidth;
 
-function HomeScreen() {
+function HomeScreen({navigation}) {
   const [loading, setLoading] = useState(false);
   const layout = useSelector(state => state.homeLayout);
   const {t} = useTranslation();
   const dispatch = useDispatch();
   const [index, setIndex] = useState(0);
 
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
 
   const _categoryKeyExtractor = (item, index) => item.id + "category_" + index;
 
@@ -113,8 +113,8 @@ function HomeScreen() {
 
   const gotoProductPage = item => () => {
     console.log("banner");
-    let params = {category_id: null, id: item.id, name: item.name};
-    navigation.navigate("ProductScreen", params);
+    // let params = {category_id: item.id, id: item.id, name: item.name};
+    navigation.navigate("ProductScreen", {category_id: item.id});
   };
 
   const _renderItemCrousel = ({item, index}) => {
@@ -418,35 +418,41 @@ function HomeScreen() {
             </>
           )}
 
-          <Image
-            source={require("../../assets/imgs/homePageBanner.png")}
-            style={{
-              width: width - 32,
-              height: aspectHeight(width - 32, 149, 343),
-              marginStart: 16,
-              marginTop: 25,
-            }}
-          />
+          <TouchableOpacity onPress={gotoProductPage(layout.second_banner[0])}>
+            <Image
+              source={{uri: layout.second_banner[0].second_banner_img}}
+              style={{
+                width: width - 32,
+                height: aspectHeight(width - 32, 149, 343),
+                marginStart: 16,
+                marginTop: 25,
+              }}
+            />
+          </TouchableOpacity>
 
-          <Image
-            source={require("../../assets/imgs/homePageBanner1.png")}
-            style={{
-              width: width - 32,
-              height: aspectHeight(width - 32, 325, 343),
-              marginStart: 16,
-              marginTop: 25,
-            }}
-          />
+          <TouchableOpacity onPress={gotoProductPage(layout.second_banner[1])}>
+            <Image
+              source={{uri: layout.second_banner[1].second_banner_img}}
+              style={{
+                width: width - 32,
+                height: aspectHeight(width - 32, 325, 343),
+                marginStart: 16,
+                marginTop: 25,
+              }}
+            />
+          </TouchableOpacity>
 
-          <Image
-            source={require("../../assets/imgs/homePageBanner2.png")}
-            style={{
-              width: width - 32,
-              height: aspectHeight(width - 32, 325, 343),
-              marginStart: 16,
-              marginTop: 25,
-            }}
-          />
+          <TouchableOpacity onPress={gotoProductPage(layout.second_banner[2])}>
+            <Image
+              source={{uri: layout.second_banner[2].second_banner_img}}
+              style={{
+                width: width - 32,
+                height: aspectHeight(width - 32, 325, 343),
+                marginStart: 16,
+                marginTop: 25,
+              }}
+            />
+          </TouchableOpacity>
           {/* 
           {layout.top_rated_products && layout.top_rated_products.length > 0 && (
             <>

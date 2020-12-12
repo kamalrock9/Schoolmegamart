@@ -1,11 +1,15 @@
 import React, {useState} from "react";
-import {View, Image, FlatList, StyleSheet} from "react-native";
+import {View, Image, FlatList, StyleSheet, PermissionsAndroid, Alert} from "react-native";
 import {Text, Toolbar, Button, ProgressDialog} from "components";
 import {isEmpty} from "lodash";
 import {useTranslation} from "react-i18next";
 import {ApiClient} from "service";
+import {useSelector} from "react-redux";
+import RNFetchBlob from "rn-fetch-blob";
+import Toast from "react-native-simple-toast";
 
 function OrderDetails({navigation}) {
+  const {accent_color} = useSelector(state => state.appSettings);
   const {t} = useTranslation();
   const [loading, setLoading] = useState(false);
   const Data = navigation.getParam("item");
@@ -32,6 +36,53 @@ function OrderDetails({navigation}) {
         setLoading(false);
         console.log(error);
       });
+  };
+
+  const _trackYourOrder = () => {
+    navigation.navigate("TrackYourOrder", {data});
+  };
+
+  const actualDownload = () => {
+    //console.log(data.invoice_action["wcfm-store-invoice-3"].url);
+    const {dirs} = RNFetchBlob.fs;
+    RNFetchBlob.config({
+      fileCache: true,
+      addAndroidDownloads: {
+        useDownloadManager: true,
+        notification: true,
+        mediaScannable: true,
+        title: data.invoice_action["wcfm-store-invoice-3"].name,
+        path: `${dirs.DownloadDir}` + "/" + data.invoice_action["wcfm-store-invoice-3"].name,
+      },
+    })
+      .fetch("GET", data.invoice_action["wcfm-store-invoice-3"].url, {})
+      .then(res => {
+        Toast.show(res.path(), Toast.LONG);
+        console.log("The file saved to ", res.path());
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  };
+
+  const _downloadInvoice = () => {
+    actualDownload();
+    // try {
+    //   const granted = PermissionsAndroid.request(
+    //     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+    //   );
+    //   console.log(granted);
+    //   if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+    //     actualDownload();
+    //   } else {
+    //     Alert.alert(
+    //       "Permission Denied!",
+    //       "You need to give storage permission to download the file",
+    //     );
+    //   }
+    // } catch (err) {
+    //   console.warn(err);
+    // }
   };
 
   // const _listHeader = () => {
@@ -69,7 +120,12 @@ function OrderDetails({navigation}) {
         key={"Sap" + item.id}>
         <Image
           style={{height: 80, width: 80}}
-          source={{uri: "https://www.bigstockphoto.com/images/homepage/module-6.jpg"}}
+          resizeMode="contain"
+          source={{
+            uri: item.img_src
+              ? item.img_src
+              : "https://www.bigstockphoto.com/images/homepage/module-6.jpg",
+          }}
         />
         <View style={{marginStart: 10, flex: 1}}>
           <Text style={{fontWeight: "600", fontSize: 14}}>{item.name}</Text>
@@ -136,10 +192,7 @@ function OrderDetails({navigation}) {
             <Text style={[styles.text, {fontWeight: "600", color: "#000000"}]}>
               {data.prices_include_tax
                 ? data.currency_symbol + "" + data.total + "(Inc. Taxes)"
-                : data.currency_symbol +
-                  "" +
-                  (Number(data.total) + Number(data.total_tax)).toFixed(2) +
-                  "(Inc. Taxes)"}
+                : data.currency_symbol + "" + Number(data.total) + "(Inc. Taxes)"}
             </Text>
           </View>
         </View>
@@ -150,25 +203,31 @@ function OrderDetails({navigation}) {
           {data.billing.company != "" && (
             <Text style={styles.billingtxt}>{data.billing.company}</Text>
           )}
-          <Text style={styles.billingtxt}>
-            {data.billing.first_name && data.billing.last_name
-              ? data.billing.first_name + " " + data.billing.last_name
-              : data.billing.first_name
-              ? data.billing.first_name
-              : null}
-          </Text>
-          <Text style={styles.billingtxt}>
-            {data.billing.address_1 ? data.billing.address_1 : null}
-          </Text>
+          {data.billing.first_name != "" && (
+            <Text style={styles.billingtxt}>
+              {data.billing.first_name && data.billing.last_name
+                ? data.billing.first_name + " " + data.billing.last_name
+                : data.billing.first_name
+                ? data.billing.first_name
+                : null}
+            </Text>
+          )}
+          {data.billing.address_1 != "" && (
+            <Text style={styles.billingtxt}>{data.billing.address_1}</Text>
+          )}
           {!isEmpty(data.billing.address_2) && (
             <Text style={styles.billingtxt}>{data.billing.address_2}</Text>
           )}
-          <Text style={styles.billingtxt}>
-            {data.billing.city ? data.billing.city + " - " + data.billing.postcode : null}
-          </Text>
-          <Text style={styles.billingtxt}>
-            {data.billing.state ? data.billing.state + " \u2022 " + data.billing.country : null}
-          </Text>
+          {data.billing.city != "" && (
+            <Text style={styles.billingtxt}>
+              {data.billing.city ? data.billing.city + " - " + data.billing.postcode : null}
+            </Text>
+          )}
+          {data.billing.state != "" && (
+            <Text style={styles.billingtxt}>
+              {data.billing.state ? data.billing.state + " \u2022 " + data.billing.country : null}
+            </Text>
+          )}
         </View>
         <View style={[styles.card, {marginTop: 16}]}>
           <Text style={{fontSize: 14, fontWeight: "600"}}>
@@ -177,29 +236,56 @@ function OrderDetails({navigation}) {
           {data.shipping.company != "" && (
             <Text style={styles.billingtxt}>{data.shipping.company}</Text>
           )}
-          <Text style={styles.billingtxt}>
-            {data.shipping.first_name && data.shipping.last_name
-              ? data.shipping.first_name + " " + data.shipping.last_name
-              : data.shipping.first_name
-              ? data.shipping.first_name
-              : null}
-          </Text>
-          <Text style={styles.billingtxt}>
-            {data.shipping.address_1 ? data.shipping.address_1 : null}
-          </Text>
+          {data.shipping.first_name != "" && (
+            <Text style={styles.billingtxt}>
+              {data.shipping.first_name && data.shipping.last_name
+                ? data.shipping.first_name + " " + data.shipping.last_name
+                : data.shipping.first_name
+                ? data.shipping.first_name
+                : null}
+            </Text>
+          )}
+          {!isEmpty(data.shipping.address_1) && (
+            <Text style={styles.billingtxt}>{data.shipping.address_1}</Text>
+          )}
           {!isEmpty(data.shipping.address_2) && (
             <Text style={styles.billingtxt}>{data.shipping.address_2}</Text>
           )}
-          <Text style={styles.billingtxt}>
-            {data.shipping.city ? data.shipping.city + " - " + data.shipping.postcode : null}
-          </Text>
-          <Text style={styles.billingtxt}>
-            {data.shipping.state ? data.shipping.state + " \u2022 " + data.shipping.country : null}
-          </Text>
+          {data.shipping.city != "" && (
+            <Text style={styles.billingtxt}>
+              {data.shipping.city ? data.shipping.city + " - " + data.shipping.postcode : null}
+            </Text>
+          )}
+          {data.shipping.state != "" && (
+            <Text style={styles.billingtxt}>
+              {data.shipping.state
+                ? data.shipping.state + " \u2022 " + data.shipping.country
+                : null}
+            </Text>
+          )}
         </View>
+        <Button
+          style={[
+            styles.card,
+            {marginTop: 16, alignItems: "center", backgroundColor: accent_color},
+          ]}
+          onPress={_trackYourOrder}>
+          <Text style={{color: "#fff", fontWeight: "600"}}>Track Your Order</Text>
+        </Button>
+        <Button
+          style={[
+            styles.card,
+            {marginTop: 16, alignItems: "center", backgroundColor: accent_color},
+          ]}
+          onPress={_downloadInvoice}>
+          <Text style={{color: "#fff", fontWeight: "600"}}>Download Invoice</Text>
+        </Button>
         {data.status != "cancelled" && (
           <Button
-            style={[styles.card, {marginTop: 16, alignItems: "center", backgroundColor: "red"}]}
+            style={[
+              styles.card,
+              {marginVertical: 16, alignItems: "center", backgroundColor: "red"},
+            ]}
             onPress={_cancelOrder}>
             <Text style={{color: "#fff", fontWeight: "600"}}>Cancel Order</Text>
           </Button>
@@ -222,13 +308,13 @@ function OrderDetails({navigation}) {
     );
   };
 
-  const _keyExtractor = item => item.id;
+  const _keyExtractor = item => "Sap" + item.id;
 
   return (
     <View style={{flex: 1, backgroundColor: "f9f9f9"}}>
       <Toolbar backButton title={t("ORDER") + " #" + data.id} />
       <FlatList
-        contentContainerStyle={{backgroundColor: "#f9f9f9", flex: 1}}
+        contentContainerStyle={{backgroundColor: "#f9f9f9"}}
         data={data.line_items}
         renderItem={_renderItem}
         keyExtractor={_keyExtractor}

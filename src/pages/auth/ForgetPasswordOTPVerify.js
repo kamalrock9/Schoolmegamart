@@ -7,8 +7,9 @@ import {ApiClient} from "service";
 import {connect} from "react-redux";
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 import {user} from "store/actions";
+import axios from "axios";
 
-class PostRegisterOTPVerify extends Component {
+class ForgetPasswordOTPVerify extends Component {
   constructor(props) {
     super(props);
     console.log(props.navigation.state.params);
@@ -62,75 +63,22 @@ class PostRegisterOTPVerify extends Component {
       });
   };
   verifyOTP = () => {
+    const {Token} = this.props.navigation.state.params;
+    var bodyFormData = new FormData();
+    bodyFormData.append("otp", this.state.code);
+    bodyFormData.append("token", Token);
+    console.log(bodyFormData);
     this.setState({loading: true});
-    ApiClient.get(
-      "/verifyOTP/?phone=" +
-        this.state.phone +
-        "&country_code=" +
-        "+" +
-        this.state.country_code +
-        "&otp=" +
-        this.state.code,
-    )
+    axios
+      .post(
+        "https://school.themiixx.com/wp-json/wc/v2/forget-passowrd/app/verify-otp",
+        bodyFormData,
+      )
       .then(({data}) => {
+        this.setState({loading: true});
         console.log(data);
-        if (data.type == "success") {
-          if (this.props.navigation.state.params.key == "Login") {
-            // let param = {
-            //   mobile: this.state.phone,
-            //   country_code: this.state.country_code,
-            // };
-            // this.setState({loading: true});
-            // ApiClient.post("/login", param)
-            //   .then(({data}) => {
-            //     console.log(data);
-            //     this.setState({loading: false});
-            //     if (data.code == 1) {
-            console.log("Navigate");
-            console.log(this.props.navigation.state.params.LoginDetails.details);
-            this.props.user(this.props.navigation.state.params.LoginDetails.details);
-            this.props.navigation.navigate("HomeScreen");
-            //   } else {
-            //     Toast.show(data.message, Toast.LONG);
-            //   }
-            // })
-            // .catch(error => {
-            //   setLoading(false);
-            // });
-          } else {
-            console.log("Register");
-            console.log(this.props.navigation.state.params.LoginDetails.details);
-            this.props.user(this.props.navigation.state.params.LoginDetails.details);
-            this.props.navigation.navigate("HomeScreen");
-            // var bodyFormData = new FormData();
-            // bodyFormData.append("fname", "");
-            // bodyFormData.append("lname", "");
-            // bodyFormData.append("email", "");
-            // bodyFormData.append("password", "");
-            // bodyFormData.append("mobile", this.state.phone);
-            // bodyFormData.append("country_code", this.state.country_code);
-            // this.setState({loading: true});
-            // ApiClient.post("/register", bodyFormData, {
-            //   config: {headers: {"Content-Type": "multipart/form-data"}},
-            // })
-            //   .then(({data}) => {
-            //     console.log(data);
-            //     this.setState({loading: false});
-            //     if (data.status == 1) {
-            //       this.props.user(data.details);
-            //       this.props.navigation.navigate("HomeScreen");
-            //     } else {
-            //       this.setState({loading: false});
-            //       Toast.show(data.error, Toast.LONG);
-            //     }
-            //   })
-            //   .catch(error => {
-            //     this.setState({loading: false});
-            //   });
-          }
-        } else {
-          this.setState({loading: false});
-          Toast.show("Otp not verified", Toast.LONG);
+        if (data.status) {
+          this.props.navigation.navigate("NewPassword", {Token: data.token});
         }
       })
       .catch(() => {
@@ -148,7 +96,7 @@ class PostRegisterOTPVerify extends Component {
       <View style={{alignItems: "center"}}>
         <Toolbar title="OTP Verify Screen" backButton />
         <Text style={{fontWeight: "700", fontSize: 18, marginTop: 100}}>We sent you a code to</Text>
-        <Text style={{fontWeight: "700", fontSize: 18}}>Verify your Number</Text>
+        <Text style={{fontWeight: "700", fontSize: 18}}>Verify your Email</Text>
 
         <SmoothPinCodeInput
           value={this.state.code}
@@ -195,7 +143,7 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(PostRegisterOTPVerify);
+)(ForgetPasswordOTPVerify);
 
 const styles = StyleSheet.create({
   pinCodeCell: {

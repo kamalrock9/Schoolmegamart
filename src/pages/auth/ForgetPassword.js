@@ -10,6 +10,7 @@ import {
 import {Text, Icon, Button} from "components";
 import Toast from "react-native-simple-toast";
 import {ApiClient} from "service";
+import axios from "axios";
 
 function ForgetPassword({navigation}) {
   const [email, changeEmail] = useState("");
@@ -26,14 +27,24 @@ function ForgetPassword({navigation}) {
   const Forgot = () => {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (reg.test(email) === true) {
-      let emailField = "?email=" + email;
+      var bodyFormData = new FormData();
+      bodyFormData.append("user_mail", email);
       setloading(true);
-      ApiClient.get("/forget-password" + emailField)
+      console.log(bodyFormData);
+      axios
+        .post("https://school.themiixx.com/wp-json/wc/v2/forget-password/app/send", bodyFormData)
         .then(({data}) => {
           console.log(data);
           setloading(false);
-          if (data.code == 1) {
-            navigation.goBack();
+          if (data.status == 1) {
+            //navigation.goBack();
+            Toast.show(data.message, Toast.LONG);
+            navigation.navigate("ForgetPasswordOTPVerify", {
+              Token: data.token,
+              email: email,
+            });
+          } else {
+            Toast.show(data.message, Toast.LONG);
           }
         })
         .catch(error => {
@@ -86,7 +97,7 @@ function ForgetPassword({navigation}) {
           />
 
           <TextInput
-            caretHidden
+            //caretHidden
             placeholder="Email"
             style={[styles.textinput, {marginTop: 3}]}
             value={email}
@@ -124,7 +135,7 @@ const styles = StyleSheet.create({
     marginTop: "20%",
   },
   textinput: {
-    height: 36,
+    paddingVertical: 6,
     flex: 1,
     borderRadius: 2,
     paddingStart: 8,

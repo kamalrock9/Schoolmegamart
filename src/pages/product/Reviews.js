@@ -1,5 +1,5 @@
 import {View, StyleSheet, FlatList} from "react-native";
-import {Text, Toolbar, HTMLRender, Icon, Button} from "components";
+import {Text, Toolbar, HTMLRender, Icon, Button, ProgressDialog} from "components";
 import React, {useState, useEffect} from "react";
 import {useTranslation} from "react-i18next";
 import {WooCommerce, ApiClient} from "../../service";
@@ -18,14 +18,24 @@ function Reviews({navigation}) {
   const [product] = useState(navigation.state.params);
   const [reviews, setReviews] = useState([]);
   const [reviewSettings, setReviewSetting] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let p = navigation.state.params.id ? "?product=" + navigation.state.params.id : "";
-    let s = "&status=" + "approved";
-    WooCommerce.get("products/reviews" + p + s).then(({data}) => {
-      setReviews(data);
-      console.log(data);
-    });
+    // let p = navigation.state.params.id ? "?product_id=" + navigation.state.params.id : "";
+    let param = {
+      product_id: navigation.state.params.id ? navigation.state.params.id : "",
+    };
+    // let s = "&status=" + "approved";
+    setLoading(true);
+    ApiClient.post("/get-reviews", param)
+      .then(({data}) => {
+        console.log(data);
+        setLoading(false);
+        if (data.code) {
+          setReviews(data.data);
+        }
+      })
+      .catch(error => {});
 
     let p_id = navigation.state.params.id ? "?product_id=" + navigation.state.params.id : "?";
     let u_id = user.id ? "&user_id=" + user.id : "";
@@ -44,38 +54,51 @@ function Reviews({navigation}) {
     navigation.navigate("AddReview", {...navigation.state.params});
   };
 
-  const renderItem = ({item}) => {
+  const renderItem = ({item, index}) => {
     var now = new Date(); //todays date
-    var end = moment(item.date_created).format("YYYY-MM-DD"); // another date
+    var end = moment(item.value_data.comment_date).format("YYYY-MM-DD"); // another date
     var duration = moment.duration(moment(now).diff(moment(end)));
-    if (item.status == "approved") {
-      return (
-        <View style={{padding: 10}}>
-          <Text style={{fontWeight: "500"}}>
-            {item.reviewer}
-            {reviewSettings.review_rating_verification_label && item.verified
-              ? " (verified owner)"
-              : ""}
+    return (
+      <View
+        style={{
+          padding: 10,
+          marginHorizontal: 8,
+          marginTop: 8,
+          elevation: 2,
+          marginBottom: reviews.length == index - 1 ? 8 : 0,
+          backgroundColor: "#fff",
+          borderRadius: 4,
+        }}
+        key={index + "Sap"}>
+        <Text style={{fontWeight: "500"}}>
+          {item.value_data.comment_author}
+          {reviewSettings.review_rating_verification_label && item.verified
+            ? " (verified owner)"
+            : ""}
+        </Text>
+        <View style={{flexDirection: "row"}}>
+          <StarRating
+            disabled
+            maxStars={5}
+            rating={parseInt(item.rating)}
+            containerStyle={{justifyContent: "flex-start", marginVertical: 2}}
+            starStyle={{marginEnd: 5}}
+            starSize={10}
+            halfStarEnabled
+            emptyStarColor={accent_color}
+            fullStarColor={accent_color}
+            halfStarColor={accent_color}
+          />
+          <Text style={{fontSize: 12}}>
+            {"(" + moment(item.value_data.comment_date).format("DD MMM YY") + ")"}
           </Text>
-          <View style={{flexDirection: "row"}}>
-            <StarRating
-              disabled
-              maxStars={5}
-              rating={parseInt(item.rating)}
-              containerStyle={{justifyContent: "flex-start", marginVertical: 2}}
-              starStyle={{marginEnd: 5}}
-              starSize={10}
-              halfStarEnabled
-              emptyStarColor={accent_color}
-              fullStarColor={accent_color}
-              halfStarColor={accent_color}
-            />
-            <Text style={{fontSize: 12}}>{moment(duration).format("hh:mm [hrs]")}</Text>
-          </View>
-          <HTMLRender html={item.review || <b />} baseFontStyle={{fontSize: 12}} />
         </View>
-      );
-    }
+        <HTMLRender
+          html={item.value_data.comment_content || <b />}
+          baseFontStyle={{fontSize: 12}}
+        />
+      </View>
+    );
   };
 
   const keyExtractor = (item, index) => item + index;
@@ -87,7 +110,15 @@ function Reviews({navigation}) {
   return (
     <View style={{flex: 1}}>
       <Toolbar title="Reviews" backButton />
-      {isEmpty(reviews) ? (
+      {!isEmpty(reviews) ? (
+        <FlatList
+          contentContainerStyle={{flex: 1}}
+          data={reviews}
+          renderItem={renderItem}
+          keyExtractor={keyExtractor}
+          ItemSeparatorComponent={itemSep}
+        />
+      ) : (
         <View style={{alignItems: "center", justifyContent: "center", flex: 1}}>
           <Text style={styles.txt}>There is no review yet.</Text>
           {reviewSettings.enable_reviews &&
@@ -97,19 +128,12 @@ function Reviews({navigation}) {
               <Text style={styles.txt}>Be the first to review "{product.name}".</Text>
             )}
         </View>
-      ) : (
-        <FlatList
-          data={reviews}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          ItemSeparatorComponent={itemSep}
-        />
       )}
 
       {reviewSettings.enable_reviews &&
         (!reviewSettings.review_rating_verification_required ||
           (reviewSettings.review_rating_verification_required &&
-            reviewSettings.user_bought_product)) && (
+            !reviewSettings.user_bought_product)) && (
           <Button
             style={[
               styles.fabIcon,
@@ -123,6 +147,7 @@ function Reviews({navigation}) {
             </Text>
           </Button>
         )}
+      <ProgressDialog loading={loading} />
     </View>
   );
 }

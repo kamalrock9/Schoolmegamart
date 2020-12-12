@@ -23,6 +23,9 @@ function SortOptions({sort, onBackButtonPress, sortData}) {
   const sortByRating = () => {
     sortData && sortData("rating");
   };
+  const sortByFeatured = () => {
+    sortData && sortData("featured");
+  };
 
   return (
     <View style={styles.container}>
@@ -77,6 +80,18 @@ function SortOptions({sort, onBackButtonPress, sortData}) {
             name="md-checkmark"
             size={24}
             color={sort == "price_desc" ? accent_color : "#000"}
+          />
+        )}
+      </Button>
+      <Button style={styles.sortbtn} onPress={sortByFeatured}>
+        <Text style={{color: sort == "featured" ? accent_color : "#000", fontWeight: "500"}}>
+          Featured
+        </Text>
+        {sort == "featured" && (
+          <Icon
+            name="md-checkmark"
+            size={24}
+            color={sort == "popularity" ? accent_color : "#000"}
           />
         )}
       </Button>

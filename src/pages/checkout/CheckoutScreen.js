@@ -8,9 +8,9 @@ import Review from "../Review";
 import StepIndicator from "react-native-step-indicator";
 import SwiperFlatList from "react-native-swiper-flatlist";
 import Toast from "react-native-simple-toast";
-import {ApiClient, WooCommerce} from "service";
+import {ApiClient} from "service";
 import {isEmpty} from "lodash";
-import {updateBilling, updateShipping, updateUser} from "../../store/actions";
+import {updateShipping, updateUser, clearCartCount} from "../../store/actions";
 import Constants from "../../service/Config";
 
 const {width} = Dimensions.get("window");
@@ -44,7 +44,7 @@ const customStyles = {
 function CheckoutScreen({navigation}) {
   console.log(navigation.state.params);
   const [stepPos, setStepPos] = useState(0);
-  const [shipToDifferent, setShipToDifferent] = useState(false);
+  const [shipToDifferent, setShipToDifferent] = useState(true);
 
   const {accent_color, primary_color, pincode_active} = useSelector(state => state.appSettings);
   const user = useSelector(state => state.user);
@@ -134,6 +134,7 @@ function CheckoutScreen({navigation}) {
           .then(resp => {
             setloading(false);
             console.log(resp);
+            dispatch(clearCartCount());
             ApiClient.get("/cart/clear")
               .then(res => {})
               .catch(error => {
@@ -513,7 +514,7 @@ function CheckoutScreen({navigation}) {
               alignItems: "center",
             }}>
             <Text style={{fontWeight: "500"}}>Same For Shipping</Text>
-            <Switch onChange={onChangeShipToDifferent} value={shipToDifferent} />
+            <Switch value={shipToDifferent} />
           </View>
         )}
         <View style={{flexDirection: "row", width: "100%"}}>

@@ -1,5 +1,12 @@
 import React, {useEffect, useState} from "react";
-import {View, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator} from "react-native";
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+  unstable_batchedUpdates,
+} from "react-native";
 import {Text, Toolbar, EmptyList} from "components";
 import {WooCommerce, ApiClient} from "service";
 import {useSelector} from "react-redux";
@@ -14,30 +21,39 @@ function Orders() {
   const {accent_color} = useSelector(state => state.appSettings);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(true);
-  const [page, setpage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setpage] = useState(0);
   const navigation = useNavigation();
 
   useEffect(() => {
-    const subs = navigation.addListener("didFocus", () => {
-      loadOrder();
+    // if(!isEmpty(user)){
+    const subscription = navigation.addListener("willFocus", () => {
+      setpage(0);
     });
-    subs.remove();
-    loadOrder();
+    return () => {
+      subscription.remove();
+    };
+    // }else{
+    //   setOrders([]);
+    // }
   }, []);
 
+  useEffect(() => {
+    setLoading(true);
+    loadOrder();
+  }, [page]);
+
   const onEndReached = () => {
-    if (!refreshing) return;
+    if (!hasMore) return;
     setpage(page + 1);
     setLoading(true);
-    setRefreshing(false);
-    loadOrder();
+    setHasMore(false);
   };
 
   const loadOrder = () => {
     console.log("order");
     let param = {
-      offset: 0,
+      offset: page * 10,
       limit: 10,
     };
 
@@ -47,11 +63,16 @@ function Orders() {
     ApiClient.post("/" + user.id + "/order-list", param)
       .then(({data}) => {
         console.log(data.data);
-        setLoading(false);
         if (data.status) {
-          setOrders(data.data);
-          setRefreshing(res.data.length == params.per_page);
+          unstable_batchedUpdates(() => {
+            let array = page == 0 ? data.data : [...orders, ...data.data];
+            setOrders(array);
+            setHasMore(data.data.length == 10);
+            setLoading(false);
+          });
+        } else {
           setLoading(false);
+          setOrders([]);
         }
       })
       .catch(error => {

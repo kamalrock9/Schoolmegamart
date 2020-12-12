@@ -43,6 +43,7 @@ import InAppBrowser from "react-native-inappbrowser-reborn";
 import SwiperFlatList from "react-native-swiper-flatlist";
 
 const {width} = Dimensions.get("window");
+const aspectHeight = (nWidth, oHeight, oWidth) => (nWidth * oHeight) / oWidth;
 class ProductDetailScreen extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -81,6 +82,9 @@ class ProductDetailScreen extends React.PureComponent {
     this.setup();
     if (postcode !== "") {
       this.submitPostcode();
+    }
+    if (!this.props.navigation.state.params.in_stock) {
+      Toast.show("Product is out of stock.");
     }
   }
 
@@ -726,17 +730,18 @@ class ProductDetailScreen extends React.PureComponent {
                 </Text>
                 <Button
                   style={{
-                    // backgroundColor: "#3F849E",
+                    backgroundColor: accent_color,
                     borderRadius: 4,
-                    // paddingHorizontal: 8,
+                    paddingHorizontal: 8,
                     paddingVertical: 4,
                   }}
                   onPress={() => this.setState({isOpenModal: true})}>
-                  <Image
+                  <Text style={{fontWeight: "600", color: "white"}}>Bulk Enquiry?</Text>
+                  {/* <Image
                     resizeMode="contain"
-                    source={{width: "100%", height: 35}}
+                    source={{width: "100%", height: aspectHeight((width - 40) / 2 - 9, 124, 36)}}
                     source={require("../../assets/imgs/bulk_enquiry.png")}
-                  />
+                  /> */}
                 </Button>
               </View>
               {product.hasOwnProperty("product_origin") && product.product_origin != "" && (
@@ -814,12 +819,12 @@ class ProductDetailScreen extends React.PureComponent {
                         rightContent={product.categories.map(item => item.name).join(", ")}
                       />
 
-                      {product.hasOwnProperty("total_sales") && (
+                      {/* {product.hasOwnProperty("total_sales") && (
                         <SpecificationRow
                           leftContent="Total Sales"
                           rightContent={product.total_sales}
                         />
-                      )}
+                      )} */}
 
                       {product.hasOwnProperty("stock_quantity") && (
                         <SpecificationRow

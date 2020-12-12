@@ -18,32 +18,87 @@ class PostRegisterOTP extends React.Component {
   }
 
   sendOTP = () => {
-    if (this.state.phone == "" || this.state.phone.length < 4 || this.state.phone.length > 13) {
+    if (this.state.phone == "") {
+      Toast.show("Enter the Phone number", Toast.LONG);
+      return;
+    }
+    if (this.state.phone.length != 10) {
       Toast.show("Phone number is not valid", Toast.LONG);
       return;
     }
     this.setState({loading: true});
-    console.log(this.state.phone);
     getCallingCode(this.state.country_code).then(res => {
       console.log(res);
       var callingCode = res;
-      ApiClient.get("/sendOTP/?phone=" + this.state.phone + "&country_code=+" + callingCode)
-        .then(({data}) => {
-          console.log(data);
-          this.setState({loading: false});
-          if (data.type == "failed") {
-            Toast.show(data.message, Toast.LONG);
-          } else {
-            this.navigateToScreen("PostRegisterOTPVerify", {
-              phone: this.state.phone,
-              country_code: callingCode,
-              ...this.props.navigation.state.params,
-            });
-          }
+      let param = {
+        mobile: this.state.phone,
+        country_code: "+" + res,
+      };
+      console.log(param);
+      if (this.props.navigation.state.params.key == "Login") {
+        this.setState({loading: true});
+        ApiClient.post("/login", param)
+          .then(({data}) => {
+            console.log(data);
+            this.setState({loading: false});
+            if (data.code == 1) {
+              // ApiClient.get("/sendOTP/?phone=" + this.state.phone + "&country_code=+" + callingCode)
+              //   .then(({data}) => {
+              //     console.log(data);
+              //     this.setState({loading: false});
+              //     if (data.type == "failed") {
+              //       Toast.show(data.message, Toast.LONG);
+              //     } else {
+              this.navigateToScreen("PostRegisterOTPVerify", {
+                LoginDetails: data,
+                phone: this.state.phone,
+                country_code: callingCode,
+                ...this.props.navigation.state.params,
+              });
+              //   }
+              // })
+              // .catch(() => {
+              //   this.setState({loading: false});
+              // });
+            } else {
+              Toast.show(data.message, Toast.LONG);
+            }
+          })
+          .catch(error => {
+            setLoading(false);
+          });
+      } else {
+        var bodyFormData = new FormData();
+        bodyFormData.append("fname", "");
+        bodyFormData.append("lname", "");
+        bodyFormData.append("email", "");
+        bodyFormData.append("password", "");
+        bodyFormData.append("mobile", this.state.phone);
+        bodyFormData.append("country_code", "+" + res);
+        console.log(bodyFormData);
+        this.setState({loading: true});
+        ApiClient.post("/register", bodyFormData, {
+          config: {headers: {"Content-Type": "multipart/form-data"}},
         })
-        .catch(() => {
-          this.setState({loading: false});
-        });
+          .then(({data}) => {
+            console.log(data);
+            this.setState({loading: false});
+            if (data.status == 1) {
+              this.navigateToScreen("PostRegisterOTPVerify", {
+                LoginDetails: data,
+                phone: this.state.phone,
+                country_code: callingCode,
+                ...this.props.navigation.state.params,
+              });
+            } else {
+              this.setState({loading: false});
+              Toast.show(data.error, Toast.LONG);
+            }
+          })
+          .catch(error => {
+            this.setState({loading: false});
+          });
+      }
     });
   };
 

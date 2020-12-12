@@ -1,10 +1,10 @@
 import React, {useState} from "react";
 import {View, TextInput} from "react-native";
-import {Text, Toolbar, Button} from "components";
+import {Text, Toolbar, Button, ProgressDialog} from "components";
 import StarRating from "react-native-star-rating";
 import {useSelector} from "react-redux";
 import Toast from "react-native-simple-toast";
-import {WooCommerce} from "../../service";
+import {WooCommerce, ApiClient} from "../../service";
 import {isEmpty} from "lodash";
 
 function AddReview({navigation}) {
@@ -13,6 +13,7 @@ function AddReview({navigation}) {
   const {accent_color} = useSelector(state => state.appSettings);
   const [star, countStar] = useState(0);
   const [review, setReview] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const onStarRatingPress = rating => {
     countStar(rating);
@@ -37,31 +38,29 @@ function AddReview({navigation}) {
       return;
     }
     let param = {
+      user_id: user.id,
+      username: user.first_name != "" ? user.first_name + " " + user.last_name : user.username,
+      user_email: user.email,
+      comment: review,
       rating: star,
-      review: review,
-      reviewer: user.first_name != "" ? user.first_name + " " + user.last_name : user.username,
-      reviewer_email: user.email,
     };
     param.product_id = navigation.state.params.id;
-    if (!user.id) {
-      param.status = "hold";
-    }
+    // if (!user.id) {
+    //   param.status = "hold";
+    // }
 
     console.log(param);
-    WooCommerce.post("products/reviews", param)
-      .then(res => {
-        console.log(res);
-        if (res.status == 201) {
-          if (res.data.status && res.data.status !== "approved") {
-            Toast.show("Reviews will be published after admin approval");
-          } else {
-            Toast.show("You have given review sunccessfully");
-          }
-        } else {
-          Toast.show("Error Occured");
+    setLoading(true);
+    ApiClient.post("/add-review", param)
+      .then(({data}) => {
+        setLoading(false);
+        console.log(data);
+        if (data.code) {
+          Toast.show("Your review has been sent successfully.", Toast.LONG);
         }
       })
       .catch(error => {
+        setLoading(false);
         console.log(error);
       });
   };
@@ -102,6 +101,7 @@ function AddReview({navigation}) {
         onPress={submitReview}>
         <Text style={{color: "#fff"}}>Submit</Text>
       </Button>
+      <ProgressDialog loading={loading} />
     </View>
   );
 }

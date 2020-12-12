@@ -368,7 +368,7 @@ function Auth({navigation}) {
               />
 
               <TextInput
-                caretHidden
+                //  caretHidden
                 placeholder="Email"
                 style={[styles.textinput, {marginTop: 3}]}
                 value={state.loginEmail}
@@ -382,8 +382,9 @@ function Auth({navigation}) {
                 source={require("../../assets/imgs/key.png")}
               />
               <TextInput
+                secureTextEntry={true}
                 placeholder="Password"
-                style={[styles.textinput, {marginTop: 10, marginBottom: 7}]}
+                style={[styles.textinput]}
                 value={state.loginPassword}
                 onChangeText={onChangePassword}
               />
@@ -460,7 +461,7 @@ function Auth({navigation}) {
 
               <TextInput
                 placeholder="Name"
-                style={[styles.textinput, {marginTop: 10, marginBottom: 7}]}
+                style={[styles.textinput]}
                 value={state.firstname}
                 onChangeText={onChangeFirstname}
               />
@@ -474,7 +475,7 @@ function Auth({navigation}) {
 
               <TextInput
                 placeholder="Password"
-                style={[styles.textinput, {marginTop: 10, marginBottom: 7}]}
+                style={[styles.textinput]}
                 value={state.password}
                 onChangeText={onChangepassword}
               />
@@ -487,9 +488,9 @@ function Auth({navigation}) {
               />
 
               <TextInput
-                caretHidden
+                //caretHidden
                 placeholder="Email"
-                style={[styles.textinput, {marginTop: 10, marginBottom: 7}]}
+                style={[styles.textinput]}
                 value={state.signUpEmail}
                 onChangeText={onChangeSignupEmail}
               />
@@ -503,7 +504,7 @@ function Auth({navigation}) {
 
               <TextInput
                 placeholder="Phone"
-                style={[styles.textinput, {marginTop: 10, marginBottom: 7}]}
+                style={[styles.textinput]}
                 value={state.signUpPhone}
                 onChangeText={onChangeSignupPhone}
               />
@@ -654,8 +655,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   textinput: {
-    height: 36,
-    flex: 1,
+    paddingVertical: 6,
     borderRadius: 2,
     paddingStart: 8,
   },

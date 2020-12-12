@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import PropTypes from "prop-types";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -96,8 +96,8 @@ IconNB.propTypes = {
     "MaterialIcons",
     "Octicons",
     "SimpleLineIcons",
-    "Zocial"
-  ])
+    "Zocial",
+  ]),
 };
 
 export default IconNB;

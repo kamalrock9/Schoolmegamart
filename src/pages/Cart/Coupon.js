@@ -15,11 +15,13 @@ function Coupon({onBackButtonPress, applyCoupon}) {
   const [loading, setLoding] = useState(true);
 
   useEffect(() => {
-    WooCommerce.get("coupons")
+    ApiClient.get("/get-coupons")
       .then(({data}) => {
         setLoding(false);
         console.log(data);
-        setCoupons(data);
+        if (data.code) {
+          setCoupons(data.data);
+        }
       })
       .catch(error => {
         setLoding(false);
@@ -59,7 +61,7 @@ function Coupon({onBackButtonPress, applyCoupon}) {
     return (
       <View style={[styles.itemContainer, {marginTop: index > 0 ? 8 : 0, flex: 1}]}>
         <View style={{flex: 1}}>
-          <Text style={{fontWeight: "600", fontSize: 14}}> {item.code.toUpperCase()}</Text>
+          <Text style={{fontWeight: "600", fontSize: 14}}> {item.coupon_code.toUpperCase()}</Text>
           {/* <Text style={{fontWeight: "700", fontSize: 18}}>{item.code.toUpperCase()}</Text> */}
           <View
             style={{
@@ -79,12 +81,12 @@ function Coupon({onBackButtonPress, applyCoupon}) {
                 fontSize: 10,
                 paddingTop: 2,
               }}>
-              {item.code.toUpperCase()}
+              {item.coupon_code.toUpperCase()}
             </Text>
             <View>
               <Text style={{fontSize: 12, color: "grey"}}>Validity:</Text>
               <Text style={{fontSize: 12, color: "grey"}}>
-                {item.date_expires ? moment(item.date_expires).format("MMMM DD,YYYY") : "no limit"}
+                {item.expiry_date ? moment(item.expiry_date).format("MMMM DD,YYYY") : "no limit"}
               </Text>
             </View>
           </View>
@@ -100,14 +102,14 @@ function Coupon({onBackButtonPress, applyCoupon}) {
             borderRadius: 5,
           }}
         />
-        <Button style={[styles.itemApplyButton]} onPress={() => setCouponCode(item.code)}>
+        <Button style={[styles.itemApplyButton]} onPress={() => setCouponCode(item.coupon_code)}>
           <Text style={{fontWeight: "600"}}>Apply</Text>
         </Button>
       </View>
     );
   };
 
-  const _keyExtractor = (item, index) => item.id;
+  const _keyExtractor = item => "Sap" + item.ID;
 
   return (
     <Container style={{backgroundColor: "#FFF"}}>

@@ -51,21 +51,13 @@ function CartItem({item, index, manageQuanity, deleteCartItem}) {
       <View
         style={{
           flexDirection: "row",
-          alignItems: "flex-start",
-          width: "100%",
-          paddingTop: index == 0 ? 16 : 16,
-          paddingBottom: 16,
-          paddingHorizontal: 16,
         }}>
-        <Image style={{height: 70, width: 70, resizeMode: "contain"}} source={{uri: item.image}} />
+        <Image style={{width: 80, height: 80}} resizeMode="contain" source={{uri: item.image}} />
         <View style={{marginStart: 16, flex: 1}}>
           <View style={{flexDirection: "row", justifyContent: "space-between"}}>
             <Text style={{fontWeight: "600", flex: 1}}>{item.name.toUpperCase()}</Text>
           </View>
           <HTMLRender baseFontStyle={{fontWeight: "700"}} html={item.subtotal} />
-
-          {/* <HTMLRender html={item.product_desc} /> */}
-          {/* <HTMLRender html={item.varitions} /> */}
           <View
             style={{
               justifyContent: "space-between",

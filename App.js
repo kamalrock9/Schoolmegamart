@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 //React-Navigation
 import {createAppContainer, createSwitchNavigator} from "react-navigation";
 import {createStackNavigator} from "react-navigation-stack";
+import {createBottomTabNavigator, createMaterialTopTabNavigator} from "react-navigation-tabs";
 import {createDrawerNavigator} from "react-navigation-drawer";
 
 //SIDEMENU
@@ -38,10 +39,17 @@ import Tabs from "./src/pages/Tabs";
 import ForgetPassword from "./src/pages/auth/ForgetPassword";
 import PostRegisterOTPVerify from "./src/pages/auth/PostRegisterOTPVerify";
 import PostRegisterOTP from "./src/pages/auth/PostRegisterOtp";
+import CouponList from "./src/pages/CouponList";
+import TrackYourOrder from "./src/pages/Order/TrackYourOrder";
+import ForgetPasswordOTPVerify from "./src/pages/auth/ForgetPasswordOTPVerify";
+import NewPassword from "./src/pages/auth/NewPassword";
 //Redux
 import {persistor, store} from "./src/store";
 import {Provider} from "react-redux";
 import {PersistGate} from "redux-persist/lib/integration/react";
+//component
+import Icon from "./src/components/IconNB";
+
 function App() {
   return (
     <Provider store={store}>
@@ -55,6 +63,7 @@ function App() {
 const HomeStack = createStackNavigator(
   {
     HomeScreen,
+    ProductScreen,
     ProductDetailScreen,
     Cart,
     CheckoutScreen,
@@ -71,6 +80,10 @@ const HomeStack = createStackNavigator(
     ForgetPassword,
     PostRegisterOTP,
     PostRegisterOTPVerify,
+    ForgetPasswordOTPVerify,
+    NewPassword,
+    CouponList,
+    TrackYourOrder,
   },
   {
     defaultNavigationOptions: {
@@ -90,6 +103,8 @@ const CategoryStack = createStackNavigator(
     ForgetPassword,
     PostRegisterOTP,
     PostRegisterOTPVerify,
+    ForgetPasswordOTPVerify,
+    NewPassword,
   },
   {
     defaultNavigationOptions: {
@@ -100,9 +115,9 @@ const CategoryStack = createStackNavigator(
 
 const ProductStack = createStackNavigator(
   {
-    CategoryScreen,
     ProductScreen,
     ProductDetailScreen,
+    CategoryScreen,
     CheckoutScreen,
     Cart,
     WishlistScreen,
@@ -113,6 +128,8 @@ const ProductStack = createStackNavigator(
     ForgetPassword,
     PostRegisterOTP,
     PostRegisterOTPVerify,
+    ForgetPasswordOTPVerify,
+    NewPassword,
   },
   {
     defaultNavigationOptions: {
@@ -139,9 +156,68 @@ const WalletStack = createStackNavigator(
   },
 );
 
+const TabNavigator = createBottomTabNavigator(
+  {
+    HomeStack: {
+      screen: HomeStack,
+      navigationOptions: ({navigation}) => {
+        let {routeName} = navigation.state.routes[navigation.state.index];
+        return {
+          title: "Home",
+          tabBarVisible: routeName === "HomeScreen" ? true : false,
+          tabBarIcon: ({tintColor}) => (
+            <Icon size={24} type="MaterialIcons" name="home" color={tintColor} />
+          ),
+        };
+      },
+    },
+    CategoryStack: {
+      screen: CategoryStack,
+      navigationOptions: {
+        title: "Category",
+        tabBarIcon: ({tintColor}) => (
+          <Icon
+            size={24}
+            type="MaterialCommunityIcons"
+            name="content-duplicate"
+            color={tintColor}
+          />
+        ),
+      },
+    },
+    OrderStack: {
+      screen: OrderStack,
+      navigationOptions: {
+        title: "Order",
+        tabBarIcon: ({tintColor}) => (
+          <Icon size={24} type="MaterialIcons" name="border-color" color={tintColor} />
+        ),
+      },
+    },
+    AccountSetting: {
+      screen: AccountSetting,
+      navigationOptions: {
+        title: "User",
+        tabBarIcon: ({tintColor}) => (
+          <Icon size={24} type="AntDesign" name="user" color={tintColor} />
+        ),
+      },
+    },
+  },
+  {
+    initialRouteName: "HomeStack",
+    defaultNavigationOptions: {
+      tabBarOptions: {
+        activeTintColor: "#f28529",
+        inactiveTintColor: "#8e9ca8",
+      },
+    },
+  },
+);
+
 const DrawerNavigator = createDrawerNavigator(
   {
-    Tabs,
+    TabNavigator,
     HomeStack,
     ProductStack,
     CategoryStack,
@@ -158,6 +234,7 @@ const DrawerNavigator = createDrawerNavigator(
     Review,
   },
   {
+    initialRouteName: "TabNavigator",
     contentComponent: Drawer,
     drawerPosition: "right",
     drawerBackgroundColor: "transparent",

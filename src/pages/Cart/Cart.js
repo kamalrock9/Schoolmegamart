@@ -18,6 +18,7 @@ import {isArray, isEmpty} from "lodash";
 import {withTranslation} from "react-i18next";
 import Modal from "react-native-modal";
 import Toast from "react-native-simple-toast";
+import {deleteItemCart} from "../../store/actions/index";
 
 class Cart extends React.PureComponent {
   static navigationOptions = {
@@ -95,6 +96,7 @@ class Cart extends React.PureComponent {
     ApiClient.get("/cart/remove", {cart_item_key: key})
       .then(({data}) => {
         this.setState({cart_data: data, updating: false});
+        this.props.deleteItemCart(1);
       })
       .catch(error => {
         this.setState({updating: false});
@@ -128,6 +130,7 @@ class Cart extends React.PureComponent {
           elevation: 2,
           backgroundColor: "white",
           //marginHorizontal: 16,
+          padding: 16,
           marginTop: index == 0 ? 16 : 0,
           borderTopLeftRadius: index == 0 ? 8 : 0,
           borderTopRightRadius: index == 0 ? 8 : 0,
@@ -292,4 +295,11 @@ const mapStateToProps = state => ({
   user: state.user,
 });
 
-export default connect(mapStateToProps)(withTranslation()(Cart));
+const mapDispatchToProps = {
+  deleteItemCart,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslation()(Cart));

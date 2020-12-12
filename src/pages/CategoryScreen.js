@@ -35,7 +35,7 @@ class CategoryScreen extends React.PureComponent {
 
   gotoPage = id => {
     console.log(id);
-    this.props.navigation.navigate("ProductScreen", {params: id});
+    this.props.navigation.navigate("ProductScreen", {category_id: id});
   };
 
   render() {

@@ -79,7 +79,11 @@ class ProductScreen extends React.PureComponent {
       loading: true,
     });
     console.log(text);
-    this.params.sort = text;
+    if (text == "featured") {
+      this.params.featured = true;
+    } else {
+      this.params.sort = text;
+    }
     this.params.page = 1;
     this.loadProducts();
   };
@@ -177,6 +181,13 @@ class ProductScreen extends React.PureComponent {
               numberOfLines={1}>
               {item.name.toUpperCase()}
             </Text>
+            {item.sku != "" && (
+              <Text
+                style={[styles.itemMargin, {fontWeight: "600", fontSize: 12, marginBottom: 4}]}
+                numberOfLines={1}>
+                {item.sku}
+              </Text>
+            )}
             <StarRating
               disabled
               maxStars={5}

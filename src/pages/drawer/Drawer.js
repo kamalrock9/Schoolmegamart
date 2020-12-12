@@ -140,6 +140,10 @@ class Drawer extends React.PureComponent {
                   <Image source={require("../../assets/imgs/order.png")} style={styles.img} />
                   <Text style={styles.text}>{t("ORDERS")}</Text>
                 </Button>
+                <Button style={styles.button} onPress={this.navigateToScreen("CouponList")}>
+                  <Image source={require("../../assets/imgs/order.png")} style={styles.img} />
+                  <Text style={styles.text}>Coupons</Text>
+                </Button>
                 <Button style={styles.button} onPress={this.navigateToScreen("AccountSetting")}>
                   <Image source={require("../../assets/imgs/setting.png")} style={styles.img} />
                   <Text style={styles.text}>{t("ACCOUNT")}</Text>
