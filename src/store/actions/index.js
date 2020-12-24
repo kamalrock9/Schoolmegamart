@@ -100,3 +100,7 @@ export const deleteItemCart = data => ({
   type: types.DELETE_ITEM_CART,
   payload: data,
 });
+export const filterCategory = data => ({
+  type: types.FILTER_CATEGORY,
+  payload: data,
+});

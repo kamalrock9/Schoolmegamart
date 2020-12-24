@@ -1,13 +1,6 @@
 import React, {useState, useCallback} from "react";
-import {
-  View,
-  Image,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
-import {Text, Icon, Button} from "components";
+import {View, Image, StyleSheet, TextInput, TouchableOpacity} from "react-native";
+import {Text, Icon, Button, ProgressDialog} from "components";
 import Toast from "react-native-simple-toast";
 import {ApiClient} from "service";
 import axios from "axios";
@@ -121,9 +114,7 @@ function ForgetPassword({navigation}) {
           </TouchableOpacity>
         </View>
       </View>
-      {loading && (
-        <ActivityIndicator style={{alignItems: "center", justifyContent: "center", flex: 1}} />
-      )}
+      <ProgressDialog loading={loading} />
     </View>
   );
 }

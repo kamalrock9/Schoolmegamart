@@ -95,6 +95,8 @@ class Cart extends React.PureComponent {
     this.setState({updating: true});
     ApiClient.get("/cart/remove", {cart_item_key: key})
       .then(({data}) => {
+        console.log("delete item");
+        console.log(data);
         this.setState({cart_data: data, updating: false});
         this.props.deleteItemCart(1);
       })

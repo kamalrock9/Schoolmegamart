@@ -52,7 +52,15 @@ function CartItem({item, index, manageQuanity, deleteCartItem}) {
         style={{
           flexDirection: "row",
         }}>
-        <Image style={{width: 80, height: 80}} resizeMode="contain" source={{uri: item.image}} />
+        <Image
+          style={{width: 80, height: 80}}
+          resizeMode="contain"
+          source={{
+            uri: item.image
+              ? item.image
+              : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+          }}
+        />
         <View style={{marginStart: 16, flex: 1}}>
           <View style={{flexDirection: "row", justifyContent: "space-between"}}>
             <Text style={{fontWeight: "600", flex: 1}}>{item.name.toUpperCase()}</Text>

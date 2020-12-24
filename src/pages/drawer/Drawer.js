@@ -9,6 +9,8 @@ import {getVersion} from "react-native-device-info";
 import {isEmpty} from "lodash";
 import {logout} from "store/actions";
 import ApiClient from "../../service/ApiClient";
+import {GoogleSignin} from "@react-native-community/google-signin";
+import {LoginManager} from "react-native-fbsdk";
 
 class Drawer extends React.PureComponent {
   constructor(props) {
@@ -61,6 +63,8 @@ class Drawer extends React.PureComponent {
         break;
       case "Logout":
         this.props.logout();
+        GoogleSignin.signOut();
+        LoginManager.logOut();
         navigation.closeDrawer();
         ApiClient.get("/logout?user_id=" + this.props.user.id)
           .then(res => {
@@ -192,7 +196,6 @@ class Drawer extends React.PureComponent {
             </Button>
             <Button style={styles.button} onPress={this.navigateToScreen("giveFeedback")}>
               <Image source={require("../../assets/imgs/review.png")} style={styles.img} />
-
               <Text style={styles.text}>{t("GIVE_FEEDBACK")}</Text>
             </Button>
             {!isEmpty(user) && (

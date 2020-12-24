@@ -1,50 +1,41 @@
 {
   "project_info": {
-    "project_number": "470894361113",
-    "firebase_url": "https://schoole-mega-mart.firebaseio.com",
-    "project_id": "schoole-mega-mart",
-    "storage_bucket": "schoole-mega-mart.appspot.com"
+    "project_number": "547968608427",
+    "project_id": "schoolmegamart-183f5",
+    "storage_bucket": "schoolmegamart-183f5.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:470894361113:android:8777896bb09c73cd484888",
+        "mobilesdk_app_id": "1:547968608427:android:6b80e7d91e890cb92cefee",
         "android_client_info": {
-          "package_name": "com.schoolmegamart"
+          "package_name": "com.in.schoolmegamart"
         }
       },
       "oauth_client": [
         {
-          "client_id": "470894361113-jdrglqm76dmfn670v2hoadauj1dls4rs.apps.googleusercontent.com",
+          "client_id": "547968608427-q7f84v90ll5uqpc4e1j24n843t93rkel.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.schoolmegamart",
-            "certificate_hash": "ecf95e00a132a865be68ab335e826b620fda84d5"
-          }
-        },
-        {
-          "client_id": "470894361113-5lstj3av06rr0el40pe0t9ftplcjfgc8.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.schoolmegamart",
+            "package_name": "com.in.schoolmegamart",
             "certificate_hash": "2a3b14b79bc300fe2e6443cbfd2937654bb065ce"
           }
         },
         {
-          "client_id": "470894361113-0831gfb1kl4550601gnft7ehrsdmmdfo.apps.googleusercontent.com",
+          "client_id": "547968608427-30i7fvlq8bb0hl7lc73dvndi34st9g16.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBjW4vEmy8scddQEf5_IA7Od1FQ9GB00IA"
+          "current_key": "AIzaSyBseo_PeCUGfgqg1NCx-UENmjujIDO7kFo"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "470894361113-0831gfb1kl4550601gnft7ehrsdmmdfo.apps.googleusercontent.com",
+              "client_id": "547968608427-30i7fvlq8bb0hl7lc73dvndi34st9g16.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

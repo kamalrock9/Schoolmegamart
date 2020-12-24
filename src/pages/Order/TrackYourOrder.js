@@ -13,7 +13,7 @@ function TrackYourOrder({navigation}) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    let oid = Data.id ? "?order_id=" + 6327 : "?order_id=''";
+    let oid = Data.id ? "?order_id=" + Data.id : "?order_id=''";
     setLoading(true);
     ApiClient.get("/track/order/delhivery" + oid)
       .then(({data}) => {

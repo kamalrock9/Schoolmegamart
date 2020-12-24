@@ -1,10 +1,12 @@
 import React, {useState, useEffect} from "react";
 import {View, StatusBar, StyleSheet, Platform, ScrollView, Image} from "react-native";
-import {Text, Icon, Button, CheckBox, Container} from "components";
+import {Text, Icon, Button, CheckBox, Container, ProgressDialog} from "components";
 import {useSelector, useDispatch} from "react-redux";
 import {useTranslation} from "react-i18next";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
-import {getAllCategories} from "store/actions";
+import {getAllCategories, filterCategory} from "store/actions";
+import {isEmpty} from "lodash";
+import ApiClient from "../../service/ApiClient";
 
 function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}}) {
   const [priceFilter, setPriceFilter] = useState({
@@ -12,19 +14,40 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
     max_price: filterData.max_price,
   });
   const [category, setCategoryID] = useState(filterData.category);
+  const [loading, setLoading] = useState(false);
+  const [cate, setCat] = useState([]);
   const [attr, setAttr] = useState(seletedAttr);
   const [tabIndex, setTabIndex] = useState(0);
   const {t} = useTranslation();
   const disptach = useDispatch();
 
-  const {primary_color_dark, primary_color, primary_color_text, price, accent_color} = useSelector(
+  const {primary_color_dark, primary_color, price, accent_color} = useSelector(
     state => state.appSettings,
   );
-  const categories = useSelector(state => state.categories);
+  const cat = useSelector(state => state.categories);
+  const filterCat = useSelector(state => state.filterCategory);
+
+  // const categories = [];
+  // //const categories = cat.data.filter(item => item.hide_on_app === "no");
+
+  // console.log(categories);
 
   const filterTabs = ["Price", "Categories", ...attributes.map(item => item.name)];
 
   useEffect(() => {
+    if (isEmpty(filterCat)) {
+      setLoading(true);
+      ApiClient.get("/products/all-categories")
+        .then(({data}) => {
+          setLoading(false);
+          let filterCat = data.filter(item => item.hide_on_app === "no" && item.parent === 0);
+          setCat(filterCat);
+          disptach(filterCategory(filterCat));
+        })
+        .catch(error => {
+          setLoading(false);
+        });
+    }
     disptach(getAllCategories());
   }, []);
 
@@ -156,14 +179,15 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
                 alignItems: "center",
                 padding: 8,
               }}>
-              {categories.data.map((item, index) => (
-                <CheckBox
-                  label={item.name}
-                  key={"categories" + item + index}
-                  checked={category == item.id}
-                  onPress={() => setCategoryID(item.id)}
-                />
-              ))}
+              {!isEmpty(filterCat) &&
+                filterCat.map((item, index) => (
+                  <CheckBox
+                    label={item.name}
+                    key={"categories" + item + index}
+                    checked={category == item.id}
+                    onPress={() => setCategoryID(item.id)}
+                  />
+                ))}
             </View>
           )}
           {tabIndex > 1 && (
@@ -189,6 +213,7 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
           )}
         </ScrollView>
       </View>
+      <ProgressDialog loading={loading} />
       <View style={styles.footer}>
         {/* <Button style={[styles.applyButton, {backgroundColor: accent_color}]} onPress={reset}>
           <Text style={{color: "#FFFFFF", fontWeight: "700"}}>RESET</Text>

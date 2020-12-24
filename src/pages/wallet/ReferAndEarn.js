@@ -29,9 +29,9 @@ function ReferAndEarn({navigation}) {
         if (res.status == 200) {
           console.log(res);
           res.data.htmlMsg =
-            "Invite your friends on WooApp and get " +
+            "Invite your friends on Schoolmegamart and get " +
             res.data.amount_referrer +
-            " as wllet credit.Your friend will also get " +
+            " as wallet credit.Your friend will also get " +
             res.data.amount_earner +
             " as wallet credit.";
           setData(res.data);
@@ -49,7 +49,7 @@ function ReferAndEarn({navigation}) {
       url:
         Platform.OS == "ios"
           ? "https://apps.apple.com/app/id1491593829"
-          : "https://play.google.com/store/apps/details?id=com.phoeniixx.wooapp",
+          : "https://play.google.com/store/apps/details?id=com.in.schoolmegamart",
       message: data.message,
     };
     setloading(true);
@@ -81,7 +81,10 @@ function ReferAndEarn({navigation}) {
         <Text style={{fontWeight: "600", fontSize: 16}}>{data.refer_earn_code}</Text>
       </View>
       <View style={{marginHorizontal: 16}}>
-        <HTMLRender html={data.htmlMsg || "<b></b>"} baseFontStyle={{fontWeight: "300"}} />
+        <HTMLRender
+          html={data.htmlMsg ? data.htmlMsg : "<b></b>"}
+          baseFontStyle={{fontWeight: "300"}}
+        />
         <Text style={{marginTop: 30, fontWeight: "300"}}>
           Referral Valid upto {data.refer_earn_uses} friends.
         </Text>

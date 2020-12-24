@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {View, Image, FlatList, StyleSheet, PermissionsAndroid, Alert} from "react-native";
+import {View, Image, FlatList, StyleSheet, TouchableOpacity} from "react-native";
 import {Text, Toolbar, Button, ProgressDialog} from "components";
 import {isEmpty} from "lodash";
 import {useTranslation} from "react-i18next";
@@ -15,6 +15,7 @@ function OrderDetails({navigation}) {
   const Data = navigation.getParam("item");
   console.log(Data);
   const [data, Setdata] = useState(Data);
+  const [orderID] = useState(data.id);
 
   const _cancelOrder = () => {
     var param = {
@@ -43,6 +44,9 @@ function OrderDetails({navigation}) {
   };
 
   const actualDownload = () => {
+    if (isEmpty(data.invoice_action)) {
+      return;
+    }
     //console.log(data.invoice_action["wcfm-store-invoice-3"].url);
     const {dirs} = RNFetchBlob.fs;
     RNFetchBlob.config({
@@ -62,6 +66,38 @@ function OrderDetails({navigation}) {
       })
       .catch(e => {
         console.log(e);
+      });
+  };
+
+  const _CancelItem = item => () => {
+    console.log(item);
+    var bodyFormData = new FormData();
+    bodyFormData.append("order_id", data.id);
+    bodyFormData.append("item_id", item.id);
+    console.log(bodyFormData);
+    setLoading(true);
+    ApiClient.post("/cancel/order-item", bodyFormData)
+      .then(({data}) => {
+        setLoading(false);
+        console.log(data);
+        if (data.status) {
+          Toast.show(data.msg, Toast.SHORT);
+          setLoading(true);
+          ApiClient.get("/get-order-by-id?order_id=" + orderID)
+            .then(({data}) => {
+              setLoading(false);
+              console.log(data);
+              Setdata(data);
+            })
+            .catch(error => {
+              setLoading(false);
+              console.log(error);
+            });
+        }
+      })
+      .catch(error => {
+        setLoading(false);
+        console.log(error);
       });
   };
 
@@ -124,7 +160,7 @@ function OrderDetails({navigation}) {
           source={{
             uri: item.img_src
               ? item.img_src
-              : "https://www.bigstockphoto.com/images/homepage/module-6.jpg",
+              : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
           }}
         />
         <View style={{marginStart: 10, flex: 1}}>
@@ -134,6 +170,13 @@ function OrderDetails({navigation}) {
             <Text style={styles.txt}>{"Qty:" + item.quantity}</Text>
             <Text style={styles.txt}>{data.currency_symbol + "" + item.subtotal}</Text>
           </View>
+          {data.status === "processing" && data.line_items.length > 1 && (
+            <TouchableOpacity
+              style={{backgroundColor: "red", borderRadius: 4, width: 100, alignItems: "center"}}
+              onPress={_CancelItem(item)}>
+              <Text style={{color: "#fff", fontWeight: "600"}}>Cancel Item</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     );
@@ -275,21 +318,24 @@ function OrderDetails({navigation}) {
         <Button
           style={[
             styles.card,
-            {marginTop: 16, alignItems: "center", backgroundColor: accent_color},
+            {marginVertical: 16, alignItems: "center", backgroundColor: accent_color},
           ]}
           onPress={_downloadInvoice}>
           <Text style={{color: "#fff", fontWeight: "600"}}>Download Invoice</Text>
         </Button>
-        {data.status != "cancelled" && (
-          <Button
-            style={[
-              styles.card,
-              {marginVertical: 16, alignItems: "center", backgroundColor: "red"},
-            ]}
-            onPress={_cancelOrder}>
-            <Text style={{color: "#fff", fontWeight: "600"}}>Cancel Order</Text>
-          </Button>
-        )}
+        {data.status === "processing" &&
+          data.status != "cancelled" &&
+          data.status != "cancel-request" &&
+          data.line_items.length == 1 && (
+            <Button
+              style={[
+                styles.card,
+                {marginBottom: 16, alignItems: "center", backgroundColor: "red"},
+              ]}
+              onPress={_cancelOrder}>
+              <Text style={{color: "#fff", fontWeight: "600"}}>Cancel Order</Text>
+            </Button>
+          )}
       </View>
     );
   };

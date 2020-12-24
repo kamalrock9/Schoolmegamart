@@ -15,7 +15,7 @@ import {useTranslation} from "react-i18next";
 import {useNavigation} from "react-navigation-hooks";
 import {isEmpty} from "lodash";
 
-function Orders() {
+function Orders({navigation}) {
   const {t} = useTranslation();
   const user = useSelector(state => state.user);
   const {accent_color} = useSelector(state => state.appSettings);
@@ -23,24 +23,31 @@ function Orders() {
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [page, setpage] = useState(0);
-  const navigation = useNavigation();
+  const [refreshing, setRefreshing] = useState(false);
+  //const navigation = useNavigation();
 
   useEffect(() => {
-    // if(!isEmpty(user)){
-    const subscription = navigation.addListener("willFocus", () => {
-      setpage(0);
-    });
-    return () => {
-      subscription.remove();
-    };
-    // }else{
-    //   setOrders([]);
-    // }
+    if (!isEmpty(user)) {
+      const subscription = navigation.addListener("willFocus", () => {
+        setpage(0);
+      });
+      return () => {
+        subscription.remove();
+      };
+    } else {
+      setLoading(false);
+      setOrders([]);
+    }
   }, []);
 
   useEffect(() => {
-    setLoading(true);
-    loadOrder();
+    if (!isEmpty(user)) {
+      setLoading(true);
+      loadOrder();
+    } else {
+      setLoading(false);
+      setOrders([]);
+    }
   }, [page]);
 
   const onEndReached = () => {
@@ -159,6 +166,11 @@ function Orders() {
 
   const _keyExtractor = (item, index) => item + "Sap" + index;
 
+  const _handleRefresh = () => {
+    setpage(0);
+    loadOrder();
+  };
+
   return (
     <View style={{backgroundColor: "#F9F9F9", flex: 1}}>
       <Toolbar menuButton title={t("ORDERS")} />
@@ -174,6 +186,8 @@ function Orders() {
           contentContainerStyle={{backgroundColor: "#F9F9F9"}}
           onEndReached={onEndReached}
           onEndReachedThreshold={0.33}
+          refreshing={refreshing}
+          onRefresh={_handleRefresh}
           renderItem={_renderItem}
           keyExtractor={_keyExtractor}
           ListFooterComponent={

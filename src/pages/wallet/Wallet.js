@@ -32,6 +32,24 @@ function Wallet({navigation}) {
       if (amount != "") {
         console.log(amount);
         setModal(false);
+        let data = {
+          woo_add_to_wallet: "Add",
+          woo_wallet_balance_to_add: amount,
+        };
+        setloading(true);
+        ApiClient.post("/wallet/add", data)
+          .then(({data}) => {
+            setloading(false);
+            console.log(data);
+            if (data.code == 1) {
+              Toast.show(data.message, Toast.SHORT);
+              navigation.navigate("Review", {wallet: true});
+            }
+          })
+          .catch(error => {
+            setloading(false);
+            console.log(error);
+          });
       } else {
         Toast.show("Please enter the amount");
       }
@@ -53,10 +71,15 @@ function Wallet({navigation}) {
     setloading(true);
     ApiClient.get("/wallet?uid=" + user.id)
       .then(({data}) => {
+        console.log(data);
         unstable_batchedUpdates(() => {
           setloading(false);
           setRefreshing(false);
-          setTransaction(data.transaction);
+          if (data.transaction === "No transactions found") {
+            setTransaction([]);
+          } else {
+            setTransaction(data.transaction);
+          }
           setBalance(data.balance);
         });
       })
@@ -153,7 +176,7 @@ function TransactionItem({item, index}) {
       <View style={{flexDirection: "row", justifyContent: "space-between", marginBottom: 8}}>
         <Text style={styles.details}>{item.details || "No details"}</Text>
         <HTMLRender
-          html={item.amount}
+          html={item.amount ? item.amount : "<b></b>"}
           baseFontStyle={[{color: item.type == "credit" ? "green" : "red"}, styles.details]}
         />
       </View>

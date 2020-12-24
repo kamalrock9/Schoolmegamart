@@ -7,10 +7,12 @@ import {cartCountReducer} from "./cartCountReducer";
 import {userReducer} from "./userReducer";
 import {saveNotification} from "./saveNotification";
 import {shippingReducer} from "./shippingReducer";
+import {filterReducer} from "./filterCategory";
 
 export default combineReducers({
   homeLayout: homeReducer,
   categories: categoryReducer,
+  filterCategory: filterReducer,
   appSettings: appSettingsReducer,
   wishlist: wishlistReducer,
   cartCount: cartCountReducer,

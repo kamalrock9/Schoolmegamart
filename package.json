@@ -14,7 +14,7 @@
   "dependencies": {
     "@ptomasroos/react-native-multi-slider": "^2.2.0",
     "@react-native-community/async-storage": "^1.7.1",
-    "@react-native-community/google-signin": "^4.0.3",
+    "@react-native-community/google-signin": "^5.0.0",
     "@react-native-firebase/analytics": "6.2.0",
     "@react-native-firebase/app": "6.2.0",
     "axios": "^0.19.1",

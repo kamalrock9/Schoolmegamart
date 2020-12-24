@@ -98,11 +98,19 @@ class ProductScreen extends React.PureComponent {
     }
 
     const params = {
-      hide_empty: true,
-      show_all: true,
+      category_id: this.params.category,
     };
+    console.log(params);
     ApiClient.get("products/custom-attributes", params).then(({data}) => {
+      console.log("Attributes");
+      console.log(data);
       this.setState({attributes: data});
+    });
+    ApiClient.get("products/all-brands?hide_empty").then(({data}) => {
+      console.log("Brand Filter");
+      console.log(data);
+      let newData = [...this.state.attributes, ...data];
+      this.setState({attributes: newData});
     });
   }
 
@@ -149,6 +157,23 @@ class ProductScreen extends React.PureComponent {
     this.setState({showFilter: false, products: [], loading: true, hasMore: false}, () =>
       this.loadProducts(),
     );
+    const paramsData = {
+      hide_empty: true,
+      show_all: true,
+      category_id: params.category,
+    };
+    console.log(params);
+    ApiClient.get("products/custom-attributes", paramsData).then(({data}) => {
+      console.log("Attributes Filter");
+      console.log(data);
+      this.setState({attributes: data});
+    });
+    ApiClient.get("products/all-brands?hide_empty").then(({data}) => {
+      console.log("Brand Filter");
+      console.log(data);
+      let newData = [...this.state.attributes, ...data];
+      this.setState({attributes: newData});
+    });
   };
 
   goToProductDetails = item => () => {
@@ -341,9 +366,12 @@ class ProductScreen extends React.PureComponent {
         <Modal
           animationType="slide"
           isVisible={showFilter}
+          hasBackdrop
           useNativeDriver
           hideModalContentWhileAnimating
           style={{margin: 0}}
+          onBackButtonPress={this.closeFilter}
+          onBackdropPress={this.closeFilter}
           onBackdropPress={this.closeFilter}>
           <Filter
             onBackPress={this.closeFilter}

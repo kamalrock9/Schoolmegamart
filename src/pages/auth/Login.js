@@ -8,6 +8,8 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
+  Platform,
 } from "react-native";
 import {Icon, Text, Button, FloatingTextinput} from "components";
 import SwiperFlatList from "react-native-swiper-flatlist";
@@ -127,19 +129,29 @@ function Auth({navigation}) {
       GoogleSignin.signIn()
         .then(res => {
           console.log(res);
-          let details = res.user;
-          details.mode = "google";
+          //Alert.alert(JSON.stringify(res.user));
+          let newData = {
+            email: res.user.email,
+            mode: "google",
+          };
+          let details = newData;
+          console.log(details);
+          // details.mode = "google";
           ApiClient.post("/social-login", details).then(({data}) => {
             console.log(data);
             setLoading(false);
             if (data.code == 1) {
-              saveDetails(data.details);
-
-              //  onClose && onClose();
-              if (NeedLogin) {
-                navigation.goBack();
+              if (data.details != "") {
+                saveDetails(data.details);
+                //  onClose && onClose();
+                if (NeedLogin) {
+                  navigation.goBack();
+                }
+                Toast.show("Login successfully", Toast.LONG);
+              } else {
+                Toast.show("Something went wrong.", Toast.LONG);
+                GoogleSignin.signOut();
               }
-              Toast.show("Login successfully", Toast.LONG);
             } else {
               Toast.show("Wrong Email / Password.", Toast.LONG);
             }
@@ -150,6 +162,9 @@ function Auth({navigation}) {
           console.log(error);
         });
     } else {
+      // if (Platform.OS === "android") {
+      //   LoginManager.setLoginBehavior("web_only");
+      // }
       LoginManager.logInWithPermissions(["public_profile", "email"]).then(result => {
         if (result.isCancelled) {
           Toast.show("Login cancelled", Toast.LONG);
@@ -163,10 +178,11 @@ function Auth({navigation}) {
                 (error, result) => {
                   if (error) {
                     setLoading(false);
+                    //Alert.alert(JSON.stringify(error));
                     Toast.show(error.toString(), Toast.LONG);
                     //  console.log(error);
                   } else {
-                    console.log(result);
+                    //Alert.alert(JSON.stringify(result));
                     let details = result;
                     details.mode = "facebook";
                     setLoading(true);

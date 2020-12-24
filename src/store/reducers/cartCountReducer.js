@@ -17,7 +17,7 @@ export const cartCountReducer = (state = initialState, action) => {
     case FETCH_CART_COUNT + FAIL_SUFFIX:
       return state;
     case DELETE_ITEM_CART:
-      let remain = state - action.payload;
+      let remain = state >= 1 ? state - action.payload : state;
       console.log(remain);
       return remain;
     case CLEAR_CART_COUNT:

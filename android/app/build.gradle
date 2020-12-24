@@ -128,7 +128,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.schoolmegamart"
+        applicationId "com.in.schoolmegamart"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -155,7 +155,7 @@ android {
             storePassword 'Schoolmegamart@123'
             keyAlias 'phoeniixx'
             keyPassword 'Schoolmegamart@123'
-         }
+        }
     }
     buildTypes {
         debug {

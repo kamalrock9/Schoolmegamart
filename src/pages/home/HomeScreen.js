@@ -76,7 +76,7 @@ function HomeScreen({navigation}) {
       .catch(e => {
         setLoading(false);
       });
-    OneSignal.init("71c73d59-6d8f-4824-a473-e76fe6663814", {
+    OneSignal.init("d2ffef10-5370-48ff-b6aa-9d7a53f71054", {
       kOSSettingsKeyAutoPrompt: true,
     });
     OneSignal.inFocusDisplaying(2);
@@ -418,19 +418,27 @@ function HomeScreen({navigation}) {
             </>
           )}
 
-          <TouchableOpacity onPress={gotoProductPage(layout.second_banner[0])}>
-            <Image
-              source={{uri: layout.second_banner[0].second_banner_img}}
-              style={{
-                width: width - 32,
-                height: aspectHeight(width - 32, 149, 343),
-                marginStart: 16,
-                marginTop: 25,
-              }}
-            />
-          </TouchableOpacity>
+          {!isEmpty(layout.second_banner) &&
+            layout.second_banner.map((item, index) => {
+              return (
+                <TouchableOpacity key={item.id + "Sap"} onPress={gotoProductPage(item)}>
+                  <Image
+                    source={{uri: item.second_banner_img}}
+                    style={{
+                      //backgroundColor: "red",
+                      width: width - 32,
+                      //flex: 1,
+                      height: aspectHeight(width - 32, 343, 343),
+                      marginStart: 16,
+                      marginTop: 25,
+                    }}
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity>
+              );
+            })}
 
-          <TouchableOpacity onPress={gotoProductPage(layout.second_banner[1])}>
+          {/* <TouchableOpacity onPress={gotoProductPage(layout.second_banner[1])}>
             <Image
               source={{uri: layout.second_banner[1].second_banner_img}}
               style={{
@@ -452,7 +460,7 @@ function HomeScreen({navigation}) {
                 marginTop: 25,
               }}
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           {/* 
           {layout.top_rated_products && layout.top_rated_products.length > 0 && (
             <>

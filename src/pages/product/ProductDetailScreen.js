@@ -84,7 +84,7 @@ class ProductDetailScreen extends React.PureComponent {
       this.submitPostcode();
     }
     if (!this.props.navigation.state.params.in_stock) {
-      Toast.show("Product is out of stock.");
+      Toast.show("More items can not be added");
     }
   }
 

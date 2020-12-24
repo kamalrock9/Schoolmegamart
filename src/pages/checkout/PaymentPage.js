@@ -318,7 +318,7 @@ function PaymentPage({navigation}) {
             </Text>
           </View>
         </View>
-        <View style={[styles.card, {alignItems: "flex-start", marginBottom: 10}]}>
+        <View style={[styles.card, {alignItems: "flex-start", marginBottom: 50}]}>
           <Text style={styles.heading}>{t("CUSTOMER_DETAILS")}</Text>
           <View style={styles.view}>
             <Text style={styles.fontweight}>{t("NAME")}</Text>

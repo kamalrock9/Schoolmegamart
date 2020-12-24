@@ -23,6 +23,7 @@ const Constants = {
 const ConstantsDemo = {
   storeName: "Schoolmegamart",
   baseURL: "https://schoolmegamart.com",
+  //baseURL: "https://school.themiixx.com",
   path: "/wp-json/wc/v2",
   keys: {
     consumerKey: "ck_ac568ef2cab011e2482e7284392da836e1e0bddb",

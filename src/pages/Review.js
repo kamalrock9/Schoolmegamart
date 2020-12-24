@@ -1,18 +1,19 @@
 import React, {useState, useEffect} from "react";
 import {View, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity} from "react-native";
-import {Text, Button, Icon, HTMLRender} from "components";
+import {Text, Button, Icon, HTMLRender, Toolbar} from "components";
 import {isEmpty, isArray} from "lodash";
 import {ApiClient} from "service";
 import {useSelector} from "react-redux";
-function Review({cartData, orderData}) {
-  //console.log(cartData);
-  const CartData = cartData;
-  //console.log(CartData);
+function Review({cartData, orderData, navigation}) {
+  console.log(cartData);
+  console.log(orderData);
+  console.log(navigation);
 
+  const user = useSelector(state => state.user);
   const {accent_color} = useSelector(state => state.appSettings);
 
   const cartdata = Object.assign({}, cartData);
-  const [data, setCart] = useState(cartdata);
+  const [data, setCart] = useState("");
   const [loading, setloading] = useState(false);
   const [isSelectShipping, setShippingMethod] = useState(data.chosen_shipping_method);
   const [paymentMethods, setPaymentMethds] = useState([]);
@@ -36,6 +37,7 @@ function Review({cartData, orderData}) {
       .then(({data}) => {
         setloading(false);
         console.log(data);
+        setCart(data);
         orderData && orderData(data);
         setPaymentMethds(data.payment_gateway);
       })
@@ -85,8 +87,34 @@ function Review({cartData, orderData}) {
 
   const _keyExtractor = item => item.cart_item_key;
 
+  const WalletPayment = () => {
+    let u = user && user.id ? "?user_id=" + user.id : "?user_id=";
+    let p = "&payment_method=" + chosen_payment_method;
+    let c = "&shipping_method=" + shipping_method;
+    let pw = pay_via_wallet ? "&pay_via_wallet=" + pay_via_wallet : "";
+
+    setloading(true);
+    ApiClient.post("/checkout/new-order" + u + p + c + pw, data)
+      .then(resp => {
+        setloading(false);
+        ApiClient.get("/cart/clear")
+          .then(res => {})
+          .catch(error => {
+            console.log(error);
+          });
+        if (resp.status == 200) {
+          navigation.navigate("PaymentPage", {Orderdata: resp.data});
+        } else {
+        }
+      })
+      .catch(errr => {
+        setloading(false);
+      });
+  };
+
   return (
-    <View style={{marginHorizontal: 16}}>
+    <View style={{flex: 1}}>
+      {navigation && navigation.state.params.wallet && <Toolbar title="Checkout" backButton />}
       {data.hasOwnProperty(shipping_method) && (
         <View style={styles.card}>
           <Text style={styles.heading}>Shipping Method(S)</Text>
@@ -153,7 +181,14 @@ function Review({cartData, orderData}) {
         <View style={{height: 1.35, backgroundColor: "#d2d2d2", marginVertical: 10}} />
         <View style={styles.flexdirection}>
           <Text style={{fontWeight: "700", color: "grey"}}>Total</Text>
-          <HTMLRender html={data.total || "<b></b>"} baseFontStyle={{fontWeight: "700"}} />
+          {navigation && navigation.state.params.wallet ? (
+            <HTMLRender
+              html={data.cart_order_total || "<b></b>"}
+              baseFontStyle={{fontWeight: "700"}}
+            />
+          ) : (
+            <HTMLRender html={data.total || "<b></b>"} baseFontStyle={{fontWeight: "700"}} />
+          )}
         </View>
       </View>
       <View style={styles.card}>
@@ -190,6 +225,15 @@ function Review({cartData, orderData}) {
             );
           })}
       </View>
+      {navigation && navigation.state.params.wallet && (
+        <View style={styles.footer}>
+          <Button
+            style={[styles.footerButton, {backgroundColor: accent_color}]}
+            onPress={WalletPayment}>
+            <Text style={{color: "white", marginEnd: 5}}>PLACE ORDER</Text>
+          </Button>
+        </View>
+      )}
       {loading && (
         <ActivityIndicator
           color={accent_color}
@@ -221,6 +265,21 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   flexdirection: {flexDirection: "row", justifyContent: "space-between"},
+  footer: {
+    width: "100%",
+    borderTopColor: "#dedede",
+    borderTopWidth: 1,
+    bottom: 0,
+    position: "absolute",
+  },
+  footerButton: {
+    flex: 1,
+    height: 40,
+    margin: 5,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
 
 export default Review;
