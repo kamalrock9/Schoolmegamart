@@ -43,8 +43,9 @@ function OrderDetails({navigation}) {
     navigation.navigate("TrackYourOrder", {data});
   };
 
-  const actualDownload = () => {
-    if (isEmpty(data.invoice_action)) {
+  const actualDownload = url => {
+    alert(url.name);
+    if (isEmpty(data.invoice_action["wcfm-store-invoice"])) {
       return;
     }
     //console.log(data.invoice_action["wcfm-store-invoice-3"].url);
@@ -55,11 +56,11 @@ function OrderDetails({navigation}) {
         useDownloadManager: true,
         notification: true,
         mediaScannable: true,
-        title: data.invoice_action["wcfm-store-invoice-3"].name,
-        path: `${dirs.DownloadDir}` + "/" + data.invoice_action["wcfm-store-invoice-3"].name,
+        title: url.name,
+        path: `${dirs.DownloadDir}` + "/" + url.name,
       },
     })
-      .fetch("GET", data.invoice_action["wcfm-store-invoice-3"].url, {})
+      .fetch("GET", url.url, {})
       .then(res => {
         Toast.show(res.path(), Toast.LONG);
         console.log("The file saved to ", res.path());
@@ -101,8 +102,8 @@ function OrderDetails({navigation}) {
       });
   };
 
-  const _downloadInvoice = () => {
-    actualDownload();
+  const _downloadInvoice = url => () => {
+    actualDownload(url);
     // try {
     //   const granted = PermissionsAndroid.request(
     //     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
@@ -315,14 +316,22 @@ function OrderDetails({navigation}) {
           onPress={_trackYourOrder}>
           <Text style={{color: "#fff", fontWeight: "600"}}>Track Your Order</Text>
         </Button>
-        <Button
-          style={[
-            styles.card,
-            {marginVertical: 16, alignItems: "center", backgroundColor: accent_color},
-          ]}
-          onPress={_downloadInvoice}>
-          <Text style={{color: "#fff", fontWeight: "600"}}>Download Invoice</Text>
-        </Button>
+        {!isEmpty(data.invoice_action["wcfm-store-invoice"]) &&
+          data.invoice_action["wcfm-store-invoice"].map((item, index) => {
+            return (
+              <Button
+                style={[
+                  styles.card,
+                  {marginTop: 16, alignItems: "center", backgroundColor: accent_color},
+                ]}
+                onPress={_downloadInvoice(item)}
+                key={item.url + "SAP" + index}>
+                <Text style={{color: "#fff", fontWeight: "600"}}>
+                  {item.name.replace("&amp;", "&")}
+                </Text>
+              </Button>
+            );
+          })}
         {data.status === "processing" &&
           data.status != "cancelled" &&
           data.status != "cancel-request" &&
@@ -330,7 +339,7 @@ function OrderDetails({navigation}) {
             <Button
               style={[
                 styles.card,
-                {marginBottom: 16, alignItems: "center", backgroundColor: "red"},
+                {marginBottom: 16, marginTop: 16, alignItems: "center", backgroundColor: "red"},
               ]}
               onPress={_cancelOrder}>
               <Text style={{color: "#fff", fontWeight: "600"}}>Cancel Order</Text>

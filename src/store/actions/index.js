@@ -104,3 +104,8 @@ export const filterCategory = data => ({
   type: types.FILTER_CATEGORY,
   payload: data,
 });
+
+export const brand = data => ({
+  type: types.BRAND,
+  payload: data,
+});

@@ -42,7 +42,7 @@ function Wallet({navigation}) {
             setloading(false);
             console.log(data);
             if (data.code == 1) {
-              Toast.show(data.message, Toast.SHORT);
+              //  Toast.show(data.message, Toast.SHORT);
               navigation.navigate("Review", {wallet: true});
             }
           })

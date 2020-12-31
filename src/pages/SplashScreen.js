@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import {Image, StyleSheet, View, Dimensions} from "react-native";
-import {saveAppSettings, getCartCount} from "store/actions";
+import {saveAppSettings, getCartCount, filterCategory} from "store/actions";
 import {useSelector, useDispatch} from "react-redux";
 import {isEmpty} from "lodash";
 import Toast from "react-native-simple-toast";
@@ -30,9 +30,20 @@ i18n
 const {width, height} = Dimensions.get("window");
 function SplashScreen({navigation}) {
   const appSettings = useSelector(state => state.appSettings);
+  const filterCat = useSelector(state => state.filterCategory);
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if (isEmpty(filterCat)) {
+      ApiClient.get("/products/all-categories")
+        .then(({data}) => {
+          let filterCat = data.filter(item => item.hide_on_app === "no" && item.parent === 0);
+          dispatch(filterCategory(filterCat));
+        })
+        .catch(error => {
+          Toast.show("Something went wrong! Try again");
+        });
+    }
     if (isEmpty(appSettings)) {
       console.log("wait");
 

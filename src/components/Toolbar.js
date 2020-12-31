@@ -80,7 +80,11 @@ function Toolbar({
             <Button
               style={[styles.right, {paddingVertical: 16, paddingHorizontal: 10}]}
               onPress={goTo("Search")}>
-              <Icon color={"#000"} name="md-search" size={34} />
+              <Image
+                resizeMode="contain"
+                source={{width: "100%", height: 15}}
+                source={require("../assets/imgs/search.png")}
+              />
             </Button>
           )}
           {wishListButton && (

@@ -5,12 +5,12 @@ import {
   ScrollView,
   TextInput,
   ActivityIndicator,
-  TouchableOpacity,
+  Image,
   FlatList,
   Linking,
-  Image,
   Dimensions,
   TouchableWithoutFeedback,
+  TouchableOpacity,
 } from "react-native";
 import {connect} from "react-redux";
 import StarRating from "react-native-star-rating";
@@ -28,6 +28,7 @@ import {
   Icon,
   Container,
   WishlistIcon,
+  ProgressDialog,
 } from "components";
 import {CustomPicker} from "react-native-custom-picker";
 import SpecificationRow from "./SpecificationRow";
@@ -47,10 +48,12 @@ const aspectHeight = (nWidth, oHeight, oWidth) => (nWidth * oHeight) / oWidth;
 class ProductDetailScreen extends React.PureComponent {
   constructor(props) {
     super(props);
-    console.log(this.props.navigation.state.params);
+    console.log(props.navigation.state.params);
     this.state = {
       quantity: 1,
-      product: this.props.navigation.state.params,
+      product: !!props.navigation.state.params.itemByProduct ? {} : props.navigation.state.params,
+      BundleQty: [],
+      BundleCheckBox: [],
       cartMsg: "",
       modalVisible: false,
       attributes: [],
@@ -58,7 +61,7 @@ class ProductDetailScreen extends React.PureComponent {
       variation: {},
       postcode: props.shipping.postcode || "",
       deliverDetails: {},
-      loading: false,
+      loading: true,
       checked: false,
       index: 0,
       isOpenModal: false,
@@ -70,6 +73,37 @@ class ProductDetailScreen extends React.PureComponent {
     };
   }
   componentDidMount() {
+    if (!!this.props.navigation.state.params.itemByProduct) {
+      this.setState({loading: true});
+      ApiClient.get("/get-products-by-id?id=" + this.props.navigation.state.params.itemByProduct.id)
+        .then(({data}) => {
+          //console.log(data);
+          // let newData = Object.assign(data,{
+          //    quantity:1
+          // });
+          var newData = data.bundled_items.map(function(el) {
+            var o = Object.assign({}, el);
+            o.quantity = 1;
+            o.checkbox = true;
+            return o;
+          });
+          var newD = {...data, bundled_items: newData};
+          console.log(newD);
+          this.setState({product: newD, loading: false}, () => {
+            this.setUpProduct();
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          this.setState({loading: false});
+        });
+    } else {
+      this.setState({loading: false});
+      this.setUpProduct();
+    }
+  }
+
+  setUpProduct() {
     const {product, postcode} = this.state;
     let attributes = [];
     for (let attr of product.attributes) {
@@ -83,8 +117,8 @@ class ProductDetailScreen extends React.PureComponent {
     if (postcode !== "") {
       this.submitPostcode();
     }
-    if (!this.props.navigation.state.params.in_stock) {
-      Toast.show("More items can not be added");
+    if (!product.in_stock) {
+      Toast.show("More items can not be added", Toast.SHORT);
     }
   }
 
@@ -239,6 +273,56 @@ class ProductDetailScreen extends React.PureComponent {
     this.setState({quantity});
   };
 
+  _BundleincreaseCounter = (item, index) => () => {
+    // const {product} = this.state;
+    // let newD = product.bundled_items[index].quantity + 1;
+    // product.bundled_items[index].quantity = newD;
+    // console.log(product);
+    // this.setState({product: product});
+    this.setState(
+      prevState => {
+        prevState.product.bundled_items[index].quantity++;
+        return {product: prevState.product};
+      },
+      () => {
+        this.forceUpdate();
+      },
+    );
+  };
+
+  _BundledecreaseCounter = (item, index) => () => {
+    const {product} = this.state;
+    console.log(product.bundled_items[index].quantity);
+    if (product.bundled_items[index].quantity < 1) {
+      Toast.show("Quantity can't below 0.", Toast.SHORT);
+      return;
+    }
+    this.setState(
+      prevState => {
+        prevState.product.bundled_items[index].quantity--;
+        return {product: prevState.product};
+      },
+      () => {
+        this.forceUpdate();
+      },
+    );
+  };
+
+  changeCheckbox = (item, index) => () => {
+    const {product} = this.state;
+    for (let i = 0; i < product.bundled_items.length; i++) {
+      if (product.bundled_items[index].checkbox) {
+        product.bundled_items[index].checkbox = false;
+      } else {
+        product.bundled_items[index].checkbox = true;
+      }
+    }
+    console.log(product);
+    this.setState({product: product}, () => {
+      this.forceUpdate();
+    });
+  };
+
   _decreaseCounter = index => {
     const {quantity, product} = this.state;
     console.log(quantity);
@@ -283,16 +367,46 @@ class ProductDetailScreen extends React.PureComponent {
 
   _handleAddToCart = (isBuyNow = false) => {
     const {product, quantity, variation, selectedAttrs} = this.state;
-    let data = {id: this.state.product.id};
+    let data = {id: this.state.product.id, quantity: this.state.quantity};
 
     switch (product.type) {
+      case "bundle":
+        if (
+          product.bundled_items.every(element => {
+            return element.checkbox == false;
+          })
+        ) {
+          Toast.show("Select atleast one product", Toast.SHORT);
+          return;
+        }
+        if (
+          product.bundled_items.every(element => {
+            return element.quantity == 0;
+          })
+        ) {
+          Toast.show("Select atleast 1 qunatity of any product", Toast.SHORT);
+          return;
+        }
+        data.bundle_items = {};
+        for (let i in product.bundled_items) {
+          if (product.bundled_items[i].checkbox) {
+            data.bundle_items[product.bundled_items[i].bundled_item_id] = Object.assign(
+              {},
+              {
+                product_id: product.bundled_items[i].product_id,
+                quantity: product.bundled_items[i].quantity,
+              },
+            );
+          }
+        }
+        break;
       case "grouped":
         if (
           product.group.every(element => {
             return element.quantity == 0;
           })
         ) {
-          Toast.show("Select atleast one product");
+          Toast.show("Select atleast one product", Toast.SHORT);
           return;
         }
         data.quantity = {};
@@ -311,31 +425,33 @@ class ProductDetailScreen extends React.PureComponent {
           data.variation = selectedAttrs;
           data.quantity = quantity;
         } else {
-          Toast.show("Select a variation first");
+          Toast.show("Select a variation first", Toast.SHORT);
           return;
         }
     }
 
     if (this.props.appSettings.pincode_active) {
       if (this.state.postcode == "") {
-        Toast.show("Please select a pincode first.");
+        Toast.show("Please select a pincode first.", Toast.SHORT);
         return;
       }
       if (isEmpty(this.state.deliverDetails)) {
-        Toast.show("Please apply the pincode first.");
+        Toast.show("Please apply the pincode first.", Toast.SHORT);
         return;
       }
       if (
         this.state.deliverDetails.hasOwnProperty("delivery") &&
         !this.state.deliverDetails.delivery
       ) {
-        Toast.show("Delivery is not available for your location");
+        Toast.show("Delivery is not available for your location.", Toast.SHORT);
         return;
       }
     }
-
+    console.log(JSON.stringify(data));
+    this.setState({loading: true});
     ApiClient.post("/cart/add", data)
       .then(({data}) => {
+        this.setState({loading: false});
         this.setState({
           cartMsg: Array.isArray(data) ? data.map(e => e.message).join(", ") : data.message,
         });
@@ -351,6 +467,7 @@ class ProductDetailScreen extends React.PureComponent {
         }
       })
       .catch(error => {
+        this.setState({loading: true});
         console.log(error);
       });
   };
@@ -392,7 +509,7 @@ class ProductDetailScreen extends React.PureComponent {
         this.setState({loading: false, isOpenModal: false});
         console.log(data);
         if (data.status) {
-          Toast.show(data.message, Toast.LONG);
+          Toast.show(data.message, Toast.SHORT);
         }
       })
       .catch(error => {
@@ -646,7 +763,16 @@ class ProductDetailScreen extends React.PureComponent {
       loading,
       index,
     } = this.state;
-    return (
+    const gotoSum = item => {
+      let value = 0;
+      for (let i = 0; i < item.length; i++) {
+        value += item[i].checkbox ? Number(item[i].product_details.price) * item[i].quantity : 0;
+      }
+      return value;
+    };
+    return loading ? (
+      <ProgressDialog loading={loading} />
+    ) : (
       <>
         <Container style={styles.container}>
           <Toolbar backButton title={product.name} cartButton wishListButton searchButton />
@@ -679,7 +805,7 @@ class ProductDetailScreen extends React.PureComponent {
               <Icon color={accent_color} name="md-share" size={24} />
             </Button>
             <View style={[styles.card, {marginTop: 0, paddingHorizontal: 16}]}>
-              <Text style={{fontSize: 16, color: "#000000", fontWeight: "700"}}>
+              <Text style={{fontSize: 16, color: "#000000", fontWeight: "500"}}>
                 {product.name.toUpperCase()}
               </Text>
               <Text style={{marginVertical: 4, fontSize: 12, color: "grey"}}>
@@ -704,11 +830,24 @@ class ProductDetailScreen extends React.PureComponent {
                 </Button>
               </View>
               <View style={[styles.rowCenterSpaced]}>
-                <HTMLRender
-                  html={variation.price_html || product.price_html}
-                  baseFontStyle={{fontSize: 16, fontWeight: "500"}}
-                  containerStyle={{paddingTop: 8}}
-                />
+                {product.type != "bundle" ? (
+                  <HTMLRender
+                    html={variation.price_html || product.price_html}
+                    baseFontStyle={{fontSize: 16, fontWeight: "500"}}
+                    containerStyle={{paddingTop: 8}}
+                  />
+                ) : (
+                  <View style={{flexDirection: "row"}}>
+                    <HTMLRender
+                      html={" " + product.bundled_items[0].product_details.currency_symbol}
+                      containerStyle={{}}
+                      baseFontStyle={{fontSize: 16, fontWeight: "500"}}
+                    />
+                    <Text style={{fontSize: 16, fontWeight: "500"}}>
+                      {gotoSum(product.bundled_items)}
+                    </Text>
+                  </View>
+                )}
 
                 {product.type != "grouped" && (
                   <QuantitySelector
@@ -744,6 +883,74 @@ class ProductDetailScreen extends React.PureComponent {
                   /> */}
                 </Button>
               </View>
+              {product.type === "bundle" &&
+                product.bundled_items.map((item, index) => {
+                  const {product_details} = item;
+                  return (
+                    <View
+                      key={item.id + "Sap" + index}
+                      style={{flexDirection: "row", marginTop: 16}}>
+                      <Image
+                        style={{height: 70, width: 70, borderRadius: 4, marginEnd: 8}}
+                        source={{
+                          uri: product_details.image_id
+                            ? product_details.image_id
+                            : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+                        }}
+                      />
+                      <View>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginTop: -4,
+                            color: "#000000",
+                            fontWeight: "500",
+                          }}>
+                          {product_details.name}
+                        </Text>
+                        <Text style={{fontSize: 12, color: "grey"}}>{product_details.sku}</Text>
+                        <View style={{flexDirection: "row", alignItems: "center"}}>
+                          <TouchableOpacity style={{}} onPress={this.changeCheckbox(item, index)}>
+                            <Icon
+                              type="MaterialCommunityIcons"
+                              color={
+                                item.checkbox ? this.props.appSettings.accent_color : "#000000"
+                              }
+                              size={24}
+                              name={item.checkbox ? "checkbox-marked" : "checkbox-blank-outline"}
+                            />
+                          </TouchableOpacity>
+                          <View style={{flexDirection: "row"}}>
+                            <Text>Add for</Text>
+                            <HTMLRender
+                              html={" " + product_details.currency_symbol}
+                              containerStyle={{}}
+                              baseFontStyle={{fontSize: 14, fontWeight: "700"}}
+                            />
+                            <Text style={{fontWeight: "700"}}>{product_details.price} each</Text>
+                          </View>
+                        </View>
+                        {item.checkbox && (
+                          <View>
+                            <Text>
+                              Status:
+                              <Text style={{color: "green", fontWeight: "600"}}>
+                                {" " + product_details.stock_quantity} in Stock
+                              </Text>
+                            </Text>
+                            <View style={{alignItems: "flex-start"}}>
+                              <QuantitySelector
+                                minusClick={this._BundledecreaseCounter(item, index)}
+                                plusClick={this._BundleincreaseCounter(item, index)}
+                                quantity={item.quantity}
+                              />
+                            </View>
+                          </View>
+                        )}
+                      </View>
+                    </View>
+                  );
+                })}
               {product.hasOwnProperty("product_origin") && product.product_origin != "" && (
                 <View style={[styles.rowCenterSpaced, {marginTop: 10}]}>
                   <Text style={{fontWeight: "600"}}>Location</Text>
@@ -999,7 +1206,6 @@ class ProductDetailScreen extends React.PureComponent {
             {product.related && product.related.length > 0 && (
               <View style={styles.card}>
                 <Text style={styles.cardItemHeader}>Related Products</Text>
-                {/* <ProductsRow keyPrefix="product" products={product.related} /> */}
                 <FlatList
                   horizontal
                   showsHorizontalScrollIndicator={false}
@@ -1014,6 +1220,7 @@ class ProductDetailScreen extends React.PureComponent {
             {loading && <ActivityIndicator style={{flex: 1}} />}
           </ScrollView>
         </Container>
+        <ProgressDialog loading={loading} />
         <Modal
           isVisible={modalVisible}
           onBackButtonPress={this._closeModal}

@@ -45,7 +45,11 @@ class CategoryScreen extends React.PureComponent {
         <ScrollView style={{paddingHorizontal: 10}}>
           {this.props.categories.data != undefined && (
             <TreeView
-              data={this.props.categories.data}
+              data={
+                this.props.categories.data
+                  ? this.props.categories.data.filter(item => item.hide_on_app === "no")
+                  : []
+              }
               collapsedItemHeight={40}
               onpress={this.gotoPage}
             />

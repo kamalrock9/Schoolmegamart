@@ -21,7 +21,11 @@ function Search({navigation}) {
   };
 
   const goToPage = (route, params = {}) => () => {
-    navigation.push(route, params);
+    if (params.type === "bundle") {
+      navigation.push(route, {itemByProduct: params});
+    } else {
+      navigation.push(route, params);
+    }
   };
 
   const onChangeText = useCallback(

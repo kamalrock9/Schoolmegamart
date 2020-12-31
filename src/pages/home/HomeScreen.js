@@ -101,20 +101,16 @@ function HomeScreen({navigation}) {
     // });
   };
 
-  const goToPage = (route, params = {}) => () => {
-    navigation.navigate(route, params);
-  };
-
-  const openCategories = () => {
-    navigation.navigate("CategoryScreen");
-  };
-
   const _renderItem = ({item, index}) => <CategoryItem item={item} index={index} />;
 
   const gotoProductPage = item => () => {
     console.log("banner");
     // let params = {category_id: item.id, id: item.id, name: item.name};
-    navigation.navigate("ProductScreen", {category_id: item.id});
+    if (item.type == "product") {
+      navigation.navigate("ProductDetailScreen", {itemByProduct: item});
+    } else {
+      navigation.navigate("ProductScreen", {category_id: item.id});
+    }
   };
 
   const _renderItemCrousel = ({item, index}) => {
@@ -130,18 +126,22 @@ function HomeScreen({navigation}) {
     );
   };
 
-  const _keyExtractor = (item, index) => index + "sap" + item.id;
+  const _keyExtractor = item => item.id + "sap";
 
   const {accent_color} = useSelector(state => state.appSettings);
 
   const goToProductDetails = item => () => {
-    navigation.navigate("ProductDetailScreen", item);
+    if (item.type === "bundle") {
+      navigation.navigate("ProductDetailScreen", {itemByProduct: item});
+    } else {
+      navigation.navigate("ProductDetailScreen", item);
+    }
   };
 
   const _renderFlatItem = ({item, index}) => {
     var discount = Math.ceil(((item.regular_price - item.price) / item.regular_price) * 100);
     return (
-      <TouchableOpacity style={{paddingTop: 10}} onPress={goToProductDetails(item)}>
+      <TouchableOpacity style={{paddingTop: 10, marginTop: 8}} onPress={goToProductDetails(item)}>
         <View
           style={[
             styles.containerProduct,
@@ -319,6 +319,12 @@ function HomeScreen({navigation}) {
     }
   };
 
+  const _renderItemForSecondBanner = ({item, index}) => (
+    <SecondBanner item={item} index={index} navigation={navigation} />
+  );
+
+  const _keyExtractorForSecondBanner = (item, index) => item.id + "sap" + index;
+
   let carousel = null;
 
   if (loading) {
@@ -397,6 +403,251 @@ function HomeScreen({navigation}) {
             />
           </View> */}
 
+          {!isEmpty(layout.section_banners) && (
+            <View>
+              {layout.section_banners.map((item, index) => {
+                return item.layout_type == 2 && item.banner.length >= 2 ? (
+                  <View
+                    style={{
+                      backgroundColor: "#FB7C00",
+                      width: width,
+                      padding: 16,
+                      marginBottom: 16,
+                    }}
+                    key={item.id + "SAP" + index}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}>
+                      <Text style={{fontWeight: "500", fontSize: 16, color: "#fff"}}>
+                        {item.title}
+                      </Text>
+                      <Button
+                        style={{backgroundColor: "green", borderRadius: 4}}
+                        onPress={gotoProductPage("")}>
+                        <Text style={styles.viewAll}>View All</Text>
+                      </Button>
+                    </View>
+                    <View style={{flexDirection: "row", marginTop: 16, marginBottom: -32}}>
+                      <TouchableOpacity onPress={gotoProductPage(item.banner[0])}>
+                        <Image
+                          resizeMode={"contain"}
+                          style={{
+                            width: width / 2 - 16,
+                            height: width / 2 - 8,
+                            borderWidth: 1,
+                            borderColor: "#d2d2d2",
+                          }}
+                          source={{uri: item.banner[0].banner_url}}
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={gotoProductPage(item.banner[1])}>
+                        <Image
+                          resizeMode={"contain"}
+                          style={{
+                            width: width / 2 - 16,
+                            height: width / 2 - 8,
+                            borderWidth: 1,
+                            borderColor: "#d2d2d2",
+                          }}
+                          source={{uri: item.banner[1].banner_url}}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ) : item.layout_type == 3 && item.banner.length >= 3 ? (
+                  <View
+                    style={{
+                      backgroundColor: "#fff",
+                      width: width,
+                      //padding: 16,
+                      marginTop: 16,
+                    }}
+                    key={item.id + "SAP" + index}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        paddingHorizontal: 16,
+                      }}>
+                      <Text style={{fontWeight: "500", fontSize: 16, color: "#000"}}>
+                        {item.title}
+                      </Text>
+                      <Button
+                        style={{backgroundColor: "green", borderRadius: 4}}
+                        onPress={gotoProductPage("")}>
+                        <Text style={styles.viewAll}>View All</Text>
+                      </Button>
+                    </View>
+                    <View style={{flexDirection: "row", marginTop: 16}}>
+                      <TouchableOpacity onPress={gotoProductPage(item.banner[0])}>
+                        <Image
+                          resizeMode={"contain"}
+                          style={{
+                            width: width / (4 / 3) - 50,
+                            height: width / (4 / 3),
+                            borderWidth: 1,
+                            borderColor: "#d2d2d2",
+                          }}
+                          source={{uri: item.banner[0].banner_url}}
+                        />
+                      </TouchableOpacity>
+                      <View>
+                        <TouchableOpacity onPress={gotoProductPage(item.banner[1])}>
+                          <Image
+                            resizeMode={"contain"}
+                            style={{
+                              width: width / (8 / 3),
+                              height: width / (8 / 3),
+                              borderWidth: 1,
+                              borderColor: "#d2d2d2",
+                            }}
+                            source={{uri: item.banner[1].banner_url}}
+                          />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={gotoProductPage(item.banner[2])}>
+                          <Image
+                            resizeMode={"contain"}
+                            style={{
+                              width: width / 3 + 32,
+                              height: width / (8 / 3),
+                              borderWidth: 1,
+                              borderColor: "#d2d2d2",
+                            }}
+                            source={{uri: item.banner[2].banner_url}}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                ) : item.layout_type == 4 && item.banner.length >= 4 ? (
+                  <View
+                    style={{
+                      backgroundColor: "#87ceeb",
+                      width: width,
+                      padding: 16,
+                      marginTop: 16,
+                      marginBottom: 16,
+                    }}
+                    key={item.id + "SAP" + index}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}>
+                      <Text style={{fontWeight: "500", fontSize: 16, color: "#fff"}}>
+                        {item.title}
+                      </Text>
+                      <Button
+                        style={{backgroundColor: "green", borderRadius: 4}}
+                        onPress={gotoProductPage("")}>
+                        <Text style={styles.viewAll}>View All</Text>
+                      </Button>
+                    </View>
+                    <View style={{flexDirection: "row", marginTop: 16}}>
+                      <TouchableOpacity onPress={gotoProductPage(item.banner[0])}>
+                        <Image
+                          resizeMode={"contain"}
+                          style={{
+                            width: width / 2 - 16,
+                            height: width / 2 - 8,
+                            borderWidth: 1,
+                            borderColor: "#d2d2d2",
+                          }}
+                          source={{uri: item.banner[0].banner_url}}
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={gotoProductPage(item.banner[1])}>
+                        <Image
+                          resizeMode={"contain"}
+                          style={{
+                            width: width / 2 - 16,
+                            height: width / 2 - 8,
+                            borderWidth: 1,
+                            borderColor: "#d2d2d2",
+                          }}
+                          source={{uri: item.banner[1].banner_url}}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    <View style={{flexDirection: "row", marginBottom: -32}}>
+                      <TouchableOpacity onPress={gotoProductPage(item.banner[2])}>
+                        <Image
+                          resizeMode={"contain"}
+                          style={{
+                            width: width / 2 - 16,
+                            height: width / 2 - 8,
+                            borderWidth: 1,
+                            borderColor: "#d2d2d2",
+                          }}
+                          source={{uri: item.banner[2].banner_url}}
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={gotoProductPage(item.banner[3])}>
+                        <Image
+                          resizeMode={"contain"}
+                          style={{
+                            width: width / 2 - 16,
+                            height: width / 2 - 8,
+                            borderWidth: 1,
+                            borderColor: "#d2d2d2",
+                          }}
+                          source={{uri: item.banner[3].banner_url}}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ) : item.layout_type == 1 && item.banner.length >= 1 ? (
+                  <View
+                    style={{
+                      backgroundColor: "#FB7C00",
+                      width: width,
+                      padding: 16,
+                      marginTop: 16,
+                      marginBottom: 32,
+                    }}
+                    key={item.id + "SAP" + index}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}>
+                      <Text style={{fontWeight: "500", fontSize: 16, color: "#fff"}}>
+                        {item.title}
+                      </Text>
+                      <Button
+                        style={{backgroundColor: "green", borderRadius: 4}}
+                        onPress={gotoProductPage("")}>
+                        <Text style={styles.viewAll}>View All</Text>
+                      </Button>
+                    </View>
+                    <TouchableOpacity onPress={gotoProductPage(item.banner[0])}>
+                      <Image
+                        resizeMode={"contain"}
+                        style={{
+                          marginTop: 16,
+                          width: width - 32,
+                          height: width / 3,
+                          borderWidth: 1,
+                          borderColor: "#d2d2d2",
+                          marginBottom: -32,
+                        }}
+                        source={{uri: item.banner[0].banner_url}}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <View key={item + "Sap"} />
+                );
+              })}
+            </View>
+          )}
+
           {layout.featured_products && layout.featured_products.length > 0 && (
             <>
               {/* <SectonHeader
@@ -418,25 +669,13 @@ function HomeScreen({navigation}) {
             </>
           )}
 
-          {!isEmpty(layout.second_banner) &&
-            layout.second_banner.map((item, index) => {
-              return (
-                <TouchableOpacity key={item.id + "Sap"} onPress={gotoProductPage(item)}>
-                  <Image
-                    source={{uri: item.second_banner_img}}
-                    style={{
-                      //backgroundColor: "red",
-                      width: width - 32,
-                      //flex: 1,
-                      height: aspectHeight(width - 32, 343, 343),
-                      marginStart: 16,
-                      marginTop: 25,
-                    }}
-                    resizeMode="contain"
-                  />
-                </TouchableOpacity>
-              );
-            })}
+          {!isEmpty(layout.second_banner) && (
+            <FlatList
+              data={layout.second_banner}
+              renderItem={_renderItemForSecondBanner}
+              keyExtractor={_keyExtractorForSecondBanner}
+            />
+          )}
 
           {/* <TouchableOpacity onPress={gotoProductPage(layout.second_banner[1])}>
             <Image
@@ -572,6 +811,34 @@ function HomeScreen({navigation}) {
   }
 }
 
+function SecondBanner({item, index, navigation}) {
+  const gotoProductPage = item => () => {
+    console.log("banner");
+    // let params = {category_id: item.id, id: item.id, name: item.name};
+    if (item.type == "category") {
+      navigation.navigate("ProductScreen", {category_id: item.id});
+    } else {
+      navigation.navigate("ProductDetailScreen", {itemByProduct: item});
+    }
+  };
+  return (
+    <TouchableOpacity key={item.id + "Sap" + index} onPress={gotoProductPage(item)}>
+      <Image
+        source={{uri: item.banner_url}}
+        style={{
+          //backgroundColor: "red",
+          width: width - 32,
+          //flex: 1,
+          height: aspectHeight(width - 32, 343, 343),
+          marginStart: 16,
+          marginTop: 25,
+        }}
+        resizeMode="contain"
+      />
+    </TouchableOpacity>
+  );
+}
+
 HomeScreen.navigationOptions = {
   header: null,
 };
@@ -607,6 +874,13 @@ const styles = StyleSheet.create({
   },
   tab: {
     fontSize: 12,
+    fontWeight: "500",
+  },
+  viewAll: {
+    color: "#fff",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    fontSize: 13,
     fontWeight: "500",
   },
 });

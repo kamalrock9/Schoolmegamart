@@ -170,7 +170,7 @@ class Drawer extends React.PureComponent {
                 </Button>
                 {wallet_active && (
                   <Button style={styles.button} onPress={this.navigateToScreen("WalletStack")}>
-                    <Icon name="wallet" type="Entypo" style={styles.icon} />
+                    <Image source={require("../../assets/imgs/wallet.png")} style={styles.img} />
                     <Text style={styles.text}>{t("WALLET")}</Text>
                   </Button>
                 )}

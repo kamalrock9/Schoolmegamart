@@ -21,6 +21,7 @@ import {isEmpty} from "lodash";
 import CategoryItem from "../home/CategoryItem";
 import SortOptions from "./SortOptions";
 import StarRating from "react-native-star-rating";
+import {brand} from "store/actions";
 
 class ProductScreen extends React.PureComponent {
   static navigationOptions = {
@@ -49,6 +50,18 @@ class ProductScreen extends React.PureComponent {
       sort: sortby || "popularity",
       featured,
       category: category_id,
+      brand: "",
+      min_price: price.min || 0,
+      max_price: price.max || "",
+    };
+    this.paramsForCat = {
+      page: 1,
+      per_page: 20,
+      on_sale,
+      sort: sortby || "popularity",
+      featured,
+      category: "",
+      brand: "",
       min_price: price.min || 0,
       max_price: price.max || "",
     };
@@ -78,7 +91,6 @@ class ProductScreen extends React.PureComponent {
       hasMore: false,
       loading: true,
     });
-    console.log(text);
     if (text == "featured") {
       this.params.featured = true;
     } else {
@@ -91,8 +103,9 @@ class ProductScreen extends React.PureComponent {
   componentDidMount() {
     this.loadProducts();
     if (this.params.category) {
+      this.setState({loading: true});
       ApiClient.get("products/all-categories", {parent: this.params.category}).then(({data}) => {
-        console.log(data);
+        // this.setState({loading: false});
         this.setState({categories: data});
       });
     }
@@ -100,24 +113,27 @@ class ProductScreen extends React.PureComponent {
     const params = {
       category_id: this.params.category,
     };
-    console.log(params);
+    this.setState({loading: true});
     ApiClient.get("products/custom-attributes", params).then(({data}) => {
       console.log("Attributes");
-      console.log(data);
+      // this.setState({loading: false});
       this.setState({attributes: data});
     });
+    // this.setState({loading: true});
     ApiClient.get("products/all-brands?hide_empty").then(({data}) => {
+      this.setState({loading: false});
       console.log("Brand Filter");
-      console.log(data);
-      let newData = [...this.state.attributes, ...data];
-      this.setState({attributes: newData});
+      this.props.brand(data);
+      // let newData = [...this.state.attributes, ...data];
+      // this.setState({attributes: newData});
     });
   }
 
   loadProducts = () => {
-    console.log(this.params);
+    this.setState({loading: true});
     ApiClient.post("custom-products", this.attr, {params: this.params})
       .then(({data}) => {
+        this.setState({loading: false});
         this.fetchAttributes(data);
       })
       .catch(e => {
@@ -153,7 +169,6 @@ class ProductScreen extends React.PureComponent {
   onFilter = (params, attr) => {
     this.params = params;
     this.attr = attr;
-    console.log(this.attr);
     this.setState({showFilter: false, products: [], loading: true, hasMore: false}, () =>
       this.loadProducts(),
     );
@@ -162,17 +177,19 @@ class ProductScreen extends React.PureComponent {
       show_all: true,
       category_id: params.category,
     };
-    console.log(params);
+    this.setState({loading: true});
     ApiClient.get("products/custom-attributes", paramsData).then(({data}) => {
+      this.setState({loading: false});
       console.log("Attributes Filter");
-      console.log(data);
       this.setState({attributes: data});
     });
+    this.setState({loading: true});
     ApiClient.get("products/all-brands?hide_empty").then(({data}) => {
+      this.setState({loading: false});
       console.log("Brand Filter");
-      console.log(data);
-      let newData = [...this.state.attributes, ...data];
-      this.setState({attributes: newData});
+      this.props.brand(data);
+      // let newData = [...this.state.attributes, ...data];
+      // this.setState({attributes: newData});
     });
   };
 
@@ -243,13 +260,6 @@ class ProductScreen extends React.PureComponent {
         </View>
       </TouchableOpacity>
     );
-  };
-
-  getToProductPage = param => {
-    this.params.category = param;
-    this.params.page = 1;
-    this.setState({hasMore: false, products: []});
-    this.loadProducts();
   };
 
   _renderItemCat = ({item, index}) => <CategoryItem item={item} index={index} />;
@@ -376,7 +386,7 @@ class ProductScreen extends React.PureComponent {
           <Filter
             onBackPress={this.closeFilter}
             onFilter={this.onFilter}
-            filterData={this.params}
+            filterData={this.paramsForCat}
             attributes={attributes}
             seletedAttr={this.attr}
           />
@@ -450,4 +460,11 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({appSettings: state.appSettings});
 
-export default connect(mapStateToProps)(ProductScreen);
+const mapDispatchToProps = {
+  brand,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(ProductScreen);

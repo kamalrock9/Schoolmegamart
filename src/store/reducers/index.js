@@ -8,11 +8,13 @@ import {userReducer} from "./userReducer";
 import {saveNotification} from "./saveNotification";
 import {shippingReducer} from "./shippingReducer";
 import {filterReducer} from "./filterCategory";
+import {brandReducer} from "./brandReducer";
 
 export default combineReducers({
   homeLayout: homeReducer,
   categories: categoryReducer,
   filterCategory: filterReducer,
+  brandReducer: brandReducer,
   appSettings: appSettingsReducer,
   wishlist: wishlistReducer,
   cartCount: cartCountReducer,

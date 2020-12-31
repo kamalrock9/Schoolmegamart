@@ -14,25 +14,28 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
     max_price: filterData.max_price,
   });
   const [category, setCategoryID] = useState(filterData.category);
+  const [brand, setBrandID] = useState(filterData.brand);
   const [loading, setLoading] = useState(false);
-  const [cate, setCat] = useState([]);
   const [attr, setAttr] = useState(seletedAttr);
   const [tabIndex, setTabIndex] = useState(0);
   const {t} = useTranslation();
-  const disptach = useDispatch();
+  const dispatch = useDispatch();
 
   const {primary_color_dark, primary_color, price, accent_color} = useSelector(
     state => state.appSettings,
   );
   const cat = useSelector(state => state.categories);
   const filterCat = useSelector(state => state.filterCategory);
+  const brandArr = useSelector(state => state.brandReducer);
 
   // const categories = [];
   // //const categories = cat.data.filter(item => item.hide_on_app === "no");
 
   // console.log(categories);
 
-  const filterTabs = ["Price", "Categories", ...attributes.map(item => item.name)];
+  const filterTabs = isEmpty(brandArr)
+    ? ["Price", "Categories", ...attributes.map(item => item.name)]
+    : ["Price", "Categories", "Brand", ...attributes.map(item => item.name)];
 
   useEffect(() => {
     if (isEmpty(filterCat)) {
@@ -41,14 +44,13 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
         .then(({data}) => {
           setLoading(false);
           let filterCat = data.filter(item => item.hide_on_app === "no" && item.parent === 0);
-          setCat(filterCat);
-          disptach(filterCategory(filterCat));
+          dispatch(filterCategory(filterCat));
         })
         .catch(error => {
           setLoading(false);
         });
     }
-    disptach(getAllCategories());
+    dispatch(getAllCategories());
   }, []);
 
   const onChangeIndex = tabIndex => () => {
@@ -90,6 +92,7 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
       ...priceFilter,
       page: 1,
       category,
+      brand,
     };
     onFilter && onFilter(params, attr);
   };
@@ -97,7 +100,13 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
   const reset = () => {
     setAttr({});
     setCategoryID(undefined);
+    setBrandID(undefined);
     setPriceFilter({min_price: price.min, max_price: price.max});
+  };
+
+  const gotoChangeBrand = item => () => {
+    setCategoryID(item);
+    setBrandID(item);
   };
 
   return (
@@ -190,27 +199,67 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
                 ))}
             </View>
           )}
-          {tabIndex > 1 && (
+          {!isEmpty(brandArr) && tabIndex == 2 && (
             <View
               style={{
                 marginHorizontal: Platform.OS == "ios" ? 10 : 0,
                 alignItems: "center",
                 padding: 8,
               }}>
-              {attributes[tabIndex - 2].options.map((item, index) => (
-                <CheckBox
-                  label={item.name}
-                  key={item + index}
-                  checked={
-                    attr[attributes[tabIndex - 2].slug] &&
-                    Array.isArray(attr[attributes[tabIndex - 2].slug]) &&
-                    attr[attributes[tabIndex - 2].slug].includes(item.slug)
-                  }
-                  onPress={updateAttributes(item)}
-                />
-              ))}
+              {!isEmpty(brandArr) &&
+                brandArr.map((item, index) => (
+                  <CheckBox
+                    label={item.name}
+                    key={"brand" + item + index}
+                    checked={brand == item.id}
+                    onPress={gotoChangeBrand(item.id)}
+                  />
+                ))}
             </View>
           )}
+          {isEmpty(brandArr)
+            ? tabIndex > 1 && (
+                <View
+                  style={{
+                    marginHorizontal: Platform.OS == "ios" ? 10 : 0,
+                    alignItems: "center",
+                    padding: 8,
+                  }}>
+                  {attributes[tabIndex - 2].options.map((item, index) => (
+                    <CheckBox
+                      label={item.name}
+                      key={item + index}
+                      checked={
+                        attr[attributes[tabIndex - 2].slug] &&
+                        Array.isArray(attr[attributes[tabIndex - 2].slug]) &&
+                        attr[attributes[tabIndex - 2].slug].includes(item.slug)
+                      }
+                      onPress={updateAttributes(item)}
+                    />
+                  ))}
+                </View>
+              )
+            : tabIndex > 2 && (
+                <View
+                  style={{
+                    marginHorizontal: Platform.OS == "ios" ? 10 : 0,
+                    alignItems: "center",
+                    padding: 8,
+                  }}>
+                  {attributes[tabIndex - 2].options.map((item, index) => (
+                    <CheckBox
+                      label={item.name}
+                      key={item + index}
+                      checked={
+                        attr[attributes[tabIndex - 2].slug] &&
+                        Array.isArray(attr[attributes[tabIndex - 2].slug]) &&
+                        attr[attributes[tabIndex - 2].slug].includes(item.slug)
+                      }
+                      onPress={updateAttributes(item)}
+                    />
+                  ))}
+                </View>
+              )}
         </ScrollView>
       </View>
       <ProgressDialog loading={loading} />

@@ -187,7 +187,10 @@ function Review({cartData, orderData, navigation}) {
               baseFontStyle={{fontWeight: "700"}}
             />
           ) : (
-            <HTMLRender html={data.total || "<b></b>"} baseFontStyle={{fontWeight: "700"}} />
+            <HTMLRender
+              html={data.total ? data.total : data.cart_order_total || "<b></b>"}
+              baseFontStyle={{fontWeight: "700"}}
+            />
           )}
         </View>
       </View>
