@@ -8,20 +8,17 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
-  Platform,
 } from "react-native";
-import {Icon, Text, Button, FloatingTextinput} from "components";
+import {Icon, Text, Button} from "components";
 import SwiperFlatList from "react-native-swiper-flatlist";
 import {useTranslation} from "react-i18next";
 import {useDispatch} from "react-redux";
-import Constants from "service/Config";
 import {ApiClient} from "service";
 import {user, saveShipping} from "store/actions";
-import Toast from "react-native-simple-toast";
 import {GoogleSignin} from "@react-native-community/google-signin";
 import {LoginManager, AccessToken, GraphRequest, GraphRequestManager} from "react-native-fbsdk";
 import {useSelector} from "react-redux";
+import Toast from "react-native-toast-message";
 
 const {width, height} = Dimensions.get("window");
 
@@ -61,7 +58,6 @@ function reducer(state = initialState, action) {
 
 function Auth({navigation}) {
   const [loading, setLoading] = useState(false);
-  //return;
   const {NeedLogin, NeedRegister} = navigation.state.params;
   console.log(NeedRegister);
   const {t} = useTranslation();
@@ -74,6 +70,13 @@ function Auth({navigation}) {
     console.log("Reg");
     goToLastIndex;
   }
+
+  const error = {
+    type: "error",
+    position: "bottom",
+    text1: "Error",
+    text2: "Please enter the correct email address.",
+  };
 
   const goToFirstIndex = () => {
     scrollRef.current.goToFirstIndex();
@@ -102,10 +105,6 @@ function Auth({navigation}) {
     dispatch({type: "changeFirstname", payload: text});
   };
 
-  const onChangeLastname = text => {
-    dispatch({type: "changeLastname", payload: text});
-  };
-
   const onChangeSignupEmail = text => {
     dispatch({type: "changeSignupEmail", payload: text});
   };
@@ -118,13 +117,10 @@ function Auth({navigation}) {
     dispatch({type: "changePasswordSignup", payload: text});
   };
 
-  const onChangeConfirmPassword = text => {
-    dispatch({type: "changeConfirmPassword", payload: text});
-  };
-
   const socialLogin = social => () => {
     if (social == "google") {
       GoogleSignin.configure();
+      GoogleSignin.hasPlayServices();
       setLoading(true);
       GoogleSignin.signIn()
         .then(res => {
@@ -147,13 +143,29 @@ function Auth({navigation}) {
                 if (NeedLogin) {
                   navigation.goBack();
                 }
-                Toast.show("Login successfully", Toast.LONG);
+                Toast.show({
+                  type: "success",
+                  position: "bottom",
+                  text1: "Success",
+                  text2: "Login Successfully.",
+                  visibilityTime: 2000,
+                });
               } else {
-                Toast.show("Something went wrong.", Toast.LONG);
+                Toast.show({
+                  type: "error",
+                  position: "bottom",
+                  text1: "Error",
+                  text2: "Something went wrong.",
+                });
                 GoogleSignin.signOut();
               }
             } else {
-              Toast.show("Wrong Email / Password.", Toast.LONG);
+              Toast.show({
+                type: "error",
+                position: "bottom",
+                text1: "Error",
+                text2: "Wrong Email / Password.",
+              });
             }
           });
         })
@@ -167,7 +179,12 @@ function Auth({navigation}) {
       // }
       LoginManager.logInWithPermissions(["public_profile", "email"]).then(result => {
         if (result.isCancelled) {
-          Toast.show("Login cancelled", Toast.LONG);
+          Toast.show({
+            type: "error",
+            position: "bottom",
+            text1: "Error",
+            text2: "Login cancelled.",
+          });
         } else {
           setLoading(true);
           AccessToken.getCurrentAccessToken()
@@ -178,11 +195,9 @@ function Auth({navigation}) {
                 (error, result) => {
                   if (error) {
                     setLoading(false);
-                    //Alert.alert(JSON.stringify(error));
-                    Toast.show(error.toString(), Toast.LONG);
+                    //Toast.show(error.toString(), Toast.LONG);
                     //  console.log(error);
                   } else {
-                    //Alert.alert(JSON.stringify(result));
                     let details = result;
                     details.mode = "facebook";
                     setLoading(true);
@@ -195,9 +210,20 @@ function Auth({navigation}) {
                         if (NeedLogin) {
                           navigation.goBack();
                         }
-                        Toast.show("Login successfully", Toast.LONG);
+                        Toast.show({
+                          type: "success",
+                          position: "bottom",
+                          text1: "Success",
+                          text2: "Login Successfully.",
+                          visibilityTime: 2000,
+                        });
                       } else {
-                        Toast.show("Wrong Email / Password.", Toast.LONG);
+                        Toast.show({
+                          type: "error",
+                          position: "bottom",
+                          text1: "Error",
+                          text2: "Wrong Email / Password.",
+                        });
                       }
                     });
                   }
@@ -227,24 +253,35 @@ function Auth({navigation}) {
             console.log(data);
             setLoading(false);
             if (data.code == 1) {
+              Toast.show({
+                type: "success",
+                position: "bottom",
+                text1: "Success",
+                text2: "Login Successfully.",
+                visibilityTime: 2000,
+              });
               saveDetails(data.details);
-
               // onClose && onClose();
               if (NeedLogin) {
                 navigation.goBack();
               }
             } else {
-              Toast.show(data.message, Toast.LONG);
+              Toast.show({
+                type: "error",
+                position: "bottom",
+                text1: "Error",
+                text2: data.message,
+              });
             }
           })
           .catch(error => {
             setLoading(false);
           });
       } else {
-        Toast.show("Please enter the correct email address", Toast.LONG);
+        Toast.show(error);
       }
     } else {
-      Toast.show("Please fill all the details", Toast.LONG);
+      Toast.show(error);
     }
   };
 
@@ -260,18 +297,8 @@ function Auth({navigation}) {
     bodyFormData.append("email", state.signUpEmail);
     bodyFormData.append("password", state.password);
 
-    if (
-      state.firstname != "" &&
-      // state.lastname != "" &&
-      state.signUpEmail != "" &&
-      state.password != ""
-      //state.confirmPassword != ""
-    ) {
+    if (state.firstname != "" && state.signUpEmail != "" && state.password != "") {
       if (reg.test(state.signUpEmail) === true) {
-        // if (state.password != state.confirmPassword) {
-        //   Toast.show("Password does not match", Toast.LONG);
-        //   return;
-        // }
         setLoading(true);
         ApiClient.post("/register", bodyFormData, {
           config: {headers: {"Content-Type": "multipart/form-data"}},
@@ -283,17 +310,27 @@ function Auth({navigation}) {
               goToFirstIndex();
             } else {
               setLoading(false);
-              Toast.show(data.error, Toast.LONG);
+              //Toast.show(data.error, Toast.LONG);
             }
           })
           .catch(error => {
             setLoading(false);
           });
       } else {
-        Toast.show("Please enter the correct email address", Toast.LONG);
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: "Error",
+          text2: "Please enter the correct email address.",
+        });
       }
     } else {
-      Toast.show("Please fill all the details", Toast.LONG);
+      Toast.show({
+        type: "error",
+        position: "bottom",
+        text1: "Error",
+        text2: "Please fill all the details.",
+      });
     }
   };
 
@@ -365,7 +402,6 @@ function Auth({navigation}) {
                   source={require("../../assets/imgs/google.png")}
                   style={{width: 20, height: 20, resizeMode: "contain"}}
                 />
-
                 <Text style={[styles.socialBtnText, {marginStart: 8, fontWeight: "500"}]}>
                   GOOGLE
                 </Text>

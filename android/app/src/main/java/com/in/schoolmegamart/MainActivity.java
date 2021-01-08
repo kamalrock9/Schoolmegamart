@@ -1,4 +1,4 @@
-package com.phoeniixx.wooapp;
+package com.in.schoolmegamart;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

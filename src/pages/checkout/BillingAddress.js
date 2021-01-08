@@ -118,7 +118,7 @@ function BillingAddresss({}) {
       <ScrollView style={{paddingHorizontal: 16}}>
         <CustomTextInputAddress
           textColor={{color: appSettings.accent_color}}
-          label={t("FIRST_NAME")}
+          label={t("FIRST_NAME") + "*"}
           value={firstname}
           onChangeText={onChangeFirstname}
         />
@@ -134,7 +134,7 @@ function BillingAddresss({}) {
         <CustomTextInputAddress
           viewstyle={{marginTop: 24}}
           textColor={{color: appSettings.accent_color}}
-          label={t("EMAIL")}
+          label={t("EMAIL") + "*"}
           value={email}
           onChangeText={onChangeEmail}
         />
@@ -142,14 +142,14 @@ function BillingAddresss({}) {
         <CustomTextInputAddress
           viewstyle={{marginTop: 24}}
           textColor={{color: appSettings.accent_color}}
-          label={t("PHONE_NUMBER")}
+          label={t("PHONE_NUMBER") + "*"}
           value={phone}
           onChangeText={onChangePhone}
         />
 
         <>
           <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 24}}>
-            Country
+            Country*
           </Text>
           <CustomPicker
             options={country}
@@ -162,7 +162,7 @@ function BillingAddresss({}) {
         </>
         <>
           <Text style={{fontSize: 12, color: appSettings.accent_color, marginTop: 24}}>
-            {t("STATE")}
+            {t("STATE") + "*"}
           </Text>
           <CustomPicker
             options={stateData}
@@ -177,7 +177,7 @@ function BillingAddresss({}) {
         <CustomTextInputAddress
           viewstyle={{marginTop: 24}}
           textColor={{color: appSettings.accent_color}}
-          label={t("CITY")}
+          label={t("CITY") + "*"}
           value={city}
           onChangeText={onChangeCity}
         />
@@ -185,7 +185,7 @@ function BillingAddresss({}) {
         <CustomTextInputAddress
           viewstyle={{marginTop: 24}}
           textColor={{color: appSettings.accent_color}}
-          label={t("POSTCODE")}
+          label={t("POSTCODE" + "*")}
           value={postcode}
           onChangeText={onChangePostcode}
         />
@@ -193,7 +193,7 @@ function BillingAddresss({}) {
         <CustomTextInputAddress
           viewstyle={{marginTop: 24}}
           textColor={{color: appSettings.accent_color}}
-          label={t("ADDRESS_1")}
+          label={t("ADDRESS_1") + "*"}
           value={address1}
           onChangeText={onChangeAddress1}
         />

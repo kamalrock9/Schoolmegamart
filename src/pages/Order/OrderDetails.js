@@ -1,5 +1,13 @@
 import React, {useState} from "react";
-import {View, Image, FlatList, StyleSheet, TouchableOpacity} from "react-native";
+import {
+  View,
+  Image,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  PermissionsAndroid,
+  Alert,
+} from "react-native";
 import {Text, Toolbar, Button, ProgressDialog} from "components";
 import {isEmpty} from "lodash";
 import {useTranslation} from "react-i18next";
@@ -43,8 +51,8 @@ function OrderDetails({navigation}) {
     navigation.navigate("TrackYourOrder", {data});
   };
 
-  const actualDownload = url => {
-    alert(url.name);
+  const actualDownload = item => {
+    alert(item.name);
     if (isEmpty(data.invoice_action["wcfm-store-invoice"])) {
       return;
     }
@@ -56,11 +64,11 @@ function OrderDetails({navigation}) {
         useDownloadManager: true,
         notification: true,
         mediaScannable: true,
-        title: url.name,
-        path: `${dirs.DownloadDir}` + "/" + url.name,
+        title: item.name,
+        path: `${dirs.DownloadDir}` + "/" + item.name,
       },
     })
-      .fetch("GET", url.url, {})
+      .fetch("GET", item.url, {})
       .then(res => {
         Toast.show(res.path(), Toast.LONG);
         console.log("The file saved to ", res.path());
@@ -102,24 +110,30 @@ function OrderDetails({navigation}) {
       });
   };
 
-  const _downloadInvoice = url => () => {
-    actualDownload(url);
-    // try {
-    //   const granted = PermissionsAndroid.request(
-    //     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-    //   );
-    //   console.log(granted);
-    //   if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-    //     actualDownload();
-    //   } else {
-    //     Alert.alert(
-    //       "Permission Denied!",
-    //       "You need to give storage permission to download the file",
-    //     );
-    //   }
-    // } catch (err) {
-    //   console.warn(err);
-    // }
+  const _downloadInvoice = item => () => {
+    //actualDownload(item);
+    try {
+      // const granted = PermissionsAndroid.request(
+      //   PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      // );
+      PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE).then(
+        res => {
+          console.log(res);
+          if (res == "granted") {
+            actualDownload(item);
+          } else {
+            Alert.alert(
+              "Permission Denied!",
+              "You need to give storage permission to download the file",
+            );
+          }
+        },
+      );
+      // console.log(granted);
+      //console.log(PermissionsAndroid.RESULTS.GRANTED);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   // const _listHeader = () => {
@@ -316,7 +330,8 @@ function OrderDetails({navigation}) {
           onPress={_trackYourOrder}>
           <Text style={{color: "#fff", fontWeight: "600"}}>Track Your Order</Text>
         </Button>
-        {!isEmpty(data.invoice_action["wcfm-store-invoice"]) &&
+        {data.status === "completed" &&
+          !isEmpty(data.invoice_action["wcfm-store-invoice"]) &&
           data.invoice_action["wcfm-store-invoice"].map((item, index) => {
             return (
               <Button

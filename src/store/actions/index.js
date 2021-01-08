@@ -109,3 +109,8 @@ export const brand = data => ({
   type: types.BRAND,
   payload: data,
 });
+
+export const rating = data => ({
+  type: types.RATING,
+  payload: data,
+});

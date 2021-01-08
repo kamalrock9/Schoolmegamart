@@ -8,7 +8,7 @@ import Login from "../auth/Login";
 import {getVersion} from "react-native-device-info";
 import {isEmpty} from "lodash";
 import {logout} from "store/actions";
-import ApiClient from "../../service/ApiClient";
+import {ApiClient} from "service";
 import {GoogleSignin} from "@react-native-community/google-signin";
 import {LoginManager} from "react-native-fbsdk";
 
@@ -62,10 +62,6 @@ class Drawer extends React.PureComponent {
         );
         break;
       case "Logout":
-        this.props.logout();
-        GoogleSignin.signOut();
-        LoginManager.logOut();
-        navigation.closeDrawer();
         ApiClient.get("/logout?user_id=" + this.props.user.id)
           .then(res => {
             console.log(res);
@@ -73,6 +69,10 @@ class Drawer extends React.PureComponent {
           .catch(error => {
             console.log(error);
           });
+        this.props.logout();
+        GoogleSignin.signOut();
+        LoginManager.logOut();
+        navigation.closeDrawer();
         break;
       default:
         navigation.closeDrawer();

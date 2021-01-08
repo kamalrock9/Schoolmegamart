@@ -4,6 +4,7 @@ import {createAppContainer, createSwitchNavigator} from "react-navigation";
 import {createStackNavigator} from "react-navigation-stack";
 import {createBottomTabNavigator, createMaterialTopTabNavigator} from "react-navigation-tabs";
 import {createDrawerNavigator} from "react-navigation-drawer";
+import Toast, {BaseToast} from "react-native-toast-message";
 
 //SIDEMENU
 import Drawer from "./src/pages/drawer/Drawer";
@@ -52,11 +53,14 @@ import Icon from "./src/components/IconNB";
 
 function App() {
   return (
-    <Provider store={store}>
-      <PersistGate persistor={persistor}>
-        <AppContainer />
-      </PersistGate>
-    </Provider>
+    <>
+      <Provider store={store}>
+        <PersistGate persistor={persistor}>
+          <AppContainer />
+        </PersistGate>
+      </Provider>
+      <Toast ref={ref => Toast.setRef(ref)} />
+    </>
   );
 }
 

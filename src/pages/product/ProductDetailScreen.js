@@ -11,6 +11,7 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import {connect} from "react-redux";
 import StarRating from "react-native-star-rating";
@@ -51,7 +52,11 @@ class ProductDetailScreen extends React.PureComponent {
     console.log(props.navigation.state.params);
     this.state = {
       quantity: 1,
-      product: !!props.navigation.state.params.itemByProduct ? {} : props.navigation.state.params,
+      product: !!props.navigation.state.params.itemByProduct
+        ? {}
+        : !!this.props.navigation.state.params.itemByURL
+        ? {}
+        : props.navigation.state.params,
       BundleQty: [],
       BundleCheckBox: [],
       cartMsg: "",
@@ -73,11 +78,13 @@ class ProductDetailScreen extends React.PureComponent {
     };
   }
   componentDidMount() {
-    if (!!this.props.navigation.state.params.itemByProduct) {
+    if (!!this.props.navigation.state.params.itemByURL) {
+      this.handleOpenURL(this.props.navigation.state.params.itemByURL);
+    } else if (!!this.props.navigation.state.params.itemByProduct) {
       this.setState({loading: true});
       ApiClient.get("/get-products-by-id?id=" + this.props.navigation.state.params.itemByProduct.id)
         .then(({data}) => {
-          //console.log(data);
+          ////console.log(data);
           // let newData = Object.assign(data,{
           //    quantity:1
           // });
@@ -88,19 +95,31 @@ class ProductDetailScreen extends React.PureComponent {
             return o;
           });
           var newD = {...data, bundled_items: newData};
-          console.log(newD);
+          //console.log(newD);
           this.setState({product: newD, loading: false}, () => {
             this.setUpProduct();
           });
         })
         .catch(error => {
-          console.log(error);
+          //console.log(error);
           this.setState({loading: false});
         });
     } else {
       this.setState({loading: false});
       this.setUpProduct();
     }
+  }
+
+  handleOpenURL(url) {
+    ApiClient.get("/get-product-by-url?url=" + url)
+      .then(({data}) => {
+        this.setState({product: data});
+        this.setState({loading: false});
+        this.setUpProduct();
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   setUpProduct() {
@@ -112,8 +131,9 @@ class ProductDetailScreen extends React.PureComponent {
       }
     }
     this.setState({attributes});
-    console.log(attributes);
+    //console.log(attributes);
     this.setup();
+    console.log(postcode);
     if (postcode !== "") {
       this.submitPostcode();
     }
@@ -164,24 +184,13 @@ class ProductDetailScreen extends React.PureComponent {
             let varia = {...item, quantity: 0};
             return varia;
           });
-          console.log(newData);
+          //console.log(newData);
           this.setState(prevState => ({
             product: {...prevState.product, group: newData},
           }));
         })
         .catch(error => {});
     }
-  };
-
-  shareProduct = () => {
-    console.log("hey kamal");
-    RNFetchBlob.fetch("GET", this.state.product.images[0].src)
-      .then(resp => {
-        alert("response : ", resp.info());
-        let base64image = resp.data;
-        this.share("data:image/png;base64," + base64image);
-      })
-      .catch(err => console.log(err));
   };
 
   share = base64image => {
@@ -193,7 +202,7 @@ class ProductDetailScreen extends React.PureComponent {
     };
     Share.open(shareOptions)
       .then(res => {
-        console.log(res);
+        //console.log(res);
       })
       .catch(err => {
         err && console.log(err);
@@ -229,8 +238,6 @@ class ProductDetailScreen extends React.PureComponent {
 
     if (product.type == "grouped") {
       product.group[index].quantity++;
-      console.log(quantity);
-      console.log(product);
     }
 
     if (product.type == "variable") {
@@ -257,8 +264,18 @@ class ProductDetailScreen extends React.PureComponent {
       } else {
         Toast.show("Select a variation first");
       }
+    } else if (product.type == "bundle") {
+      if (product.manage_stock) {
+        if (quantity < product.stock_quantity) {
+          quantity++;
+        } else {
+          Toast.show("More items cannot be added");
+        }
+      } else {
+        quantity++;
+      }
     } else {
-      console.log("def", product.manage_stock);
+      //console.log("def", product.manage_stock);
       if (product.manage_stock) {
         if (quantity < product.stock_quantity) {
           quantity++;
@@ -274,11 +291,15 @@ class ProductDetailScreen extends React.PureComponent {
   };
 
   _BundleincreaseCounter = (item, index) => () => {
-    // const {product} = this.state;
-    // let newD = product.bundled_items[index].quantity + 1;
-    // product.bundled_items[index].quantity = newD;
-    // console.log(product);
-    // this.setState({product: product});
+    const {product} = this.state;
+    if (
+      product.bundled_items[index].quantity + 1 >
+      product.bundled_items[index].product_details.stock_quantity
+    ) {
+      Toast.show("More items cannot be added");
+      return;
+    }
+
     this.setState(
       prevState => {
         prevState.product.bundled_items[index].quantity++;
@@ -292,7 +313,7 @@ class ProductDetailScreen extends React.PureComponent {
 
   _BundledecreaseCounter = (item, index) => () => {
     const {product} = this.state;
-    console.log(product.bundled_items[index].quantity);
+    //console.log(product.bundled_items[index].quantity);
     if (product.bundled_items[index].quantity < 1) {
       Toast.show("Quantity can't below 0.", Toast.SHORT);
       return;
@@ -317,7 +338,7 @@ class ProductDetailScreen extends React.PureComponent {
         product.bundled_items[index].checkbox = true;
       }
     }
-    console.log(product);
+    //console.log(product);
     this.setState({product: product}, () => {
       this.forceUpdate();
     });
@@ -325,8 +346,8 @@ class ProductDetailScreen extends React.PureComponent {
 
   _decreaseCounter = index => {
     const {quantity, product} = this.state;
-    console.log(quantity);
-    console.log(product);
+    //console.log(quantity);
+    //console.log(product);
     if (product.type == "grouped") {
       if (product.group[index].quantity > 0) {
         product.group[index].quantity--;
@@ -343,8 +364,8 @@ class ProductDetailScreen extends React.PureComponent {
 
   checkBox = i => () => {
     const {quantity, product, checked} = this.state;
-    console.log(quantity);
-    console.log(product);
+    //console.log(quantity);
+    //console.log(product);
     if (checked) {
       product.group[i].quantity--;
       this.setState({
@@ -361,7 +382,7 @@ class ProductDetailScreen extends React.PureComponent {
   };
 
   gotoProductDetailPage = item => () => {
-    console.log("kamal");
+    //console.log("kamal");
     this.props.navigation.push("ProductDetailScreen", item);
   };
 
@@ -447,7 +468,7 @@ class ProductDetailScreen extends React.PureComponent {
         return;
       }
     }
-    console.log(JSON.stringify(data));
+    //console.log(JSON.stringify(data));
     this.setState({loading: true});
     ApiClient.post("/cart/add", data)
       .then(({data}) => {
@@ -456,7 +477,7 @@ class ProductDetailScreen extends React.PureComponent {
           cartMsg: Array.isArray(data) ? data.map(e => e.message).join(", ") : data.message,
         });
         if (this.isError(data)) {
-          console.log("error");
+          //console.log("error");
         } else {
           this.props.getCartCount();
           if (isBuyNow) {
@@ -468,7 +489,7 @@ class ProductDetailScreen extends React.PureComponent {
       })
       .catch(error => {
         this.setState({loading: true});
-        console.log(error);
+        //console.log(error);
       });
   };
 
@@ -496,25 +517,29 @@ class ProductDetailScreen extends React.PureComponent {
       return;
     }
     let param = {
-      user_id: id,
+      customer_email: email,
+      customer_name: name,
       product_id: product.id,
       enquery: enquiry,
       mobile: phone,
       qty: qty,
     };
-    console.log(param);
+    if (!isEmpty(this.props.user)) {
+      param.user_id = id;
+    }
+    // console.log(JSON.stringify(param));
     this.setState({loading: true});
     ApiClient.post("/bulk-enqury", param)
       .then(({data}) => {
         this.setState({loading: false, isOpenModal: false});
-        console.log(data);
+        //console.log(data);
         if (data.status) {
           Toast.show(data.message, Toast.SHORT);
         }
       })
       .catch(error => {
         this.setState({loading: false});
-        console.log(error);
+        //console.log(error);
       });
   };
 
@@ -531,7 +556,7 @@ class ProductDetailScreen extends React.PureComponent {
         },
       }),
       () => {
-        console.log(this.state.selectedAttrs);
+        // console.log(this.state.selectedAttrs);
         const {selectedAttrs, product, attributes} = this.state;
         if (Object.keys(selectedAttrs).length == attributes.length) {
           this.loadVariation({product_id: product.id, attributes: selectedAttrs});
@@ -541,7 +566,9 @@ class ProductDetailScreen extends React.PureComponent {
   };
 
   loadVariation(data) {
-    console.log("Loading Variation");
+    // console.log("Loading Variation");
+    // console.log(JSON.stringify(data));
+    // console.log(this.state.product);
     ApiClient.post("products/get-variation", data)
       .then(({data}) => {
         if (data.error) {
@@ -562,16 +589,17 @@ class ProductDetailScreen extends React.PureComponent {
       product_id: this.state.product.id,
     };
     this.props.changeShippingPincode(this.state.postcode);
-    this.setState({loading: true});
-    ApiClient.post("/checkpincode/", param)
-      .then(({data}) => {
-        console.log(data);
-        this.setState({loading: false, deliverDetails: data});
-      })
-      .catch(error => {
-        this.setState({loading: false});
-        console.log(error);
-      });
+    console.log(param);
+    //this.setState({loading: true});
+    // ApiClient.post("/checkpincode/", param)
+    //   .then(({data}) => {
+    //     //console.log(data);
+    //     this.setState({loading: false, deliverDetails: data});
+    //   })
+    //   .catch(error => {
+    //     this.setState({loading: false});
+    //     //console.log(error);
+    //   });
   };
 
   changePostcode = () => {
@@ -635,7 +663,7 @@ class ProductDetailScreen extends React.PureComponent {
   };
 
   goToProductDetails = item => () => {
-    console.log(item);
+    //console.log(item);
     this.props.navigation.push("ProductDetailScreen", item);
   };
 
@@ -777,20 +805,27 @@ class ProductDetailScreen extends React.PureComponent {
         <Container style={styles.container}>
           <Toolbar backButton title={product.name} cartButton wishListButton searchButton />
           <ScrollView contentContainerStyle={{flexGrow: 1}}>
-            <SwiperFlatList
-              data={variation.image ? variation.image : product.images}
-              nestedScrollEnabled={true}
-              paginationActiveColor="red"
-              showPagination={product.images.length > 1 ? true : false}
-              paginationStyleItem={{
-                width: 50,
-                height: 50,
-                marginHorizontal: 5,
-              }}
-              keyExtractor={this.keyExtractorSlider}
-              renderItem={this.renderItemSlider}
-              style={{width, height: width}}
-            />
+            {variation != "" && variation.hasOwnProperty("image") ? (
+              <Image
+                style={{width, height: width, resizeMode: "contain"}}
+                source={{uri: variation.image.src}}
+              />
+            ) : (
+              <SwiperFlatList
+                data={product.images}
+                nestedScrollEnabled={true}
+                paginationActiveColor="red"
+                showPagination={product.images.length > 1 ? true : false}
+                paginationStyleItem={{
+                  width: 50,
+                  height: 50,
+                  marginHorizontal: 5,
+                }}
+                keyExtractor={this.keyExtractorSlider}
+                renderItem={this.renderItemSlider}
+                style={{width, height: width}}
+              />
+            )}
             <WishlistIcon style={[styles.right, {backgroundColor: "transparent"}]} item={product} />
             <Button
               style={{
@@ -804,14 +839,15 @@ class ProductDetailScreen extends React.PureComponent {
               onPress={this.share}>
               <Icon color={accent_color} name="md-share" size={24} />
             </Button>
-            <View style={[styles.card, {marginTop: 0, paddingHorizontal: 16}]}>
-              <Text style={{fontSize: 16, color: "#000000", fontWeight: "500"}}>
+            <View style={[styles.card, {marginTop: 0, paddingVertical: 16}]}>
+              <Text
+                style={{fontSize: 16, color: "#000000", fontWeight: "500", paddingHorizontal: 16}}>
                 {product.name.toUpperCase()}
               </Text>
-              <Text style={{marginVertical: 4, fontSize: 12, color: "grey"}}>
+              <Text style={{marginVertical: 4, fontSize: 12, color: "grey", paddingHorizontal: 16}}>
                 {"SKU:" + product.sku}
               </Text>
-              <View style={[{flexDirection: "row", alignItems: "center"}]}>
+              <View style={[{flexDirection: "row", alignItems: "center", paddingHorizontal: 16}]}>
                 <StarRating
                   disabled
                   maxStars={5}
@@ -829,7 +865,7 @@ class ProductDetailScreen extends React.PureComponent {
                   <Text> See all reviews</Text>
                 </Button>
               </View>
-              <View style={[styles.rowCenterSpaced]}>
+              <View style={[styles.rowCenterSpaced, {paddingHorizontal: 16}]}>
                 {product.type != "bundle" ? (
                   <HTMLRender
                     html={variation.price_html || product.price_html}
@@ -839,7 +875,7 @@ class ProductDetailScreen extends React.PureComponent {
                 ) : (
                   <View style={{flexDirection: "row"}}>
                     <HTMLRender
-                      html={" " + product.bundled_items[0].product_details.currency_symbol}
+                      html={" " + product.currency_symbol}
                       containerStyle={{}}
                       baseFontStyle={{fontSize: 16, fontWeight: "500"}}
                     />
@@ -857,7 +893,7 @@ class ProductDetailScreen extends React.PureComponent {
                   />
                 )}
               </View>
-              <View style={[styles.rowCenterSpaced, {marginTop: 10}]}>
+              <View style={[styles.rowCenterSpaced, {marginTop: 10, paddingHorizontal: 16}]}>
                 <Text
                   style={[
                     (!isEmpty(variation) && variation.in_stock) || product.in_stock
@@ -889,7 +925,7 @@ class ProductDetailScreen extends React.PureComponent {
                   return (
                     <View
                       key={item.id + "Sap" + index}
-                      style={{flexDirection: "row", marginTop: 16}}>
+                      style={{flexDirection: "row", marginTop: 16, paddingHorizontal: 16}}>
                       <Image
                         style={{height: 70, width: 70, borderRadius: 4, marginEnd: 8}}
                         source={{
@@ -923,7 +959,7 @@ class ProductDetailScreen extends React.PureComponent {
                           <View style={{flexDirection: "row"}}>
                             <Text>Add for</Text>
                             <HTMLRender
-                              html={" " + product_details.currency_symbol}
+                              html={" " + product.currency_symbol}
                               containerStyle={{}}
                               baseFontStyle={{fontSize: 14, fontWeight: "700"}}
                             />
@@ -952,9 +988,41 @@ class ProductDetailScreen extends React.PureComponent {
                   );
                 })}
               {product.hasOwnProperty("product_origin") && product.product_origin != "" && (
-                <View style={[styles.rowCenterSpaced, {marginTop: 10}]}>
+                <View style={[styles.rowCenterSpaced, {marginTop: 10, paddingHorizontal: 16}]}>
                   <Text style={{fontWeight: "600"}}>Location</Text>
                   <Text>{product.product_origin}</Text>
+                </View>
+              )}
+
+              <View style={{backgroundColor: "#f5f5f5", height: 8, marginTop: 10}} />
+              {product.variations.length > 0 && attributes.length > 0 && (
+                <View style={[styles.card, {paddingBottom: 0, marginTop: 0}]}>
+                  <Text style={[styles.cardItemHeader, {paddingBottom: 8, paddingHorizontal: 16}]}>
+                    Variations
+                  </Text>
+                  <FlatGrid
+                    items={attributes}
+                    keyExtractor={this._keyExtractor}
+                    renderItem={({item, index}) => {
+                      return (
+                        <CustomPicker
+                          options={item.options}
+                          getLabel={option => (option && option.slug ? option.name : option)}
+                          fieldTemplate={PickerField}
+                          placeholder={item.name}
+                          modalAnimationType="slide"
+                          onValueChange={this.onVariationChange(item)}
+                        />
+                      );
+                    }}
+                    itemDimension={180}
+                    spacing={8}
+                    itemContainerStyle={{
+                      justifyContent: "flex-start",
+                      width: width - 32,
+                      marginStart: 8,
+                    }}
+                  />
                 </View>
               )}
 
@@ -962,7 +1030,7 @@ class ProductDetailScreen extends React.PureComponent {
               {(product.purchasable ||
                 (product.type === "external" && product.external_url) ||
                 product.type === "grouped") && (
-                <View style={{}}>
+                <View style={{paddingHorizontal: 16}}>
                   {product.type === "external" ? (
                     <Fragment>
                       <Button
@@ -1061,41 +1129,14 @@ class ProductDetailScreen extends React.PureComponent {
                       ))}
                     </View>
                   ) : (
-                    ""
+                    <View />
                   )}
                 </View>
               )}
             </View>
 
-            {product.variations.length > 0 && attributes.length > 0 && (
-              <View style={[styles.card, {paddingBottom: 0, paddingHorizontal: 8}]}>
-                <Text style={[styles.cardItemHeader, {paddingBottom: 8, paddingStart: 8}]}>
-                  Variations
-                </Text>
-                <FlatGrid
-                  items={attributes}
-                  keyExtractor={this._keyExtractor}
-                  renderItem={({item, index}) => {
-                    console.log(index);
-                    return (
-                      <CustomPicker
-                        options={item.options}
-                        getLabel={option => (option && option.slug ? option.name : option)}
-                        fieldTemplate={PickerField}
-                        placeholder={item.name}
-                        modalAnimationType="slide"
-                        onValueChange={this.onVariationChange(item)}
-                      />
-                    );
-                  }}
-                  itemDimension={180}
-                  spacing={8}
-                  itemContainerStyle={{justifyContent: "flex-start"}}
-                />
-              </View>
-            )}
             {product.group && product.group.length > 0 && (
-              <View style={styles.card}>
+              <View style={[styles.card, {paddingHorizontal: 16}]}>
                 <Text style={styles.cardItemHeader}>Group Products</Text>
                 <FlatList
                   data={product.group}
@@ -1105,7 +1146,7 @@ class ProductDetailScreen extends React.PureComponent {
               </View>
             )}
             {pincode_active && (
-              <View style={styles.card}>
+              <View style={[styles.card, {paddingHorizontal: 16}]}>
                 <Text style={styles.cardItemHeader}>{t("DELIVERY_OPTIONS")}</Text>
                 {!deliverDetails.hasOwnProperty("delivery") ? (
                   <View
@@ -1190,7 +1231,7 @@ class ProductDetailScreen extends React.PureComponent {
             )}
 
             {product.upsell && product.upsell.length > 0 && (
-              <View style={styles.card}>
+              <View style={[styles.card, {paddingHorizontal: 16}]}>
                 <Text style={styles.cardItemHeader}>Products you may like</Text>
                 <FlatList
                   horizontal
@@ -1204,7 +1245,7 @@ class ProductDetailScreen extends React.PureComponent {
               </View>
             )}
             {product.related && product.related.length > 0 && (
-              <View style={styles.card}>
+              <View style={[styles.card, {paddingHorizontal: 16}]}>
                 <Text style={styles.cardItemHeader}>Related Products</Text>
                 <FlatList
                   horizontal

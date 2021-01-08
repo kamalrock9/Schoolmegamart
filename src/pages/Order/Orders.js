@@ -124,7 +124,7 @@ function Orders({navigation}) {
               fontSize: 12,
               color: "#fff",
               paddingHorizontal: 8,
-              borderRadius: 4,
+              borderRadius: 3,
             }}>
             {item.status}
           </Text>
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     padding: 10,
-    borderRadius: 8,
+    borderRadius: 4,
     marginHorizontal: 8,
     elevation: 2,
     shadowRadius: 2,

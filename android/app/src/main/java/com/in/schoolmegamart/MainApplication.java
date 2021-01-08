@@ -1,4 +1,4 @@
-package com.phoeniixx.wooapp;
+package com.in.schoolmegamart;
 
 import android.app.Application;
 import android.content.Context;

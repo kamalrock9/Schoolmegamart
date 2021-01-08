@@ -8,7 +8,7 @@ import {
   unstable_batchedUpdates,
   Dimensions,
   TouchableOpacity,
-  TouchableWithoutFeedback,
+  Linking,
   Image,
 } from "react-native";
 import {
@@ -62,6 +62,12 @@ function HomeScreen({navigation}) {
 
   useEffect(() => {
     //trackScreenView("Home Page");
+    Linking.getInitialURL().then(url => {
+      // console.log(url);
+      if (url && url.includes("/product")) {
+        navigation.navigate("ProductDetailScreen", {itemByURL: url});
+      }
+    });
     setLoading(layout ? false : true);
     ApiClient.get("/layout")
       .then(({data}) => {
@@ -117,7 +123,7 @@ function HomeScreen({navigation}) {
     return (
       <TouchableOpacity onPress={gotoProductPage(item)}>
         <Image
-          style={{width: "100%", height: aspectHeight(width - 16, 500, 500), borderRadius: 4}}
+          style={{width: "100%", height: aspectHeight(width - 128, 200, 500), borderRadius: 4}}
           source={{uri: item.banner_url}}
           resizeMode={"cover"}
         />
@@ -356,7 +362,8 @@ function HomeScreen({navigation}) {
             renderItem={_renderItem}
             removeClippedSubviews={true}
           />
-          <>
+          <View style={{backgroundColor: "#d2d2d2", height: 4}} />
+          <View style={{marginTop: 16}}>
             <Carousel
               layout={"default"}
               ref={ref => {
@@ -374,25 +381,25 @@ function HomeScreen({navigation}) {
             <Pagination
               dotsLength={layout.banner.length}
               activeDotIndex={activeIndex}
-              containerStyle={{marginTop: -20}}
+              containerStyle={{marginTop: -45, marginBottom: -24}}
               dotStyle={{
-                width: 24,
-                height: 6,
+                width: 8,
+                height: 8,
                 borderRadius: 5,
                 // marginTop: -20,
-                marginHorizontal: -4,
+                marginHorizontal: -6,
                 paddingHorizontal: -2,
                 backgroundColor: "grey",
               }}
               inactiveDotStyle={{
-                width: 18,
-                height: 8,
-                backgroundColor: "grey",
+                width: 12,
+                height: 12,
+                backgroundColor: "#fff",
               }}
-              inactiveDotOpacity={0.4}
+              inactiveDotOpacity={0.8}
               inactiveDotScale={0.6}
             />
-          </>
+          </View>
           {/* <View>
             <Slider
               //autoplay
@@ -407,239 +414,286 @@ function HomeScreen({navigation}) {
             <View>
               {layout.section_banners.map((item, index) => {
                 return item.layout_type == 2 && item.banner.length >= 2 ? (
-                  <View
-                    style={{
-                      backgroundColor: "#FB7C00",
-                      width: width,
-                      padding: 16,
-                      marginBottom: 16,
-                    }}
-                    key={item.id + "SAP" + index}>
+                  <View key={item.id + "SAP" + index}>
+                    <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 16}} />
                     <View
                       style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
+                        backgroundColor:
+                          item.background_color != "" ? item.background_color : "#FB7C00",
+                        width: width,
+                        padding: 16,
+                        marginBottom: 16,
+                        marginTop: 16,
                       }}>
-                      <Text style={{fontWeight: "500", fontSize: 16, color: "#fff"}}>
-                        {item.title}
-                      </Text>
-                      <Button
-                        style={{backgroundColor: "green", borderRadius: 4}}
-                        onPress={gotoProductPage("")}>
-                        <Text style={styles.viewAll}>View All</Text>
-                      </Button>
-                    </View>
-                    <View style={{flexDirection: "row", marginTop: 16, marginBottom: -32}}>
-                      <TouchableOpacity onPress={gotoProductPage(item.banner[0])}>
-                        <Image
-                          resizeMode={"contain"}
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}>
+                        <Text
                           style={{
-                            width: width / 2 - 16,
-                            height: width / 2 - 8,
-                            borderWidth: 1,
-                            borderColor: "#d2d2d2",
-                          }}
-                          source={{uri: item.banner[0].banner_url}}
-                        />
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={gotoProductPage(item.banner[1])}>
-                        <Image
-                          resizeMode={"contain"}
-                          style={{
-                            width: width / 2 - 16,
-                            height: width / 2 - 8,
-                            borderWidth: 1,
-                            borderColor: "#d2d2d2",
-                          }}
-                          source={{uri: item.banner[1].banner_url}}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                ) : item.layout_type == 3 && item.banner.length >= 3 ? (
-                  <View
-                    style={{
-                      backgroundColor: "#fff",
-                      width: width,
-                      //padding: 16,
-                      marginTop: 16,
-                    }}
-                    key={item.id + "SAP" + index}>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        paddingHorizontal: 16,
-                      }}>
-                      <Text style={{fontWeight: "500", fontSize: 16, color: "#000"}}>
-                        {item.title}
-                      </Text>
-                      <Button
-                        style={{backgroundColor: "green", borderRadius: 4}}
-                        onPress={gotoProductPage("")}>
-                        <Text style={styles.viewAll}>View All</Text>
-                      </Button>
-                    </View>
-                    <View style={{flexDirection: "row", marginTop: 16}}>
-                      <TouchableOpacity onPress={gotoProductPage(item.banner[0])}>
-                        <Image
-                          resizeMode={"contain"}
-                          style={{
-                            width: width / (4 / 3) - 50,
-                            height: width / (4 / 3),
-                            borderWidth: 1,
-                            borderColor: "#d2d2d2",
-                          }}
-                          source={{uri: item.banner[0].banner_url}}
-                        />
-                      </TouchableOpacity>
-                      <View>
+                            fontWeight: "500",
+                            fontSize: 16,
+                            color: item.title_color != "" ? item.title_color : "#fff",
+                          }}>
+                          {item.title}
+                        </Text>
+                        <Button
+                          style={{backgroundColor: "green", borderRadius: 4}}
+                          onPress={gotoProductPage("")}>
+                          <Text style={styles.viewAll}>View All</Text>
+                        </Button>
+                      </View>
+                      <View style={{flexDirection: "row", marginTop: 16, marginBottom: -32}}>
+                        <TouchableOpacity onPress={gotoProductPage(item.banner[0])}>
+                          <Image
+                            resizeMode={"contain"}
+                            style={{
+                              width: width / 2 - 24,
+                              height: width / 2 - 8,
+                              borderWidth: 1,
+                              borderColor: "#d2d2d2",
+                              marginEnd: 8,
+                            }}
+                            source={{uri: item.banner[0].banner_url}}
+                          />
+                        </TouchableOpacity>
                         <TouchableOpacity onPress={gotoProductPage(item.banner[1])}>
                           <Image
                             resizeMode={"contain"}
                             style={{
-                              width: width / (8 / 3),
-                              height: width / (8 / 3),
+                              width: width / 2 - 24,
+                              height: width / 2 - 8,
                               borderWidth: 1,
                               borderColor: "#d2d2d2",
+                              marginStart: 8,
                             }}
                             source={{uri: item.banner[1].banner_url}}
-                          />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={gotoProductPage(item.banner[2])}>
-                          <Image
-                            resizeMode={"contain"}
-                            style={{
-                              width: width / 3 + 32,
-                              height: width / (8 / 3),
-                              borderWidth: 1,
-                              borderColor: "#d2d2d2",
-                            }}
-                            source={{uri: item.banner[2].banner_url}}
                           />
                         </TouchableOpacity>
                       </View>
                     </View>
                   </View>
-                ) : item.layout_type == 4 && item.banner.length >= 4 ? (
-                  <View
-                    style={{
-                      backgroundColor: "#87ceeb",
-                      width: width,
-                      padding: 16,
-                      marginTop: 16,
-                      marginBottom: 16,
-                    }}
-                    key={item.id + "SAP" + index}>
+                ) : item.layout_type == 3 && item.banner.length >= 3 ? (
+                  <View key={item.id + "SAP" + index}>
+                    <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 16}} />
                     <View
                       style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
+                        backgroundColor:
+                          item.background_color != "" ? item.background_color : "#FB7C00",
+                        width: width,
+                        //padding: 16,
+                        marginTop: 16,
                       }}>
-                      <Text style={{fontWeight: "500", fontSize: 16, color: "#fff"}}>
-                        {item.title}
-                      </Text>
-                      <Button
-                        style={{backgroundColor: "green", borderRadius: 4}}
-                        onPress={gotoProductPage("")}>
-                        <Text style={styles.viewAll}>View All</Text>
-                      </Button>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          paddingHorizontal: 16,
+                          marginTop: 16,
+                        }}>
+                        <Text
+                          style={{
+                            fontWeight: "500",
+                            fontSize: 16,
+                            color: item.title_color != "" ? item.title_color : "#fff",
+                          }}>
+                          {item.title}
+                        </Text>
+                        <Button
+                          style={{backgroundColor: "green", borderRadius: 4}}
+                          onPress={gotoProductPage("")}>
+                          <Text style={styles.viewAll}>View All</Text>
+                        </Button>
+                      </View>
+                      <View style={{flexDirection: "row", marginTop: 16}}>
+                        <TouchableOpacity onPress={gotoProductPage(item.banner[0])}>
+                          <Image
+                            resizeMode={"contain"}
+                            style={{
+                              width: width / (4 / 3) - 58,
+                              height: width / (4 / 3),
+                              borderWidth: 1,
+                              borderColor: "#d2d2d2",
+                              marginEnd: 8,
+                            }}
+                            source={{uri: item.banner[0].banner_url}}
+                          />
+                        </TouchableOpacity>
+                        <View>
+                          <TouchableOpacity onPress={gotoProductPage(item.banner[1])}>
+                            <Image
+                              resizeMode={"contain"}
+                              style={{
+                                width: width / 3 + 16,
+                                height: width / (8 / 3) - 8,
+                                borderWidth: 1,
+                                borderColor: "#d2d2d2",
+                                marginStart: 8,
+                                marginBottom: 8,
+                              }}
+                              source={{uri: item.banner[1].banner_url}}
+                            />
+                          </TouchableOpacity>
+                          <TouchableOpacity onPress={gotoProductPage(item.banner[2])}>
+                            <Image
+                              resizeMode={"contain"}
+                              style={{
+                                width: width / 3 + 16,
+                                height: width / (8 / 3) - 8,
+                                borderWidth: 1,
+                                borderColor: "#d2d2d2",
+                                marginStart: 8,
+                                marginTop: 8,
+                              }}
+                              source={{uri: item.banner[2].banner_url}}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      </View>
                     </View>
-                    <View style={{flexDirection: "row", marginTop: 16}}>
+                  </View>
+                ) : item.layout_type == 4 && item.banner.length >= 4 ? (
+                  <View key={item.id + "SAP" + index}>
+                    <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 16}} />
+                    <View
+                      style={{
+                        backgroundColor:
+                          item.background_color != "" ? item.background_color : "#FB7C00",
+                        width: width,
+                        padding: 16,
+                        marginTop: 16,
+                        marginBottom: 16,
+                      }}>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}>
+                        <Text
+                          style={{
+                            fontWeight: "500",
+                            fontSize: 16,
+                            color: item.title_color != "" ? item.title_color : "#fff",
+                          }}>
+                          {item.title}
+                        </Text>
+                        <Button
+                          style={{backgroundColor: "green", borderRadius: 4}}
+                          onPress={gotoProductPage("")}>
+                          <Text style={styles.viewAll}>View All</Text>
+                        </Button>
+                      </View>
+                      <View style={{flexDirection: "row", marginTop: 16}}>
+                        <TouchableOpacity onPress={gotoProductPage(item.banner[0])}>
+                          <Image
+                            resizeMode={"contain"}
+                            style={{
+                              width: width / 2 - 24,
+                              height: width / 2 - 8,
+                              borderWidth: 1,
+                              borderColor: "#d2d2d2",
+                              marginEnd: 8,
+                            }}
+                            source={{uri: item.banner[0].banner_url}}
+                          />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={gotoProductPage(item.banner[1])}>
+                          <Image
+                            resizeMode={"contain"}
+                            style={{
+                              width: width / 2 - 24,
+                              height: width / 2 - 8,
+                              borderWidth: 1,
+                              borderColor: "#d2d2d2",
+                              marginStart: 8,
+                            }}
+                            source={{uri: item.banner[1].banner_url}}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                      <View style={{flexDirection: "row", marginBottom: -32}}>
+                        <TouchableOpacity onPress={gotoProductPage(item.banner[2])}>
+                          <Image
+                            resizeMode={"contain"}
+                            style={{
+                              width: width / 2 - 24,
+                              height: width / 2 - 8,
+                              borderWidth: 1,
+                              borderColor: "#d2d2d2",
+                              marginTop: 16,
+                              marginEnd: 8,
+                            }}
+                            source={{uri: item.banner[2].banner_url}}
+                          />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={gotoProductPage(item.banner[3])}>
+                          <Image
+                            resizeMode={"contain"}
+                            style={{
+                              width: width / 2 - 24,
+                              height: width / 2 - 8,
+                              borderWidth: 1,
+                              borderColor: "#d2d2d2",
+                              marginTop: 16,
+                              marginStart: 8,
+                            }}
+                            source={{uri: item.banner[3].banner_url}}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                ) : item.layout_type == 1 && item.banner.length >= 1 ? (
+                  <View key={item.id + "SAP" + index}>
+                    <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 16}} />
+                    <View
+                      style={{
+                        backgroundColor:
+                          item.background_color != "" ? item.background_color : "#FB7C00",
+                        width: width,
+                        padding: 16,
+                        marginTop: 16,
+                        marginBottom: 32,
+                      }}>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}>
+                        <Text
+                          style={{
+                            fontWeight: "500",
+                            fontSize: 16,
+                            color: item.title_color != "" ? item.title_color : "#fff",
+                          }}>
+                          {item.title}
+                        </Text>
+                        <Button
+                          style={{backgroundColor: "green", borderRadius: 4}}
+                          onPress={gotoProductPage("")}>
+                          <Text style={styles.viewAll}>View All</Text>
+                        </Button>
+                      </View>
                       <TouchableOpacity onPress={gotoProductPage(item.banner[0])}>
                         <Image
                           resizeMode={"contain"}
                           style={{
-                            width: width / 2 - 16,
-                            height: width / 2 - 8,
+                            marginTop: 16,
+                            width: width - 32,
+                            height: width / 3,
                             borderWidth: 1,
                             borderColor: "#d2d2d2",
+                            marginBottom: -32,
                           }}
                           source={{uri: item.banner[0].banner_url}}
                         />
                       </TouchableOpacity>
-                      <TouchableOpacity onPress={gotoProductPage(item.banner[1])}>
-                        <Image
-                          resizeMode={"contain"}
-                          style={{
-                            width: width / 2 - 16,
-                            height: width / 2 - 8,
-                            borderWidth: 1,
-                            borderColor: "#d2d2d2",
-                          }}
-                          source={{uri: item.banner[1].banner_url}}
-                        />
-                      </TouchableOpacity>
                     </View>
-                    <View style={{flexDirection: "row", marginBottom: -32}}>
-                      <TouchableOpacity onPress={gotoProductPage(item.banner[2])}>
-                        <Image
-                          resizeMode={"contain"}
-                          style={{
-                            width: width / 2 - 16,
-                            height: width / 2 - 8,
-                            borderWidth: 1,
-                            borderColor: "#d2d2d2",
-                          }}
-                          source={{uri: item.banner[2].banner_url}}
-                        />
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={gotoProductPage(item.banner[3])}>
-                        <Image
-                          resizeMode={"contain"}
-                          style={{
-                            width: width / 2 - 16,
-                            height: width / 2 - 8,
-                            borderWidth: 1,
-                            borderColor: "#d2d2d2",
-                          }}
-                          source={{uri: item.banner[3].banner_url}}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                ) : item.layout_type == 1 && item.banner.length >= 1 ? (
-                  <View
-                    style={{
-                      backgroundColor: "#FB7C00",
-                      width: width,
-                      padding: 16,
-                      marginTop: 16,
-                      marginBottom: 32,
-                    }}
-                    key={item.id + "SAP" + index}>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}>
-                      <Text style={{fontWeight: "500", fontSize: 16, color: "#fff"}}>
-                        {item.title}
-                      </Text>
-                      <Button
-                        style={{backgroundColor: "green", borderRadius: 4}}
-                        onPress={gotoProductPage("")}>
-                        <Text style={styles.viewAll}>View All</Text>
-                      </Button>
-                    </View>
-                    <TouchableOpacity onPress={gotoProductPage(item.banner[0])}>
-                      <Image
-                        resizeMode={"contain"}
-                        style={{
-                          marginTop: 16,
-                          width: width - 32,
-                          height: width / 3,
-                          borderWidth: 1,
-                          borderColor: "#d2d2d2",
-                          marginBottom: -32,
-                        }}
-                        source={{uri: item.banner[0].banner_url}}
-                      />
-                    </TouchableOpacity>
                   </View>
                 ) : (
                   <View key={item + "Sap"} />
@@ -647,6 +701,8 @@ function HomeScreen({navigation}) {
               })}
             </View>
           )}
+
+          <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 16}} />
 
           {layout.featured_products && layout.featured_products.length > 0 && (
             <>
@@ -736,6 +792,7 @@ function HomeScreen({navigation}) {
               <ProductsRow keyPrefix="topseller" products={layout.top_seller} />
             </>
           )} */}
+          <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 16}} />
           <View
             style={{
               flexDirection: "row",
@@ -822,20 +879,23 @@ function SecondBanner({item, index, navigation}) {
     }
   };
   return (
-    <TouchableOpacity key={item.id + "Sap" + index} onPress={gotoProductPage(item)}>
-      <Image
-        source={{uri: item.banner_url}}
-        style={{
-          //backgroundColor: "red",
-          width: width - 32,
-          //flex: 1,
-          height: aspectHeight(width - 32, 343, 343),
-          marginStart: 16,
-          marginTop: 25,
-        }}
-        resizeMode="contain"
-      />
-    </TouchableOpacity>
+    <View key={item.id + "Sap" + index}>
+      <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 16}} />
+      <TouchableOpacity onPress={gotoProductPage(item)}>
+        <Image
+          source={{uri: item.banner_url}}
+          style={{
+            //backgroundColor: "red",
+            width: width - 32,
+            //flex: 1,
+            height: aspectHeight(width - 32, 343, 343),
+            marginStart: 16,
+            marginTop: 25,
+          }}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -875,6 +935,7 @@ const styles = StyleSheet.create({
   tab: {
     fontSize: 12,
     fontWeight: "500",
+    padding: 8,
   },
   viewAll: {
     color: "#fff",

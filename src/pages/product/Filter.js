@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import {View, StatusBar, StyleSheet, Platform, ScrollView, Image} from "react-native";
-import {Text, Icon, Button, CheckBox, Container, ProgressDialog} from "components";
+import {Text, Icon, Button, CheckBox, CheckBoxHTML, Container, ProgressDialog} from "components";
 import {useSelector, useDispatch} from "react-redux";
 import {useTranslation} from "react-i18next";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
@@ -15,6 +15,7 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
   });
   const [category, setCategoryID] = useState(filterData.category);
   const [brand, setBrandID] = useState(filterData.brand);
+  const [rating, setRating] = useState(filterData.rating);
   const [loading, setLoading] = useState(false);
   const [attr, setAttr] = useState(seletedAttr);
   const [tabIndex, setTabIndex] = useState(0);
@@ -27,15 +28,18 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
   const cat = useSelector(state => state.categories);
   const filterCat = useSelector(state => state.filterCategory);
   const brandArr = useSelector(state => state.brandReducer);
+  const ratingArr = useSelector(state => state.rating);
 
-  // const categories = [];
-  // //const categories = cat.data.filter(item => item.hide_on_app === "no");
-
-  // console.log(categories);
-
-  const filterTabs = isEmpty(brandArr)
-    ? ["Price", "Categories", ...attributes.map(item => item.name)]
-    : ["Price", "Categories", "Brand", ...attributes.map(item => item.name)];
+  const filterTabs =
+    isEmpty(brandArr) && isEmpty(ratingArr)
+      ? ["Price", "Categories", ...attributes.map(item => item.name)]
+      : !isEmpty(ratingArr) && !isEmpty(brandArr)
+      ? ["Price", "Categories", "Brand", "Rating", ...attributes.map(item => item.name)]
+      : !isEmpty(brandArr) && isEmpty(ratingArr)
+      ? ["Price", "Categories", "Brand", ...attributes.map(item => item.name)]
+      : !isEmpty(ratingArr) && isEmpty(brandArr)
+      ? ["Price", "Categories", "Rating", ...attributes.map(item => item.name)]
+      : ["Price", "Categories", ...attributes.map(item => item.name)];
 
   useEffect(() => {
     if (isEmpty(filterCat)) {
@@ -54,6 +58,8 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
   }, []);
 
   const onChangeIndex = tabIndex => () => {
+    console.log(tabIndex);
+    console.log(attributes);
     setTabIndex(tabIndex);
   };
 
@@ -62,7 +68,17 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
   };
 
   const updateAttributes = item => () => {
-    const key = attributes[tabIndex - 2].slug;
+    const key =
+      isEmpty(brandArr) && isEmpty(ratingArr)
+        ? attributes[tabIndex - 2].slug
+        : !isEmpty(brandArr) && !isEmpty(brandArr)
+        ? attributes[tabIndex - 4].slug
+        : isEmpty(brandArr) && !isEmpty(brandArr)
+        ? attributes[tabIndex - 3].slug
+        : !isEmpty(brandArr) && isEmpty(brandArr)
+        ? attributes[tabIndex - 3].slug
+        : attributes[tabIndex - 3].slug;
+
     let index =
       attr[key] && Array.isArray(attr[key]) ? attr[key].findIndex(el => el === item.slug) : -1;
     if (index != -1) {
@@ -93,6 +109,7 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
       page: 1,
       category,
       brand,
+      rating,
     };
     onFilter && onFilter(params, attr);
   };
@@ -105,8 +122,27 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
   };
 
   const gotoChangeBrand = item => () => {
-    setCategoryID(item);
-    setBrandID(item);
+    if (brand === item) {
+      setBrandID("");
+    } else {
+      setBrandID(item);
+    }
+  };
+
+  const gotoChangeCate = item => () => {
+    if (category === item) {
+      setCategoryID("");
+    } else {
+      setCategoryID(item);
+    }
+  };
+
+  const gotoChangeRating = item => () => {
+    if (rating === item) {
+      setRating("");
+    } else {
+      setRating(item);
+    }
   };
 
   return (
@@ -194,7 +230,7 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
                     label={item.name}
                     key={"categories" + item + index}
                     checked={category == item.id}
-                    onPress={() => setCategoryID(item.id)}
+                    onPress={gotoChangeCate(item.id)}
                   />
                 ))}
             </View>
@@ -217,49 +253,171 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
                 ))}
             </View>
           )}
-          {isEmpty(brandArr)
-            ? tabIndex > 1 && (
-                <View
-                  style={{
-                    marginHorizontal: Platform.OS == "ios" ? 10 : 0,
-                    alignItems: "center",
-                    padding: 8,
-                  }}>
-                  {attributes[tabIndex - 2].options.map((item, index) => (
-                    <CheckBox
-                      label={item.name}
-                      key={item + index}
-                      checked={
-                        attr[attributes[tabIndex - 2].slug] &&
-                        Array.isArray(attr[attributes[tabIndex - 2].slug]) &&
-                        attr[attributes[tabIndex - 2].slug].includes(item.slug)
-                      }
-                      onPress={updateAttributes(item)}
-                    />
-                  ))}
-                </View>
-              )
-            : tabIndex > 2 && (
-                <View
-                  style={{
-                    marginHorizontal: Platform.OS == "ios" ? 10 : 0,
-                    alignItems: "center",
-                    padding: 8,
-                  }}>
-                  {attributes[tabIndex - 2].options.map((item, index) => (
-                    <CheckBox
-                      label={item.name}
-                      key={item + index}
-                      checked={
-                        attr[attributes[tabIndex - 2].slug] &&
-                        Array.isArray(attr[attributes[tabIndex - 2].slug]) &&
-                        attr[attributes[tabIndex - 2].slug].includes(item.slug)
-                      }
-                      onPress={updateAttributes(item)}
-                    />
-                  ))}
-                </View>
-              )}
+          {isEmpty(brandArr) && !isEmpty(ratingArr) && tabIndex == 2 && (
+            <View
+              style={{
+                marginHorizontal: Platform.OS == "ios" ? 10 : 0,
+                alignItems: "center",
+                padding: 8,
+              }}>
+              {!isEmpty(ratingArr) &&
+                ratingArr.map((item, index) => (
+                  <CheckBoxHTML
+                    //label={item.rating + " Star's (" + item.count + ")"}
+                    label={item.rating}
+                    count={item.count}
+                    key={"rating" + item + index}
+                    checked={rating == item.rating}
+                    onPress={gotoChangeRating(item.rating)}
+                  />
+                ))}
+            </View>
+          )}
+          {!isEmpty(ratingArr) && !isEmpty(brandArr) && tabIndex == 3 && (
+            <View
+              style={{
+                marginHorizontal: Platform.OS == "ios" ? 10 : 0,
+                alignItems: "center",
+                padding: 8,
+              }}>
+              {!isEmpty(ratingArr) &&
+                ratingArr.map((item, index) => (
+                  <CheckBoxHTML
+                    //label={item.rating + " Star's (" + item.count + ")"}
+                    label={item.rating}
+                    count={item.count}
+                    key={"rating" + item + index}
+                    checked={rating == item.rating}
+                    onPress={gotoChangeRating(item.rating)}
+                  />
+                ))}
+            </View>
+          )}
+          {isEmpty(brandArr) && isEmpty(ratingArr) ? (
+            tabIndex > 1 && (
+              <View
+                style={{
+                  marginHorizontal: Platform.OS == "ios" ? 10 : 0,
+                  alignItems: "center",
+                  padding: 8,
+                }}>
+                {attributes[tabIndex - 2].options.map((item, index) => (
+                  <CheckBox
+                    label={item.name}
+                    key={item + index}
+                    checked={
+                      attr[attributes[tabIndex - 2].slug] &&
+                      Array.isArray(attr[attributes[tabIndex - 2].slug]) &&
+                      attr[attributes[tabIndex - 2].slug].includes(item.slug)
+                    }
+                    onPress={updateAttributes(item)}
+                  />
+                ))}
+              </View>
+            )
+          ) : !isEmpty(brandArr) && isEmpty(ratingArr) && tabIndex > 2 ? (
+            <View
+              style={{
+                marginHorizontal: Platform.OS == "ios" ? 10 : 0,
+                alignItems: "center",
+                padding: 8,
+              }}>
+              {attributes[tabIndex - 3].options.map((item, index) => (
+                <CheckBox
+                  label={item.name}
+                  key={item + index}
+                  checked={
+                    attr[attributes[tabIndex - 3].slug] &&
+                    Array.isArray(attr[attributes[tabIndex - 3].slug]) &&
+                    attr[attributes[tabIndex - 3].slug].includes(item.slug)
+                  }
+                  onPress={updateAttributes(item)}
+                />
+              ))}
+            </View>
+          ) : !isEmpty(ratingArr) && isEmpty(brandArr) && tabIndex > 2 ? (
+            <View
+              style={{
+                marginHorizontal: Platform.OS == "ios" ? 10 : 0,
+                alignItems: "center",
+                padding: 8,
+              }}>
+              {attributes[tabIndex - 3].options.map((item, index) => (
+                <CheckBox
+                  label={item.name}
+                  key={item + index}
+                  checked={
+                    attr[attributes[tabIndex - 3].slug] &&
+                    Array.isArray(attr[attributes[tabIndex - 3].slug]) &&
+                    attr[attributes[tabIndex - 3].slug].includes(item.slug)
+                  }
+                  onPress={updateAttributes(item)}
+                />
+              ))}
+            </View>
+          ) : !isEmpty(brandArr) && !isEmpty(ratingArr) && tabIndex > 3 ? (
+            <View
+              style={{
+                marginHorizontal: Platform.OS == "ios" ? 10 : 0,
+                alignItems: "center",
+                padding: 8,
+              }}>
+              {attributes[tabIndex - 4].options.map((item, index) => (
+                <CheckBox
+                  label={item.name}
+                  key={item + index}
+                  checked={
+                    attr[attributes[tabIndex - 4].slug] &&
+                    Array.isArray(attr[attributes[tabIndex - 4].slug]) &&
+                    attr[attributes[tabIndex - 4].slug].includes(item.slug)
+                  }
+                  onPress={updateAttributes(item)}
+                />
+              ))}
+            </View>
+          ) : (isEmpty(brandArr) || isEmpty(ratingArr)) && tabIndex > 2 ? (
+            <View
+              style={{
+                marginHorizontal: Platform.OS == "ios" ? 10 : 0,
+                alignItems: "center",
+                padding: 8,
+              }}>
+              {attributes[tabIndex - 3].options.map((item, index) => (
+                <CheckBox
+                  label={item.name}
+                  key={item + index}
+                  checked={
+                    attr[attributes[tabIndex - 3].slug] &&
+                    Array.isArray(attr[attributes[tabIndex - 3].slug]) &&
+                    attr[attributes[tabIndex - 3].slug].includes(item.slug)
+                  }
+                  onPress={updateAttributes(item)}
+                />
+              ))}
+            </View>
+          ) : (
+            tabIndex > 3 && (
+              <View
+                style={{
+                  marginHorizontal: Platform.OS == "ios" ? 10 : 0,
+                  alignItems: "center",
+                  padding: 8,
+                }}>
+                {attributes[tabIndex - 3].options.map((item, index) => (
+                  <CheckBox
+                    label={item.name}
+                    key={item + index}
+                    checked={
+                      attr[attributes[tabIndex - 3].slug] &&
+                      Array.isArray(attr[attributes[tabIndex - 3].slug]) &&
+                      attr[attributes[tabIndex - 3].slug].includes(item.slug)
+                    }
+                    onPress={updateAttributes(item)}
+                  />
+                ))}
+              </View>
+            )
+          )}
         </ScrollView>
       </View>
       <ProgressDialog loading={loading} />

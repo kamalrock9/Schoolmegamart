@@ -26,3 +26,4 @@ export const CLEAR_CART_COUNT = "CLEAR_CART_COUNT";
 export const DELETE_ITEM_CART = "DELETE_ITEM_CART";
 export const FILTER_CATEGORY = "FILTER_CATEGORY";
 export const BRAND = "BRAND";
+export const RATING = "RATING";

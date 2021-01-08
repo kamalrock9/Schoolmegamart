@@ -21,7 +21,7 @@ import {isEmpty} from "lodash";
 import CategoryItem from "../home/CategoryItem";
 import SortOptions from "./SortOptions";
 import StarRating from "react-native-star-rating";
-import {brand} from "store/actions";
+import {brand, rating} from "store/actions";
 
 class ProductScreen extends React.PureComponent {
   static navigationOptions = {
@@ -51,6 +51,7 @@ class ProductScreen extends React.PureComponent {
       featured,
       category: category_id,
       brand: "",
+      rating: "",
       min_price: price.min || 0,
       max_price: price.max || "",
     };
@@ -62,6 +63,7 @@ class ProductScreen extends React.PureComponent {
       featured,
       category: "",
       brand: "",
+      rating: "",
       min_price: price.min || 0,
       max_price: price.max || "",
     };
@@ -114,16 +116,24 @@ class ProductScreen extends React.PureComponent {
       category_id: this.params.category,
     };
     this.setState({loading: true});
-    ApiClient.get("products/custom-attributes", params).then(({data}) => {
+    ApiClient.get("products/custom-attributes/?show_all=yes", params).then(({data}) => {
       console.log("Attributes");
       // this.setState({loading: false});
       this.setState({attributes: data});
     });
     // this.setState({loading: true});
-    ApiClient.get("products/all-brands?hide_empty").then(({data}) => {
+    ApiClient.get("products/all-brands?hide_empty", params).then(({data}) => {
       this.setState({loading: false});
       console.log("Brand Filter");
       this.props.brand(data);
+      // let newData = [...this.state.attributes, ...data];
+      // this.setState({attributes: newData});
+    });
+    console.log(params);
+    ApiClient.get("products/ratings?", params).then(({data}) => {
+      this.setState({loading: false});
+      console.log("Rating Filter");
+      this.props.rating(data);
       // let newData = [...this.state.attributes, ...data];
       // this.setState({attributes: newData});
     });
@@ -131,6 +141,8 @@ class ProductScreen extends React.PureComponent {
 
   loadProducts = () => {
     this.setState({loading: true});
+    console.log(this.attr);
+    console.log(this.params);
     ApiClient.post("custom-products", this.attr, {params: this.params})
       .then(({data}) => {
         this.setState({loading: false});
@@ -168,6 +180,9 @@ class ProductScreen extends React.PureComponent {
 
   onFilter = (params, attr) => {
     this.params = params;
+    this.paramsForCat.category = params.category;
+    this.paramsForCat.brand = params.brand;
+    this.paramsForCat.rating = params.rating;
     this.attr = attr;
     this.setState({showFilter: false, products: [], loading: true, hasMore: false}, () =>
       this.loadProducts(),
@@ -178,16 +193,23 @@ class ProductScreen extends React.PureComponent {
       category_id: params.category,
     };
     this.setState({loading: true});
-    ApiClient.get("products/custom-attributes", paramsData).then(({data}) => {
+    ApiClient.get("products/custom-attributes/?show_all=yes", paramsData).then(({data}) => {
       this.setState({loading: false});
       console.log("Attributes Filter");
       this.setState({attributes: data});
     });
     this.setState({loading: true});
-    ApiClient.get("products/all-brands?hide_empty").then(({data}) => {
+    ApiClient.get("products/all-brands?hide_empty", paramsData).then(({data}) => {
       this.setState({loading: false});
       console.log("Brand Filter");
       this.props.brand(data);
+      // let newData = [...this.state.attributes, ...data];
+      // this.setState({attributes: newData});
+    });
+    ApiClient.get("products/ratings?", paramsData).then(({data}) => {
+      this.setState({loading: false});
+      console.log("Rating Filter");
+      this.props.rating(data);
       // let newData = [...this.state.attributes, ...data];
       // this.setState({attributes: newData});
     });
@@ -262,7 +284,9 @@ class ProductScreen extends React.PureComponent {
     );
   };
 
-  _renderItemCat = ({item, index}) => <CategoryItem item={item} index={index} />;
+  _renderItemCat = ({item, index}) => (
+    <Categories item={item} index={index} navigation={this.props.navigation} />
+  );
 
   listHeaderComponent = () =>
     !isEmpty(this.state.categories) && (
@@ -411,6 +435,46 @@ class ProductScreen extends React.PureComponent {
   }
 }
 
+function Categories({item, index, navigation}) {
+  const goToProductScreen = () => {
+    navigation.push("ProductScreen", {category_id: item.id});
+  };
+  return (
+    <TouchableOpacity
+      style={[
+        {
+          marginTop: 10,
+          marginBottom: 15,
+        },
+        index == 0 ? {marginStart: 18, marginEnd: 16} : {marginEnd: 16},
+      ]}
+      onPress={goToProductScreen}>
+      <Image
+        source={{
+          uri: item.image
+            ? typeof item.image == "string"
+              ? item.image
+              : item.image.src
+            : "https://source.unsplash.com/1600x900/?" + item.name,
+        }}
+        style={{width: 60, height: 60, borderRadius: 30}}
+        resizeMode="cover"
+      />
+      <Text
+        style={{
+          color: "black",
+          textAlign: "center",
+          fontSize: 10,
+          width: 60,
+          paddingVertical: 2,
+          fontWeight: "700",
+        }}>
+        {item.name.toUpperCase()}
+      </Text>
+    </TouchableOpacity>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -462,6 +526,7 @@ const mapStateToProps = state => ({appSettings: state.appSettings});
 
 const mapDispatchToProps = {
   brand,
+  rating,
 };
 
 export default connect(

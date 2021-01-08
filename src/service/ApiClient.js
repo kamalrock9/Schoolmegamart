@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import axiosRetry from "axios-retry";
-import Toast from "react-native-simple-toast";
+import Toast from "react-native-toast-message";
 import Constants from "./Config";
 
 class Service {
@@ -42,19 +42,19 @@ class Service {
   }
 
   handleError = error => {
-    console.log(error);
-    Toast.show(e.message ? e.message : e.toString(), Toast.LONG);
-    // switch (error.response.status) {
-    //   case 401:
-    //     //this.redirectTo(document, "/");
-    //     break;
-    //   case 404:
-    //     //this.redirectTo(document, "/404");
-    //     break;
-    //   default:
-    //     //this.redirectTo(document, "/500");
-    //     break;
-    // }
+    //console.log(error);
+
+    console.error("Request Failed:", error.config);
+    if (error.response) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        position: "bottom",
+        text2: error.response.data.toString(),
+      });
+    } else if (error.message) {
+      Toast.show({type: "error", text1: "Error", text2: error.message, position: "bottom"});
+    }
     return Promise.reject(error);
   };
 

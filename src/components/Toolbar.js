@@ -49,7 +49,7 @@ function Toolbar({
   return (
     <>
       <StatusBar backgroundColor={primary_color_dark} barStyle="light-content" />
-      <View style={[styles.container, {backgroundColor: primary_color}]}>
+      <View style={[styles.container, {backgroundColor: "#fff"}]}>
         {menuButton && (
           <Button onPress={navigation.openDrawer} style={styles.menuButton}>
             <Icon color={"#000"} name="md-menu" size={24} />

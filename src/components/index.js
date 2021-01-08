@@ -12,6 +12,7 @@ import WishlistIcon from "./WishlistIcon";
 import FloatingTextinput from "./FloatingTextinput";
 import Container from "./Container";
 import CheckBox from "./CheckBox";
+import CheckBoxHTML from "./CheckBoxHTML";
 import ProgressDialog from "./ProgressDialog";
 import CustomTextInput from "./CustomTextInput";
 import CustomTextInputAddress from "./CustomTextInputAddress";
@@ -31,6 +32,7 @@ export {
   FloatingTextinput,
   Container,
   CheckBox,
+  CheckBoxHTML,
   ProgressDialog,
   CustomTextInput,
   CustomTextInputAddress,

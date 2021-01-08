@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#000",
     width: "100%",
     //flexDirection: "row",
-    paddingVertical: 10,
+    // paddingVertical: 10,
     paddingRight: 10,
   },
   input: {
