@@ -1,12 +1,13 @@
 import {View, StyleSheet} from "react-native";
 import {Text, Toolbar, Icon, Button} from "components";
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {useTranslation} from "react-i18next";
 import {useSelector, useDispatch} from "react-redux";
 import {isArray, isEmpty} from "lodash";
 import {SwipeListView} from "react-native-swipe-list-view";
 import {deleteNotification} from "store/actions";
 import NotificationItem from "./NotificationItem";
+import analytics from "@react-native-firebase/analytics";
 
 function Notification() {
   const dispatch = useDispatch();
@@ -20,6 +21,15 @@ function Notification() {
   // ]);
   const appSettings = useSelector(state => state.appSettings);
   const {t} = useTranslation();
+
+  useEffect(() => {
+    trackScreenView("Notification Page");
+  }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   const _renderItem = ({item, index}) => <NotificationItem item={item} index={index} />;
 

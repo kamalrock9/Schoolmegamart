@@ -7,6 +7,7 @@ import {CustomPicker} from "react-native-custom-picker";
 import {updateUser} from "../../store/actions";
 import Toast from "react-native-simple-toast";
 import {ApiClient} from "service";
+import analytics from "@react-native-firebase/analytics";
 
 function user() {
   return useSelector(state => state.user);
@@ -65,10 +66,16 @@ function BillingAddress() {
   const [state, dispatch] = useReducer(reducer, user.billing);
 
   useEffect(() => {
+    trackScreenView("Billing Address");
     let arr = [];
     for (let i in appSettings.countries) arr.push({id: i, name: appSettings.countries[i]});
     setCountry(arr);
   }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   const [allCountry, setCountry] = useState([]);
 

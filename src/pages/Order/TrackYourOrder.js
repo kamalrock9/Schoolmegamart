@@ -31,14 +31,6 @@ function TrackYourOrder({navigation}) {
       });
   }, []);
 
-  // const _renderItem = ({item, index}) => {
-  //   return (
-
-  //   );
-  // };
-
-  // const _keyExtractor = item => item.title + "Sap";
-
   return (
     <View style={{flex: 1, backgroundColor: "f9f9f9"}}>
       <Toolbar backButton title={"Track Your Order"} />

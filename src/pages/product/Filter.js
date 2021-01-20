@@ -149,7 +149,7 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
     <Container>
       <StatusBar backgroundColor={primary_color_dark} barStyle="light-content" />
       <View style={[styles.toolbar, {backgroundColor: primary_color, paddingStart: 8}]}>
-        <Button style={{marginStart: 8}} onPress={reset}>
+        <Button style={{paddingHorizontal: 8}} onPress={reset}>
           <Image
             resizeMode="contain"
             source={require("../../assets/imgs/refresh.png")}
@@ -173,7 +173,8 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
               ]}
               key={"filter_" + item + index}
               onPress={onChangeIndex(index)}>
-              <Text style={{fontWeight: "500", color: index === tabIndex ? accent_color : "#000"}}>
+              <Text
+                style={{fontWeight: "600", color: index === tabIndex ? accent_color : "#000000"}}>
                 {item}
               </Text>
             </Button>
@@ -428,7 +429,7 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
         <Button
           style={[styles.applyButton, {backgroundColor: accent_color, flex: 3}]}
           onPress={filter}>
-          <Text style={{color: "#FFFFFF", fontWeight: "700"}}>Show Result</Text>
+          <Text style={{color: "#FFFFFF", fontWeight: "700"}}>Show Results</Text>
         </Button>
       </View>
     </Container>

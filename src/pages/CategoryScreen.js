@@ -3,6 +3,7 @@ import {ScrollView} from "react-native";
 import {connect} from "react-redux";
 import {Text, Toolbar, Icon, TreeView} from "components";
 import {getAllCategories} from "store/actions";
+import analytics from "@react-native-firebase/analytics";
 
 class CategoryScreen extends React.PureComponent {
   static navigationOptions = {
@@ -13,6 +14,15 @@ class CategoryScreen extends React.PureComponent {
     super(props);
     this.props.getAllCategories();
   }
+
+  componentDidMount() {
+    this.trackScreenView("Category Screen");
+  }
+
+  trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   _renderCategoryItem = (item, level) => {
     return (

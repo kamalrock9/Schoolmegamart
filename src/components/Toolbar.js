@@ -78,25 +78,26 @@ function Toolbar({
         <View style={styles.right}>
           {searchButton && (
             <Button
-              style={[styles.right, {paddingVertical: 16, paddingHorizontal: 10}]}
+              style={[styles.right, {paddingVertical: 16, paddingHorizontal: 6}]}
               onPress={goTo("Search")}>
-              <Image
+              <Icon name="search" type="EvilIcons" size={34} />
+              {/* <Image
                 resizeMode="contain"
                 source={{width: "100%", height: 15}}
                 source={require("../assets/imgs/search.png")}
-              />
+              /> */}
             </Button>
           )}
           {wishListButton && (
             <Button
               onPress={goTo("WishlistScreen")}
-              style={[styles.menuButton, {paddingVertical: 16, paddingHorizontal: 10}]}>
-              {/* <Icon color={"#000"} name="md-heart" size={24} /> */}
-              <Image
+              style={[styles.menuButton, {paddingVertical: 16, paddingHorizontal: 6}]}>
+              <Icon name="heart" type="EvilIcons" size={34} />
+              {/* <Image
                 resizeMode="contain"
-                source={{width: "100%", height: 15}}
+                source={{width: "100%", height: 20}}
                 source={require("../assets/imgs/wishlist.png")}
-              />
+              /> */}
               {isArray(wishlist) && !isEmpty(wishlist) && (
                 <View style={[styles.badge, {backgroundColor: toolbarbadgecolor || accent_color}]}>
                   <Text style={styles.badgeText}>{wishlist.length}</Text>
@@ -107,12 +108,13 @@ function Toolbar({
           {cartButton && (
             <Button
               onPress={goTo("Cart")}
-              style={[styles.menuButton, {paddingVertical: 16, paddingHorizontal: 10}]}>
-              <Image
+              style={[styles.menuButton, {paddingVertical: 16, paddingHorizontal: 6}]}>
+              <Icon name="cart" type="EvilIcons" size={34} />
+              {/* <Image
                 resizeMode="contain"
                 source={{width: "100%", height: 15}}
                 source={require("../assets/imgs/addToCart.png")}
-              />
+              /> */}
               {count > 0 && (
                 <View style={[styles.badge, {backgroundColor: toolbarbadgecolor || accent_color}]}>
                   <Text style={styles.badgeText}>{count}</Text>
@@ -159,7 +161,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 16,
     paddingHorizontal: 16,
-    flex: 1,
+    //flex: 1,
   },
   right: {
     flexDirection: "row",

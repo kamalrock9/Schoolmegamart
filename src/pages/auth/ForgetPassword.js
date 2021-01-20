@@ -1,13 +1,23 @@
-import React, {useState, useCallback} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {View, Image, StyleSheet, TextInput, TouchableOpacity} from "react-native";
 import {Text, Icon, Button, ProgressDialog} from "components";
 import Toast from "react-native-simple-toast";
 import {ApiClient} from "service";
 import axios from "axios";
+import analytics from "@react-native-firebase/analytics";
 
 function ForgetPassword({navigation}) {
   const [email, changeEmail] = useState("");
   const [loading, setloading] = useState(false);
+
+  useEffect(() => {
+    trackScreenView("Forget Password Screen");
+  }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   const onChangeEmail = useCallback(text => {
     changeEmail(text);

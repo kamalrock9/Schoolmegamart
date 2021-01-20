@@ -6,6 +6,7 @@ import {useSelector} from "react-redux";
 import {useTranslation} from "react-i18next";
 import Toast from "react-native-simple-toast";
 import moment from "moment";
+import analytics from "@react-native-firebase/analytics";
 
 function Download() {
   const {t} = useTranslation();
@@ -14,6 +15,7 @@ function Download() {
   const [download, setDwonload] = useState([]);
 
   useEffect(() => {
+    trackScreenView("Download Page");
     WooCommerce.get("customers/" + user.id + "/downloads").then(res => {
       console.log(res);
       if (res.status == 200) {
@@ -23,6 +25,11 @@ function Download() {
       }
     });
   }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   const _renderItem = ({item, index}) => {
     return (

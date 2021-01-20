@@ -1,4 +1,4 @@
-import React, {useRef, useState, useCallback, useReducer} from "react";
+import React, {useRef, useState, useEffect, useReducer} from "react";
 import {
   View,
   StyleSheet,
@@ -19,6 +19,7 @@ import {GoogleSignin} from "@react-native-community/google-signin";
 import {LoginManager, AccessToken, GraphRequest, GraphRequestManager} from "react-native-fbsdk";
 import {useSelector} from "react-redux";
 import Toast from "react-native-toast-message";
+import analytics from "@react-native-firebase/analytics";
 
 const {width, height} = Dimensions.get("window");
 
@@ -65,6 +66,15 @@ function Auth({navigation}) {
   const {accent_color} = useSelector(state => state.appSettings);
   const [state, dispatch] = useReducer(reducer, initialState);
   const scrollRef = useRef(null);
+
+  useEffect(() => {
+    trackScreenView("Login Screen");
+  }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   if (NeedRegister) {
     console.log("Reg");

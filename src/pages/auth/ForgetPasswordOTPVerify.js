@@ -8,6 +8,7 @@ import {connect} from "react-redux";
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 import {user} from "store/actions";
 import axios from "axios";
+import analytics from "@react-native-firebase/analytics";
 
 class ForgetPasswordOTPVerify extends Component {
   constructor(props) {
@@ -26,9 +27,15 @@ class ForgetPasswordOTPVerify extends Component {
   }
 
   componentDidMount() {
+    this.trackScreenView("Forget Password OTP");
     let timer = setInterval(this.tick, 1000);
     this.setState({timer, counter: 30});
   }
+
+  trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   componentWillUnmount() {
     clearInterval(this.state.timer);

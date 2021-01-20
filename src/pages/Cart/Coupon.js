@@ -5,6 +5,7 @@ import {useSelector} from "react-redux";
 import Toast from "react-native-simple-toast";
 import {WooCommerce, ApiClient} from "service";
 import moment from "moment";
+import analytics from "@react-native-firebase/analytics";
 
 function Coupon({onBackButtonPress, applyCoupon}) {
   const appSettings = useSelector(state => state.appSettings);
@@ -15,6 +16,7 @@ function Coupon({onBackButtonPress, applyCoupon}) {
   const [loading, setLoding] = useState(true);
 
   useEffect(() => {
+    trackScreenView("Coupon");
     ApiClient.get("/get-coupons")
       .then(({data}) => {
         setLoding(false);
@@ -27,6 +29,11 @@ function Coupon({onBackButtonPress, applyCoupon}) {
         setLoding(false);
       });
   }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   useEffect(() => {
     if (couponCode == "") return;

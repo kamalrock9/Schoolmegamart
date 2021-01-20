@@ -143,8 +143,8 @@ class TreeView extends React.PureComponent {
     });
   }
 
-  gotoPage = id => () => {
-    this.props.onpress && this.props.onpress(id);
+  gotoPage = item => () => {
+    this.props.onpress && this.props.onpress(item);
   };
 
   _renderItem = ({item, index}) => {
@@ -158,7 +158,7 @@ class TreeView extends React.PureComponent {
           alignItems: "center",
         }}
         key={item + "sap" + index}
-        onPress={this.gotoPage(item.id)}>
+        onPress={this.gotoPage(item)}>
         <Image
           style={{width: width / 2 - 16, height: 150, resizeMode: "contain", borderRadius: 16}}
           source={{
@@ -168,7 +168,9 @@ class TreeView extends React.PureComponent {
                 : "https://user-images.githubusercontent.com/2351721/31314483-7611c488-ac0e-11e7-97d1-3cfc1c79610e.png",
           }}
         />
-        <Text style={{fontSize: 14, paddingStart: 10, fontWeight: "600"}}>{item.name}</Text>
+        <Text style={{fontSize: 14, paddingStart: 10, fontWeight: "600"}} numberOfLines={1}>
+          {item.name}
+        </Text>
       </TouchableOpacity>
     );
   };

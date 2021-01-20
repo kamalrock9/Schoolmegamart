@@ -8,6 +8,7 @@ import {isEmpty} from "lodash";
 import StarRating from "react-native-star-rating";
 import {useSelector} from "react-redux";
 import moment from "moment";
+import analytics from "@react-native-firebase/analytics";
 
 function Reviews({navigation}) {
   console.log(navigation.state.params);
@@ -21,6 +22,7 @@ function Reviews({navigation}) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    trackScreenView("Review Screen");
     // let p = navigation.state.params.id ? "?product_id=" + navigation.state.params.id : "";
     let param = {
       product_id: navigation.state.params.id ? navigation.state.params.id : "",
@@ -49,6 +51,11 @@ function Reviews({navigation}) {
       setReviewSetting(data);
     });
   }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   const gotoAddReview = () => {
     navigation.navigate("AddReview", {...navigation.state.params});

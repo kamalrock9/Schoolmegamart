@@ -12,7 +12,7 @@ import {
   Image,
 } from "react-native";
 import {
-  Slider,
+  Icon,
   Toolbar,
   Container,
   Text,
@@ -24,8 +24,6 @@ import {
 import {useSelector, useDispatch} from "react-redux";
 import {isEmpty} from "lodash";
 import CategoryItem from "./CategoryItem";
-import SectonHeader from "./SectonHeader";
-import ProductsRow from "../product/ProductsRow";
 import {saveHomeLayout, saveNotification} from "store/actions";
 import {ApiClient} from "service";
 import {useTranslation} from "react-i18next";
@@ -33,8 +31,7 @@ import OneSignal from "react-native-onesignal";
 import Carousel, {Pagination} from "react-native-snap-carousel";
 import StarRating from "react-native-star-rating";
 import {FlatGrid} from "react-native-super-grid";
-import ProductItem from "../product/ProductItem";
-//import {useNavigation} from "react-navigation-hooks";
+import analytics from "@react-native-firebase/analytics";
 
 const {width} = Dimensions.get("window");
 
@@ -55,13 +52,8 @@ function HomeScreen({navigation}) {
   const [data, setData] = useState([]);
   const [gridData, setgridData] = useState([]);
 
-  // const trackScreenView = async screen => {
-  //   // Set & override the MainActivity screen name
-  //   await analytics().setCurrentScreen(screen, screen);
-  // };
-
   useEffect(() => {
-    //trackScreenView("Home Page");
+    trackScreenView("Home Screen");
     Linking.getInitialURL().then(url => {
       // console.log(url);
       if (url && url.includes("/product")) {
@@ -94,6 +86,11 @@ function HomeScreen({navigation}) {
     };
   }, []);
 
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
+
   const onReceived = notification => {
     console.log("Notification received: ", notification);
     dispatch(saveNotification(notification.payload));
@@ -112,10 +109,14 @@ function HomeScreen({navigation}) {
   const gotoProductPage = item => () => {
     console.log("banner");
     // let params = {category_id: item.id, id: item.id, name: item.name};
-    if (item.type == "product") {
+    if (item.type == "static") {
+      return;
+    } else if (item.type == "page") {
+      navigation.navigate("ProductScreen", {customPage: item.id});
+    } else if (item.type == "product") {
       navigation.navigate("ProductDetailScreen", {itemByProduct: item});
     } else {
-      navigation.navigate("ProductScreen", {category_id: item.id});
+      navigation.navigate("ProductScreen", {category_id: item});
     }
   };
 
@@ -123,9 +124,13 @@ function HomeScreen({navigation}) {
     return (
       <TouchableOpacity onPress={gotoProductPage(item)}>
         <Image
-          style={{width: "100%", height: aspectHeight(width - 128, 200, 500), borderRadius: 4}}
-          source={{uri: item.banner_url}}
-          resizeMode={"cover"}
+          style={{width: "100%", height: 150, borderRadius: 4}}
+          source={{
+            uri: item.banner_url
+              ? item.banner_url
+              : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+          }}
+          resizeMode={"contain"}
         />
         {/* <Text>{item.name}</Text> */}
       </TouchableOpacity>
@@ -137,7 +142,11 @@ function HomeScreen({navigation}) {
   const {accent_color} = useSelector(state => state.appSettings);
 
   const goToProductDetails = item => () => {
-    if (item.type === "bundle") {
+    if (item.type == "static") {
+      return;
+    } else if (item.type == "page") {
+      navigation.navigate("ProductScreen", {customPage: item.id});
+    } else if (item.type === "bundle") {
       navigation.navigate("ProductDetailScreen", {itemByProduct: item});
     } else {
       navigation.navigate("ProductDetailScreen", item);
@@ -174,7 +183,11 @@ function HomeScreen({navigation}) {
             <Image
               resizeMode="contain"
               style={{width: 100, height: 100}}
-              source={{uri: item.images[0].src}}
+              source={{
+                uri: item.images[0].src
+                  ? item.images[0].src
+                  : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+              }}
               indicatorColor={accent_color}
             />
           )}
@@ -234,7 +247,11 @@ function HomeScreen({navigation}) {
               <Image
                 resizeMode="contain"
                 style={{width: 150, height: 150}}
-                source={{uri: item.images[0].src}}
+                source={{
+                  uri: item.images[0].src
+                    ? item.images[0].src
+                    : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+                }}
                 indicatorColor={accent_color}
               />
             )}
@@ -261,22 +278,10 @@ function HomeScreen({navigation}) {
             )}
             <WishlistIcon style={styles.right} item={item} />
           </View>
-          <View>
+          <View style={{marginHorizontal: 4}}>
             <Text style={[styles.itemMargin, {fontWeight: "600", fontSize: 12}]} numberOfLines={1}>
               {item.name}
             </Text>
-            <StarRating
-              disabled
-              maxStars={5}
-              rating={parseInt(item.average_rating)}
-              containerStyle={[styles.itemMargin, styles.star]}
-              starStyle={{marginEnd: 5}}
-              starSize={10}
-              halfStarEnabled
-              emptyStarColor={accent_color}
-              fullStarColor={accent_color}
-              halfStarColor={accent_color}
-            />
             <View
               style={{
                 flexDirection: "row",
@@ -284,19 +289,28 @@ function HomeScreen({navigation}) {
                 paddingEnd: 16,
                 marginBottom: 8,
               }}>
-              {item.price_html != "" && (
-                <HTMLRender
-                  html={item.price_html}
-                  containerStyle={styles.itemMargin}
-                  baseFontStyle={{fontSize: 12}}
+              <View>
+                <StarRating
+                  disabled
+                  maxStars={5}
+                  rating={parseInt(item.average_rating)}
+                  containerStyle={[styles.itemMargin, styles.star]}
+                  starStyle={{marginEnd: 5}}
+                  starSize={10}
+                  halfStarEnabled
+                  emptyStarColor={accent_color}
+                  fullStarColor={accent_color}
+                  halfStarColor={accent_color}
                 />
-              )}
-
-              <Image
-                resizeMode="contain"
-                source={require("../../assets/imgs/cart.png")}
-                style={{width: 25, height: 25}}
-              />
+                {item.price_html != "" && (
+                  <HTMLRender
+                    html={item.price_html}
+                    containerStyle={styles.itemMargin}
+                    baseFontStyle={{fontSize: 12}}
+                  />
+                )}
+              </View>
+              <Icon style={{marginTop: 8}} name="handbag" type="SimpleLineIcons" size={24} />
             </View>
           </View>
         </>
@@ -371,17 +385,17 @@ function HomeScreen({navigation}) {
               }}
               data={layout.banner}
               sliderWidth={width}
-              sliderHeight={200}
+              sliderHeight={250}
               itemWidth={width - 32}
-              itemHeight={180}
+              itemHeight={150}
               // pagingEnabled={true}
               renderItem={_renderItemCrousel}
               onSnapToItem={index => setactiveIndex(index)}
             />
             <Pagination
-              dotsLength={layout.banner.length}
+              dotsLength={isEmpty(layout.banner) ? 1 : layout.banner.length}
               activeDotIndex={activeIndex}
-              containerStyle={{marginTop: -45, marginBottom: -24}}
+              containerStyle={{marginTop: -50, marginBottom: -24}}
               dotStyle={{
                 width: 8,
                 height: 8,
@@ -456,7 +470,11 @@ function HomeScreen({navigation}) {
                               borderColor: "#d2d2d2",
                               marginEnd: 8,
                             }}
-                            source={{uri: item.banner[0].banner_url}}
+                            source={{
+                              uri: item.banner[0].banner_url
+                                ? item.banner[0].banner_url
+                                : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+                            }}
                           />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={gotoProductPage(item.banner[1])}>
@@ -519,7 +537,11 @@ function HomeScreen({navigation}) {
                               borderColor: "#d2d2d2",
                               marginEnd: 8,
                             }}
-                            source={{uri: item.banner[0].banner_url}}
+                            source={{
+                              uri: item.banner[0].banner_url
+                                ? item.banner[0].banner_url
+                                : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+                            }}
                           />
                         </TouchableOpacity>
                         <View>
@@ -534,7 +556,11 @@ function HomeScreen({navigation}) {
                                 marginStart: 8,
                                 marginBottom: 8,
                               }}
-                              source={{uri: item.banner[1].banner_url}}
+                              source={{
+                                uri: item.banner[1].banner_url
+                                  ? item.banner[1].banner_url
+                                  : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+                              }}
                             />
                           </TouchableOpacity>
                           <TouchableOpacity onPress={gotoProductPage(item.banner[2])}>
@@ -548,7 +574,11 @@ function HomeScreen({navigation}) {
                                 marginStart: 8,
                                 marginTop: 8,
                               }}
-                              source={{uri: item.banner[2].banner_url}}
+                              source={{
+                                uri: item.banner[2].banner_url
+                                  ? item.banner[2].banner_url
+                                  : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+                              }}
                             />
                           </TouchableOpacity>
                         </View>
@@ -598,7 +628,11 @@ function HomeScreen({navigation}) {
                               borderColor: "#d2d2d2",
                               marginEnd: 8,
                             }}
-                            source={{uri: item.banner[0].banner_url}}
+                            source={{
+                              uri: item.banner[0].banner_url
+                                ? item.banner[0].banner_url
+                                : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+                            }}
                           />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={gotoProductPage(item.banner[1])}>
@@ -611,7 +645,11 @@ function HomeScreen({navigation}) {
                               borderColor: "#d2d2d2",
                               marginStart: 8,
                             }}
-                            source={{uri: item.banner[1].banner_url}}
+                            source={{
+                              uri: item.banner[1].banner_url
+                                ? item.banner[1].banner_url
+                                : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+                            }}
                           />
                         </TouchableOpacity>
                       </View>
@@ -627,7 +665,11 @@ function HomeScreen({navigation}) {
                               marginTop: 16,
                               marginEnd: 8,
                             }}
-                            source={{uri: item.banner[2].banner_url}}
+                            source={{
+                              uri: item.banner[2].banner_url
+                                ? item.banner[2].banner_url
+                                : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+                            }}
                           />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={gotoProductPage(item.banner[3])}>
@@ -641,7 +683,11 @@ function HomeScreen({navigation}) {
                               marginTop: 16,
                               marginStart: 8,
                             }}
-                            source={{uri: item.banner[3].banner_url}}
+                            source={{
+                              uri: item.banner[3].banner_url
+                                ? item.banner[3].banner_url
+                                : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+                            }}
                           />
                         </TouchableOpacity>
                       </View>
@@ -690,7 +736,11 @@ function HomeScreen({navigation}) {
                             borderColor: "#d2d2d2",
                             marginBottom: -32,
                           }}
-                          source={{uri: item.banner[0].banner_url}}
+                          source={{
+                            uri: item.banner[0].banner_url
+                              ? item.banner[0].banner_url
+                              : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+                          }}
                         />
                       </TouchableOpacity>
                     </View>
@@ -872,8 +922,12 @@ function SecondBanner({item, index, navigation}) {
   const gotoProductPage = item => () => {
     console.log("banner");
     // let params = {category_id: item.id, id: item.id, name: item.name};
-    if (item.type == "category") {
-      navigation.navigate("ProductScreen", {category_id: item.id});
+    if (item.type == "static") {
+      return;
+    } else if (item.type == "page") {
+      navigation.navigate("ProductScreen", {customPage: item.id});
+    } else if (item.type == "category") {
+      navigation.navigate("ProductScreen", {category_id: item});
     } else {
       navigation.navigate("ProductDetailScreen", {itemByProduct: item});
     }
@@ -883,7 +937,11 @@ function SecondBanner({item, index, navigation}) {
       <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 16}} />
       <TouchableOpacity onPress={gotoProductPage(item)}>
         <Image
-          source={{uri: item.banner_url}}
+          source={{
+            uri: item.banner_url
+              ? item.banner_url
+              : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+          }}
           style={{
             //backgroundColor: "red",
             width: width - 32,

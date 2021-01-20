@@ -1,15 +1,25 @@
 import {View, StyleSheet} from "react-native";
 import {Text, Toolbar, Icon, Button} from "components";
-import React from "react";
+import React, {useEffect} from "react";
 import {useSelector} from "react-redux";
 import {useTranslation} from "react-i18next";
 import {useNavigation} from "react-navigation-hooks";
+import analytics from "@react-native-firebase/analytics";
 
 function ManageAddress() {
   const navigation = useNavigation();
   const {t} = useTranslation();
   const user = useSelector(state => state.user);
   const appSettings = useSelector(state => state.appSettings);
+
+  useEffect(() => {
+    trackScreenView("Manage Address Page");
+  }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   const _gotoBilling = route => () => {
     navigation.navigate(route);

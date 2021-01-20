@@ -1,5 +1,14 @@
 import React from "react";
-import {StyleSheet, View, FlatList, ActivityIndicator, Image, TouchableOpacity} from "react-native";
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  ActivityIndicator,
+  Image,
+  TouchableOpacity,
+  Switch,
+  Dimensions,
+} from "react-native";
 import {
   Toolbar,
   Container,
@@ -22,7 +31,9 @@ import CategoryItem from "../home/CategoryItem";
 import SortOptions from "./SortOptions";
 import StarRating from "react-native-star-rating";
 import {brand, rating} from "store/actions";
+import analytics from "@react-native-firebase/analytics";
 
+const {width} = Dimensions.get("screen");
 class ProductScreen extends React.PureComponent {
   static navigationOptions = {
     header: null,
@@ -42,6 +53,9 @@ class ProductScreen extends React.PureComponent {
       showFilterSort: false,
       categories: [],
       attributes: [],
+      gridView: false,
+      title: "",
+      header: category_id ? category_id.name : "",
     };
     this.params = {
       page: 1,
@@ -49,7 +63,7 @@ class ProductScreen extends React.PureComponent {
       on_sale,
       sort: sortby || "popularity",
       featured,
-      category: category_id,
+      category: category_id ? category_id.id : "",
       brand: "",
       rating: "",
       min_price: price.min || 0,
@@ -103,41 +117,73 @@ class ProductScreen extends React.PureComponent {
   };
 
   componentDidMount() {
-    this.loadProducts();
+    this.trackScreenView("Product Screen");
+    const {customPage} = this.props.navigation.state.params;
+    console.log(this.props.navigation.state.params);
+    if (customPage) {
+      this.setState({loading: true});
+      ApiClient.get("/get-app-page-by-id?page_id=" + customPage)
+        .then(response => {
+          //this.setState({title: data.page_title});
+          if (response.data.status) {
+            ApiClient.get("/get-products-by-id?include=" + response.data.product_id)
+              .then(({data}) => {
+                this.setState({title: response.data.page_title});
+                //this.fetchAttributes(data);
+                this.setState({loading: false, products: data});
+              })
+              .catch(error => {
+                this.setState({loading: false});
+              });
+          }
+        })
+        .catch(error => {
+          this.setState({loading: false});
+        });
+    } else {
+      console.log("else");
+      const params = {
+        category_id: this.params.category,
+      };
+      this.setState({loading: true});
+      ApiClient.get("products/custom-attributes/?show_all=yes", params).then(({data}) => {
+        console.log("Attributes");
+        //this.setState({loading: true});
+        this.setState({attributes: data});
+      });
+      this.setState({loading: true});
+      ApiClient.get("products/all-brands?hide_empty", params).then(({data}) => {
+        //this.setState({loading: true});
+        console.log("Brand Filter");
+        this.props.brand(data);
+        // let newData = [...this.state.attributes, ...data];
+        // this.setState({attributes: newData});
+      });
+      console.log(params);
+      this.setState({loading: true});
+      ApiClient.get("products/ratings?", params).then(({data}) => {
+        //this.setState({loading: false});
+        console.log("Rating Filter");
+        this.props.rating(data);
+        // let newData = [...this.state.attributes, ...data];
+        // this.setState({attributes: newData});
+      });
+      this.loadProducts();
+    }
+
     if (this.params.category) {
       this.setState({loading: true});
       ApiClient.get("products/all-categories", {parent: this.params.category}).then(({data}) => {
-        // this.setState({loading: false});
+        //  this.setState({loading: false});
         this.setState({categories: data});
       });
     }
-
-    const params = {
-      category_id: this.params.category,
-    };
-    this.setState({loading: true});
-    ApiClient.get("products/custom-attributes/?show_all=yes", params).then(({data}) => {
-      console.log("Attributes");
-      // this.setState({loading: false});
-      this.setState({attributes: data});
-    });
-    // this.setState({loading: true});
-    ApiClient.get("products/all-brands?hide_empty", params).then(({data}) => {
-      this.setState({loading: false});
-      console.log("Brand Filter");
-      this.props.brand(data);
-      // let newData = [...this.state.attributes, ...data];
-      // this.setState({attributes: newData});
-    });
-    console.log(params);
-    ApiClient.get("products/ratings?", params).then(({data}) => {
-      this.setState({loading: false});
-      console.log("Rating Filter");
-      this.props.rating(data);
-      // let newData = [...this.state.attributes, ...data];
-      // this.setState({attributes: newData});
-    });
   }
+
+  trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   loadProducts = () => {
     this.setState({loading: true});
@@ -145,7 +191,7 @@ class ProductScreen extends React.PureComponent {
     console.log(this.params);
     ApiClient.post("custom-products", this.attr, {params: this.params})
       .then(({data}) => {
-        this.setState({loading: false});
+        // this.setState({loading: false});
         this.fetchAttributes(data);
       })
       .catch(e => {
@@ -220,7 +266,7 @@ class ProductScreen extends React.PureComponent {
   };
 
   _renderItem = ({item, index}) => {
-    var discount = Math.ceil(((item.regular_price - item.price) / item.regular_price) * 100);
+    // var discount = Math.ceil(((item.regular_price - item.price) / item.regular_price) * 100);
     const {
       appSettings: {accent_color},
     } = this.props;
@@ -235,7 +281,11 @@ class ProductScreen extends React.PureComponent {
             <Image
               resizeMode="contain"
               style={{width: 100, height: 80, borderRadius: 8}}
-              source={{uri: item.images[0].src}}
+              source={{
+                uri: item.images[0].src
+                  ? item.images[0].src
+                  : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+              }}
               indicatorColor={accent_color}
             />
           )}
@@ -272,11 +322,12 @@ class ProductScreen extends React.PureComponent {
                   baseFontStyle={{fontSize: 12, fontWeight: "700"}}
                 />
               )}
-              <Image
+              <Icon name="handbag" type="SimpleLineIcons" size={24} />
+              {/* <Image
                 resizeMode="contain"
                 source={require("../../assets/imgs/cart.png")}
                 style={{width: 25, height: 25}}
-              />
+              /> */}
             </View>
           </View>
         </View>
@@ -284,9 +335,123 @@ class ProductScreen extends React.PureComponent {
     );
   };
 
+  _renderItemGridView = ({item, index}) => {
+    var discount = Math.ceil(((item.regular_price - item.price) / item.regular_price) * 100);
+    const {
+      appSettings: {accent_color},
+    } = this.props;
+    return (
+      <TouchableOpacity onPress={this.goToProductDetails(item)}>
+        <>
+          <View
+            style={[
+              index % 2 == 0 ? {marginStart: 12} : {marginStart: 8},
+              {
+                width: width / 2 - 30,
+                backgroundColor: "#EAEAF1",
+                paddingVertical: 20,
+                borderRadius: 8,
+                marginTop: 8,
+                alignItems: "center",
+              },
+            ]}>
+            {item.images.length > 0 && (
+              <Image
+                resizeMode="contain"
+                style={{width: 150, height: 150}}
+                source={{
+                  uri: item.images[0].src
+                    ? item.images[0].src
+                    : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+                }}
+                indicatorColor={accent_color}
+              />
+            )}
+
+            {item.on_sale && (
+              <View
+                style={{
+                  marginStart: 5,
+                  marginTop: 5,
+                  position: "absolute",
+                  top: 0,
+                  start: 0,
+                  backgroundColor: accent_color,
+                  width: 30,
+                  height: 30,
+                  borderRadius: 15,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                <Text style={{fontSize: 10, color: "#fff", fontWeight: "600"}}>
+                  {isFinite(discount) ? discount + "%" : "SALE"}
+                </Text>
+              </View>
+            )}
+            <WishlistIcon style={styles.right} item={item} />
+          </View>
+          <View style={{marginHorizontal: 4}}>
+            <Text style={[styles.itemMargin, {fontWeight: "600", fontSize: 12}]} numberOfLines={1}>
+              {item.name}
+            </Text>
+            <StarRating
+              disabled
+              maxStars={5}
+              rating={parseInt(item.average_rating)}
+              containerStyle={[styles.itemMargin, styles.star]}
+              starStyle={{marginEnd: 5}}
+              starSize={10}
+              halfStarEnabled
+              emptyStarColor={accent_color}
+              fullStarColor={accent_color}
+              halfStarColor={accent_color}
+            />
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                paddingEnd: 16,
+                marginBottom: 8,
+              }}>
+              {item.price_html != "" && (
+                <HTMLRender
+                  html={item.price_html}
+                  containerStyle={styles.itemMargin}
+                  baseFontStyle={{fontSize: 12}}
+                />
+              )}
+              <Icon name="handbag" type="SimpleLineIcons" size={24} />
+              {/* <Image
+                resizeMode="contain"
+                source={require("../../assets/imgs/cart.png")}
+                style={{width: 25, height: 25}}
+              /> */}
+            </View>
+          </View>
+        </>
+      </TouchableOpacity>
+    );
+  };
+
   _renderItemCat = ({item, index}) => (
     <Categories item={item} index={index} navigation={this.props.navigation} />
   );
+
+  // _listHeaderComponent = () => {
+  //   return (
+  //     <View
+  //       style={{
+  //         flexDirection: "row",
+  //         width: "100%",
+  //         justifyContent: "space-between",
+  //         padding: 16,
+  //         alignItems: "center",
+  //       }}>
+  //       <Text style={{fontWeight: "500"}}>Same For Shipping</Text>
+  //       <Switch value={this.state.gridView} />
+  //     </View>
+  //   );
+  // };
 
   listHeaderComponent = () =>
     !isEmpty(this.state.categories) && (
@@ -297,6 +462,7 @@ class ProductScreen extends React.PureComponent {
         keyExtractor={this._categoryKeyExtractor}
         renderItem={this._renderItemCat}
         removeClippedSubviews={true}
+        //ListHeaderComponent={this._listHeaderComponent}
       />
     );
 
@@ -312,12 +478,24 @@ class ProductScreen extends React.PureComponent {
     return <View style={{borderBottomWidth: 2, borderColor: "#EEEEEE", marginHorizontal: 16}} />;
   };
 
+  _gotoChangeGrid = () => {
+    this.setState({gridView: !this.state.gridView});
+  };
+
   render() {
-    const {products, loading, showFilter, showFilterSort, attributes} = this.state;
+    const {
+      products,
+      loading,
+      showFilter,
+      showFilterSort,
+      attributes,
+      gridView,
+      title,
+      header,
+    } = this.state;
     const {
       appSettings: {accent_color},
     } = this.props;
-
     return (
       <Container>
         <View style={{width: "100%", flexDirection: "row", alignItems: "center"}}>
@@ -338,22 +516,24 @@ class ProductScreen extends React.PureComponent {
                 paddingHorizontal: 16,
                 color: "#000",
               }}>
-              Product
+              {header != "" ? header : "Product"}
             </Text>
-            <View style={{flexDirection: "row"}}>
-              <Button onPress={this.openSort}>
-                <Image
-                  style={{width: 30, height: 30, resizeMode: "contain"}}
-                  source={require("../../assets/imgs/sort.png")}
-                />
-              </Button>
-              <Button onPress={this.openFilter}>
-                <Image
-                  style={{width: 30, height: 30, marginHorizontal: 10, resizeMode: "contain"}}
-                  source={require("../../assets/imgs/filter.png")}
-                />
-              </Button>
-            </View>
+            {title == "" && (
+              <View style={{flexDirection: "row"}}>
+                <Button onPress={this.openSort}>
+                  <Image
+                    style={{width: 30, height: 30, resizeMode: "contain"}}
+                    source={require("../../assets/imgs/sort.png")}
+                  />
+                </Button>
+                <Button onPress={this.openFilter}>
+                  <Image
+                    style={{width: 30, height: 30, marginHorizontal: 10, resizeMode: "contain"}}
+                    source={require("../../assets/imgs/filter.png")}
+                  />
+                </Button>
+              </View>
+            )}
           </View>
         </View>
         {/* <Toolbar backButton title="PRODUCTS" /> */}
@@ -363,40 +543,65 @@ class ProductScreen extends React.PureComponent {
             <Text style={styles.btntext}>Categories</Text>
           </Button>
         </View> */}
-        <FlatList
-          data={products}
-          renderItem={this._renderItem}
-          keyExtractor={this._keyExtractor}
-          ListEmptyComponent={<EmptyList loading={loading} label="Products not available" />}
-          ListFooterComponent={
-            products.length > 0 && loading ? (
-              <ActivityIndicator color={accent_color} size="large" style={{padding: 16}} />
-            ) : null
-          }
-          ListHeaderComponent={this.listHeaderComponent}
-          showsVerticalScrollIndicator={!loading}
-          onEndReached={this.onEndReached}
-          ItemSeparatorComponent={this.gotoSeperate}
-        />
-        {/* <FlatGrid
-          items={products}
-          keyExtractor={this._keyExtractor}
-          renderItem={this._renderItem}
-          itemDimension={160}
-          spacing={8}
-          onEndReached={this.onEndReached}
-          onEndReachedThreshold={0.33}
-          contentContainerStyle={{flexGrow: 1}}
-          showsVerticalScrollIndicator={!loading}
-          itemContainerStyle={{justifyContent: "flex-start"}}
-          ListHeaderComponent={this.listHeaderComponent}
-          ListEmptyComponent={<EmptyList loading={loading} label="Products not available" />}
-          ListFooterComponent={
-            products.length > 0 && loading ? (
-              <ActivityIndicator color={accent_color} size="large" style={{padding: 16}} />
-            ) : null
-          }
-        /> */}
+        <TouchableOpacity
+          style={{
+            padding: 8,
+            width: "100%",
+            alignItems: "flex-end",
+          }}
+          onPress={this._gotoChangeGrid}>
+          {gridView ? (
+            <Icon name="list" type="SimpleLineIcons" size={24} />
+          ) : (
+            <Icon name="grid" type="SimpleLineIcons" size={24} />
+          )}
+        </TouchableOpacity>
+        {title != "" && (
+          <Text style={{marginHorizontal: 16, fontWeight: "600", alignSelf: "center"}}>
+            {title}
+          </Text>
+        )}
+        {!isEmpty(products) && !gridView ? (
+          <FlatList
+            data={products}
+            renderItem={this._renderItem}
+            keyExtractor={this._keyExtractor}
+            ListEmptyComponent={<EmptyList loading={loading} label="Products not available" />}
+            ListFooterComponent={
+              products.length > 0 && loading ? (
+                <ActivityIndicator color={accent_color} size="large" style={{padding: 16}} />
+              ) : null
+            }
+            ListHeaderComponent={this.listHeaderComponent}
+            showsVerticalScrollIndicator={!loading}
+            onEndReached={this.onEndReached}
+            ItemSeparatorComponent={this.gotoSeperate}
+          />
+        ) : !isEmpty(products) ? (
+          <FlatGrid
+            items={products}
+            renderItem={this._renderItemGridView}
+            keyExtractor={this._keyExtractor}
+            itemDimension={160}
+            spacing={8}
+            onEndReached={this.onEndReached}
+            contentContainerStyle={{flexGrow: 1}}
+            showsVerticalScrollIndicator={!loading}
+            itemContainerStyle={{justifyContent: "flex-start"}}
+            ListHeaderComponent={this.listHeaderComponent}
+            ListFooterComponent={
+              products.length > 0 && loading ? (
+                <ActivityIndicator color={accent_color} size="large" style={{padding: 16}} />
+              ) : null
+            }
+            ListEmptyComponent={<EmptyList loading={loading} label="Products not available" />}
+          />
+        ) : isEmpty(products) && loading ? (
+          <ActivityIndicator color={accent_color} size="large" style={{padding: 16, flex: 1}} />
+        ) : (
+          isEmpty(products) && !loading && <Text>Products not available</Text>
+        )}
+
         <Modal
           animationType="slide"
           isVisible={showFilter}
@@ -437,7 +642,7 @@ class ProductScreen extends React.PureComponent {
 
 function Categories({item, index, navigation}) {
   const goToProductScreen = () => {
-    navigation.push("ProductScreen", {category_id: item.id});
+    navigation.push("ProductScreen", {category_id: item});
   };
   return (
     <TouchableOpacity

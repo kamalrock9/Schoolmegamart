@@ -7,6 +7,7 @@ import {CustomPicker} from "react-native-custom-picker";
 import {ApiClient} from "service";
 import {updateUser} from "../../store/actions";
 import Toast from "react-native-simple-toast";
+import analytics from "@react-native-firebase/analytics";
 
 const initialState = {
   first_name: "",
@@ -55,10 +56,16 @@ function ShippingAddress() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    trackScreenView("Shipping Address");
     let arr = [];
     for (let i in appSettings.countries) arr.push({id: i, name: appSettings.countries[i]});
     setCountry(arr);
   }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   const [arrCountry, setCountry] = useState([]);
 

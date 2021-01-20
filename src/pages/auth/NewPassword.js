@@ -1,9 +1,10 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {View, TextInput, StyleSheet, Dimensions} from "react-native";
 import {Text, Toolbar, Button, ProgressDialog} from "components";
 import {useSelector} from "react-redux";
 import axios from "axios";
 import Toast from "react-native-simple-toast";
+import analytics from "@react-native-firebase/analytics";
 
 const {width} = Dimensions.get("screen");
 function NewPassword({navigation}) {
@@ -13,6 +14,15 @@ function NewPassword({navigation}) {
   const [loading, setLoading] = useState(false);
 
   const {accent_color} = useSelector(state => state.appSettings);
+
+  useEffect(() => {
+    trackScreenView("New Password");
+  }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   const onChangeNew = text => {
     setNewPassword(text);

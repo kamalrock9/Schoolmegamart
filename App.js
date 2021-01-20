@@ -5,6 +5,7 @@ import {createStackNavigator} from "react-navigation-stack";
 import {createBottomTabNavigator, createMaterialTopTabNavigator} from "react-navigation-tabs";
 import {createDrawerNavigator} from "react-navigation-drawer";
 import Toast, {BaseToast} from "react-native-toast-message";
+import {Image} from "react-native";
 
 //SIDEMENU
 import Drawer from "./src/pages/drawer/Drawer";
@@ -170,7 +171,7 @@ const TabNavigator = createBottomTabNavigator(
           title: "Home",
           tabBarVisible: routeName === "HomeScreen" ? true : false,
           tabBarIcon: ({tintColor}) => (
-            <Icon size={24} type="MaterialIcons" name="home" color={tintColor} />
+            <Icon size={22} type="SimpleLineIcons" name="home" color={tintColor} />
           ),
         };
       },
@@ -194,16 +195,25 @@ const TabNavigator = createBottomTabNavigator(
       navigationOptions: {
         title: "Order",
         tabBarIcon: ({tintColor}) => (
-          <Icon size={24} type="MaterialIcons" name="border-color" color={tintColor} />
+          <Icon size={28} type="SimpleLineIcons" name="list" color={tintColor} />
+          // <Image
+          //   source={require("../schoolmegamart/src/assets/imgs/cart.png")}
+          //   tintColor={tintColor}
+          // />
         ),
       },
     },
     AccountSetting: {
       screen: AccountSetting,
       navigationOptions: {
-        title: "User",
+        title: "Profile",
         tabBarIcon: ({tintColor}) => (
-          <Icon size={24} type="AntDesign" name="user" color={tintColor} />
+          <Icon name="user" type="EvilIcons" size={34} color={tintColor} />
+          // <Icon size={24} type="AntDesign" name="user" color={tintColor} />
+          // <Image
+          //   source={require("../schoolmegamart/src/assets/imgs/bottomProfile.png")}
+          //   tintColor={tintColor}
+          // />
         ),
       },
     },

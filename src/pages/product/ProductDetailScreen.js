@@ -43,6 +43,7 @@ import {withTranslation} from "react-i18next";
 import Constants from "../../service/Config";
 import InAppBrowser from "react-native-inappbrowser-reborn";
 import SwiperFlatList from "react-native-swiper-flatlist";
+import analytics from "@react-native-firebase/analytics";
 
 const {width} = Dimensions.get("window");
 const aspectHeight = (nWidth, oHeight, oWidth) => (nWidth * oHeight) / oWidth;
@@ -78,6 +79,7 @@ class ProductDetailScreen extends React.PureComponent {
     };
   }
   componentDidMount() {
+    this.trackScreenView("Product Details Screen");
     if (!!this.props.navigation.state.params.itemByURL) {
       this.handleOpenURL(this.props.navigation.state.params.itemByURL);
     } else if (!!this.props.navigation.state.params.itemByProduct) {
@@ -88,17 +90,20 @@ class ProductDetailScreen extends React.PureComponent {
           // let newData = Object.assign(data,{
           //    quantity:1
           // });
-          var newData = data.bundled_items.map(function(el) {
-            var o = Object.assign({}, el);
-            o.quantity = 1;
-            o.checkbox = true;
-            return o;
-          });
-          var newD = {...data, bundled_items: newData};
-          //console.log(newD);
-          this.setState({product: newD, loading: false}, () => {
-            this.setUpProduct();
-          });
+          if (data.status) {
+            var newData = data.bundled_items.map(function(el) {
+              var o = Object.assign({}, el);
+              o.quantity = 1;
+              o.checkbox = true;
+              return o;
+            });
+            var newD = {...data, bundled_items: newData};
+            //console.log(newD);
+            this.setState({product: newD, loading: false}, () => {
+              this.setUpProduct();
+            });
+          }
+          this.setState({loading: false});
         })
         .catch(error => {
           //console.log(error);
@@ -109,6 +114,11 @@ class ProductDetailScreen extends React.PureComponent {
       this.setUpProduct();
     }
   }
+
+  trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   handleOpenURL(url) {
     ApiClient.get("/get-product-by-url?url=" + url)
@@ -710,7 +720,7 @@ class ProductDetailScreen extends React.PureComponent {
                   justifyContent: "center",
                 }}>
                 <Text style={{fontSize: 10, color: "#fff", fontWeight: "600"}}>
-                  {isFinite(discount) ? discount + "%" : "SALE"}
+                  {isFinite(discount) ? discount + "%" : " (SALE)"}
                 </Text>
               </View>
             )}
@@ -775,7 +785,21 @@ class ProductDetailScreen extends React.PureComponent {
     );
   };
 
-  _keyExtractor = (item, index) => index + "sap" + item.id;
+  _attributesRenderItem = ({item, index}) => {
+    return (
+      <CustomPicker
+        containerStyle={{marginTop: index > 0 ? 16 : 0}}
+        options={item.options}
+        getLabel={option => (option && option.slug ? option.name : option)}
+        fieldTemplate={PickerField}
+        placeholder={item.name}
+        modalAnimationType="slide"
+        onValueChange={this.onVariationChange(item)}
+      />
+    );
+  };
+
+  _keyExtractorAttri = (item, index) => index + "sap" + item.id;
 
   render() {
     const {accent_color, pincode_active} = this.props.appSettings;
@@ -798,8 +822,18 @@ class ProductDetailScreen extends React.PureComponent {
       }
       return value;
     };
+    var discount = Math.ceil(
+      ((product.regular_price - product.price) / product.regular_price) * 100,
+    );
     return loading ? (
       <ProgressDialog loading={loading} />
+    ) : !loading && isEmpty(product) ? (
+      <>
+        <Toolbar backButton title={"Prdouct Details Screen"} />
+        <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+          <Text style={{fontWeight: "600", fontSize: 14}}>Product Not Found...</Text>
+        </View>
+      </>
     ) : (
       <>
         <Container style={styles.container}>
@@ -829,11 +863,12 @@ class ProductDetailScreen extends React.PureComponent {
             <WishlistIcon style={[styles.right, {backgroundColor: "transparent"}]} item={product} />
             <Button
               style={{
+                marginHorizontal: 8,
                 position: "absolute",
-                top: 0,
                 end: 0,
-                marginTop: 20,
+                top: 0,
                 marginEnd: 20,
+                marginTop: 20,
               }}
               transparent
               onPress={this.share}>
@@ -841,12 +876,20 @@ class ProductDetailScreen extends React.PureComponent {
             </Button>
             <View style={[styles.card, {marginTop: 0, paddingVertical: 16}]}>
               <Text
-                style={{fontSize: 16, color: "#000000", fontWeight: "500", paddingHorizontal: 16}}>
+                style={{
+                  fontSize: 16,
+                  color: "#000000",
+                  fontWeight: "500",
+                  paddingHorizontal: 16,
+                  marginEnd: 16,
+                  flex: 10,
+                }}>
                 {product.name.toUpperCase()}
               </Text>
-              <Text style={{marginVertical: 4, fontSize: 12, color: "grey", paddingHorizontal: 16}}>
-                {"SKU:" + product.sku}
-              </Text>
+
+              {/* <Text style={{marginVertical: 4, fontSize: 12, color: "grey", paddingHorizontal: 16}}>
+                {product.sku}
+              </Text> */}
               <View style={[{flexDirection: "row", alignItems: "center", paddingHorizontal: 16}]}>
                 <StarRating
                   disabled
@@ -867,11 +910,41 @@ class ProductDetailScreen extends React.PureComponent {
               </View>
               <View style={[styles.rowCenterSpaced, {paddingHorizontal: 16}]}>
                 {product.type != "bundle" ? (
-                  <HTMLRender
-                    html={variation.price_html || product.price_html}
-                    baseFontStyle={{fontSize: 16, fontWeight: "500"}}
-                    containerStyle={{paddingTop: 8}}
-                  />
+                  <View style={{flexDirection: "row", alignItems: "center"}}>
+                    <HTMLRender
+                      html={variation.price_html || product.price_html}
+                      baseFontStyle={{fontSize: 16, fontWeight: "500"}}
+                      containerStyle={{paddingTop: 8}}
+                    />
+                    {product.on_sale && (
+                      // <View
+                      //   style={{
+                      //     marginStart: 5,
+                      //     marginTop: 20,
+                      //     position: "absolute",
+                      //     top: 0,
+                      //     end: 0,
+                      //     marginEnd: 20,
+                      //     backgroundColor: accent_color,
+                      //     width: 35,
+                      //     height: 35,
+                      //     borderRadius: 18,
+                      //     alignItems: "center",
+                      //     justifyContent: "center",
+                      //   }}>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          color: accent_color,
+                          fontWeight: "700",
+                          paddingTop: 8,
+                          //position: "absolute",
+                        }}>
+                        {isFinite(discount) ? "(-" + discount + "%)" : " (SALE)"}
+                      </Text>
+                      // </View>
+                    )}
+                  </View>
                 ) : (
                   <View style={{flexDirection: "row"}}>
                     <HTMLRender
@@ -882,6 +955,34 @@ class ProductDetailScreen extends React.PureComponent {
                     <Text style={{fontSize: 16, fontWeight: "500"}}>
                       {gotoSum(product.bundled_items)}
                     </Text>
+                    {product.on_sale && (
+                      // <View
+                      //   style={{
+                      //     marginStart: 5,
+                      //     marginTop: 20,
+                      //     position: "absolute",
+                      //     top: 0,
+                      //     end: 0,
+                      //     marginEnd: 20,
+                      //     backgroundColor: accent_color,
+                      //     width: 35,
+                      //     height: 35,
+                      //     borderRadius: 18,
+                      //     alignItems: "center",
+                      //     justifyContent: "center",
+                      //   }}>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          color: accent_color,
+                          fontWeight: "700",
+                          paddingTop: 8,
+                          //position: "absolute",
+                        }}>
+                        {isFinite(discount) ? "(-" + discount + "%)" : " (SALE)"}
+                      </Text>
+                      // </View>
+                    )}
                   </View>
                 )}
 
@@ -944,7 +1045,7 @@ class ProductDetailScreen extends React.PureComponent {
                           }}>
                           {product_details.name}
                         </Text>
-                        <Text style={{fontSize: 12, color: "grey"}}>{product_details.sku}</Text>
+                        {/* <Text style={{fontSize: 12, color: "grey"}}>{product_details.sku}</Text> */}
                         <View style={{flexDirection: "row", alignItems: "center"}}>
                           <TouchableOpacity style={{}} onPress={this.changeCheckbox(item, index)}>
                             <Icon
@@ -1000,27 +1101,16 @@ class ProductDetailScreen extends React.PureComponent {
                   <Text style={[styles.cardItemHeader, {paddingBottom: 8, paddingHorizontal: 16}]}>
                     Variations
                   </Text>
-                  <FlatGrid
-                    items={attributes}
-                    keyExtractor={this._keyExtractor}
-                    renderItem={({item, index}) => {
-                      return (
-                        <CustomPicker
-                          options={item.options}
-                          getLabel={option => (option && option.slug ? option.name : option)}
-                          fieldTemplate={PickerField}
-                          placeholder={item.name}
-                          modalAnimationType="slide"
-                          onValueChange={this.onVariationChange(item)}
-                        />
-                      );
-                    }}
+                  <FlatList
+                    data={attributes}
+                    keyExtractor={this._keyExtractorAttri}
+                    renderItem={this._attributesRenderItem}
                     itemDimension={180}
                     spacing={8}
-                    itemContainerStyle={{
+                    contentContainerStyle={{
                       justifyContent: "flex-start",
                       width: width - 32,
-                      marginStart: 8,
+                      marginStart: 16,
                     }}
                   />
                 </View>
@@ -1079,20 +1169,20 @@ class ProductDetailScreen extends React.PureComponent {
                   </View>
                   {index == 0 ? (
                     <HTMLRender
-                      html={product.short_description}
+                      html={product.short_description ? product.short_description : "<b />"}
                       containerStyle={[styles.cardItem, {marginTop: 30}]}
                     />
                   ) : index == 1 ? (
                     <HTMLRender
-                      html={product.description}
+                      html={product.description ? product.description : "<b />"}
                       containerStyle={[styles.cardItem, {marginTop: 30}]}
                     />
                   ) : index == 2 ? (
                     <View style={[styles.cardItem, {marginTop: 30}]}>
-                      <SpecificationRow
+                      {/* <SpecificationRow
                         leftContent="Categories"
                         rightContent={product.categories.map(item => item.name).join(", ")}
-                      />
+                      /> */}
 
                       {/* {product.hasOwnProperty("total_sales") && (
                         <SpecificationRow
@@ -1101,32 +1191,35 @@ class ProductDetailScreen extends React.PureComponent {
                         />
                       )} */}
 
-                      {product.hasOwnProperty("stock_quantity") && (
+                      {/* {product.hasOwnProperty("stock_quantity") && (
                         <SpecificationRow
                           leftContent="Stock Quantity"
                           rightContent={product.stock_quantity}
                         />
-                      )}
+                      )} */}
 
-                      {product.hasOwnProperty("sku") && product.sku != "" && (
+                      {/* {product.hasOwnProperty("sku") && product.sku != "" && (
                         <SpecificationRow leftContent="SKU" rightContent={product.sku} />
-                      )}
+                      )} */}
                       {product.hasOwnProperty("weight") && product.weight != "" && (
                         <SpecificationRow
                           leftContent="Weight"
-                          rightContent={product.stock_quantity}
+                          rightContent={product.weight + " kg"}
                         />
                       )}
 
-                      {product.attributes.map((item, index) => (
-                        <SpecificationRow
-                          leftContent={item.name}
-                          rightContent={item.options
-                            .map(opt => (opt.slug ? opt.name : opt))
-                            .join(", ")}
-                          key={item.name + index}
-                        />
-                      ))}
+                      {product.hasOwnProperty("attributes_specification") &&
+                        !isEmpty(product.attributes_specification) &&
+                        product.attributes_specification.map((item, index) => (
+                          <SpecificationRow
+                            leftContent={item.name}
+                            rightContent={item.value}
+                            // rightContent={item.options
+                            //   .map(opt => (opt.slug ? opt.name : opt))
+                            //   .join(", ")}
+                            key={item.name + index}
+                          />
+                        ))}
                     </View>
                   ) : (
                     <View />

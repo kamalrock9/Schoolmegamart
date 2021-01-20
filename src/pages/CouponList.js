@@ -1,25 +1,15 @@
 import React, {useState, useEffect} from "react";
-import {View, StyleSheet, FlatList, ActivityIndicator} from "react-native";
-import {
-  Text,
-  Toolbar,
-  FloatingTextinput,
-  Button,
-  CustomTextInput,
-  Container,
-  EmptyList,
-} from "components";
-import {useTranslation} from "react-i18next";
-import {useSelector, useDispatch} from "react-redux";
-import Toast from "react-native-simple-toast";
-import {WooCommerce, ApiClient} from "service";
-import {updateUser} from "../store/actions";
+import {View, StyleSheet, FlatList} from "react-native";
+import {Text, Toolbar, EmptyList} from "components";
+import {ApiClient} from "service";
+import analytics from "@react-native-firebase/analytics";
 
 function CouponList({navigation}) {
   const [coupons, setCoupons] = useState([]);
   const [loading, setLoding] = useState(true);
 
   useEffect(() => {
+    trackScreenView("Coupon List Page");
     ApiClient.post("/get-coupons")
       .then(({data}) => {
         setLoding(false);
@@ -33,6 +23,11 @@ function CouponList({navigation}) {
         console, log(error);
       });
   }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   const _renderItem = ({item, index}) => {
     return (

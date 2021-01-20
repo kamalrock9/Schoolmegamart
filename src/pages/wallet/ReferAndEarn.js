@@ -7,6 +7,7 @@ import {useTranslation} from "react-i18next";
 import Share from "react-native-share";
 import FitImage from "react-native-fit-image";
 import Shimmer from "react-native-shimmer";
+import analytics from "@react-native-firebase/analytics";
 
 const {height, width} = Dimensions.get("window");
 
@@ -19,6 +20,7 @@ function ReferAndEarn({navigation}) {
   const [loading, setloading] = useState({});
 
   useEffect(() => {
+    trackScreenView("Refer & Earn Screen");
     let param = {
       user_id: user.id,
     };
@@ -43,6 +45,11 @@ function ReferAndEarn({navigation}) {
         setloading(false);
       });
   }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   const share = () => {
     let options = {

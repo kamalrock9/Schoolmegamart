@@ -1,11 +1,12 @@
 import {View, StyleSheet, StatusBar, TextInput, FlatList, TouchableOpacity} from "react-native";
 import {Text, Icon, Button, HTMLRender, Toolbar} from "components";
-import React, {useState, useCallback} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {useSelector} from "react-redux";
 import {ApiClient} from "service";
 import {isEmpty} from "lodash";
 import FitImage from "react-native-fit-image";
 import {debounce} from "lodash";
+import analytics from "@react-native-firebase/analytics";
 
 function Search({navigation}) {
   const {primary_color, primary_color_dark, primary_color_text} = useSelector(
@@ -15,6 +16,15 @@ function Search({navigation}) {
   const [textinput, setTextInput] = useState("");
   const [results, setResults] = useState([]);
   const [cate, setCate] = useState([]);
+
+  useEffect(() => {
+    trackScreenView("Search Page");
+  }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   const goBack = () => {
     navigation.goBack(null);

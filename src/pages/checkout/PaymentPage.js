@@ -12,7 +12,7 @@ import InAppBrowser from "react-native-inappbrowser-reborn";
 import Paytm from "react-native-paytm";
 import {isEmpty} from "lodash";
 import PayuMoney, {HashGenerator} from "react-native-payumoney";
-import axios from "axios";
+import analytics from "@react-native-firebase/analytics";
 function PaymentPage({navigation}) {
   console.log(navigation.state.params);
 
@@ -23,9 +23,9 @@ function PaymentPage({navigation}) {
   const {Orderdata} = navigation.state.params;
   const [data, Setdata] = useState(Orderdata);
   const [id, Setid] = useState(data.id);
-  const [status, Setstatus] = useState(data.status);
 
   useEffect(() => {
+    trackScreenView("Payment Page");
     if (
       data.payment_method == "cod" ||
       data.payment_method == "bacs" ||
@@ -36,6 +36,11 @@ function PaymentPage({navigation}) {
       payment();
     }
   }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   const payment = () => {
     console.log("payment");

@@ -297,8 +297,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    borderTopStartRadius: 20,
-    borderBottomStartRadius: 20,
+    // borderTopStartRadius: 20,
+    //borderBottomStartRadius: 20,
   },
   divider: {
     backgroundColor: "#DBDBDB",

@@ -4,6 +4,7 @@ import {Text, Button, Icon, HTMLRender, Toolbar} from "components";
 import {isEmpty, isArray} from "lodash";
 import {ApiClient} from "service";
 import {useSelector} from "react-redux";
+import analytics from "@react-native-firebase/analytics";
 function Review({cartData, orderData, navigation}) {
   console.log(cartData);
   console.log(orderData);
@@ -22,8 +23,14 @@ function Review({cartData, orderData, navigation}) {
   const [pay_via_wallet, set_pay_via_wallet] = useState("");
 
   useEffect(() => {
+    trackScreenView("Review Checkout Page");
     Apicall(null);
   }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   function Apicall(item) {
     setChosen(item);

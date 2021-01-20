@@ -19,6 +19,7 @@ import {withTranslation} from "react-i18next";
 import Modal from "react-native-modal";
 import Toast from "react-native-simple-toast";
 import {deleteItemCart} from "../../store/actions/index";
+import analytics from "@react-native-firebase/analytics";
 
 class Cart extends React.PureComponent {
   static navigationOptions = {
@@ -41,8 +42,14 @@ class Cart extends React.PureComponent {
   };
 
   componentDidMount() {
+    this.trackScreenView("Cart");
     this.ApiCall(null);
   }
+
+  trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   gotoCheckout = (route, param) => () => {
     if (isEmpty(this.props.user)) {

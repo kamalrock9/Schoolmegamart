@@ -8,6 +8,7 @@ import {FlatList} from "react-native-gesture-handler";
 import moment from "moment";
 import Modal from "react-native-modal";
 import Toast from "react-native-simple-toast";
+import analytics from "@react-native-firebase/analytics";
 
 function Wallet({navigation}) {
   const {t} = useTranslation();
@@ -61,8 +62,15 @@ function Wallet({navigation}) {
   };
 
   useEffect(() => {
+    trackScreenView("Wallet Screen");
     getTransactions();
   }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
+
   useEffect(() => {
     if (refreshing) getTransactions();
   }, [refreshing]);

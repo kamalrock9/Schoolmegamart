@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {View, StyleSheet, FlatList} from "react-native";
 import {Text, Toolbar, Icon, Button} from "components";
 import {useSelector} from "react-redux";
@@ -13,7 +13,14 @@ function WishlistScreen() {
   const {accent_color} = useSelector(state => state.appSettings);
   const navigation = useNavigation();
 
-  console.log(wishlist);
+  useEffect(() => {
+    trackScreenView("WishList Screen");
+  }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   const gotoProduct = () => {
     navigation.navigate("ProductScreen", {category_id: "", sortby: "popularity"});

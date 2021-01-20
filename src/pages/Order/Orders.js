@@ -12,8 +12,8 @@ import {WooCommerce, ApiClient} from "service";
 import {useSelector} from "react-redux";
 import moment from "moment";
 import {useTranslation} from "react-i18next";
-import {useNavigation} from "react-navigation-hooks";
 import {isEmpty} from "lodash";
+import analytics from "@react-native-firebase/analytics";
 
 function Orders({navigation}) {
   const {t} = useTranslation();
@@ -27,6 +27,7 @@ function Orders({navigation}) {
   //const navigation = useNavigation();
 
   useEffect(() => {
+    trackScreenView("Order Page");
     if (!isEmpty(user)) {
       const subscription = navigation.addListener("willFocus", () => {
         setpage(0);
@@ -39,6 +40,11 @@ function Orders({navigation}) {
       setOrders([]);
     }
   }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   useEffect(() => {
     if (!isEmpty(user)) {
@@ -174,7 +180,7 @@ function Orders({navigation}) {
   return (
     <View style={{backgroundColor: "#F9F9F9", flex: 1}}>
       <Toolbar menuButton title={t("ORDERS")} />
-      {loading ? (
+      {loading && isEmpty(orders) ? (
         <ActivityIndicator
           color={accent_color}
           size="large"

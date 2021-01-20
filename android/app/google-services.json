@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "547968608427-1kftoikvognp9hm52lli9g8bt92j9id4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.in.schoolmegamart",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "547968608427-f42gst6q2beh7gfc5gam2p4s6hdidfia.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.in.schoolmegamart",
+            "certificate_hash": "fda6804fb5e490545f87e7095ab300325dc00ea1"
+          }
+        },
+        {
           "client_id": "547968608427-q7f84v90ll5uqpc4e1j24n843t93rkel.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

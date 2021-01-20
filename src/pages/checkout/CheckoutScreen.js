@@ -12,6 +12,7 @@ import {ApiClient} from "service";
 import {isEmpty} from "lodash";
 import {updateShipping, updateUser, clearCartCount} from "../../store/actions";
 import Constants from "../../service/Config";
+import analytics from "@react-native-firebase/analytics";
 
 const {width} = Dimensions.get("window");
 
@@ -52,6 +53,15 @@ function CheckoutScreen({navigation}) {
 
   const [orderdata, SetorderData] = useState("");
   const [loading, setloading] = useState(false);
+
+  useEffect(() => {
+    trackScreenView("Checkout Screen");
+  }, []);
+
+  const trackScreenView = async screen => {
+    // Set & override the MainActivity screen name
+    await analytics().logScreenView({screen_name: screen, screen_class: screen});
+  };
 
   const ApiCall = (postcode, pos) => {
     let param = {
@@ -526,10 +536,7 @@ function CheckoutScreen({navigation}) {
             </Button>
           )}
           <Button
-            style={[
-              styles.footerButton,
-              {backgroundColor: accent_color, borderTopStartRadius: stepPos != 0 ? 0 : 8},
-            ]}
+            style={[styles.footerButton, {backgroundColor: accent_color}]}
             onPress={gotoShipping}>
             <Text style={{color: "white", marginEnd: 5, fontWeight: "600"}}>
               {stepPos == 3 ? "PLACE ORDER" : "NEXT"}
@@ -556,8 +563,8 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     // margin: 5,
-    borderTopStartRadius: 8,
-    borderTopEndRadius: 8,
+    //borderTopStartRadius: 8,
+    //borderTopEndRadius: 8,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
