@@ -26,21 +26,15 @@ function CategoryItem({item, index}) {
         style={{
           backgroundColor:
             index == 0
-              ? "#FEDCBD"
+              ? "#FEDBBC"
               : index == 1
-              ? "#A6EFC8"
-              : index % 2 == 0 && index % 4 != 0
-              ? "#FEDCBD"
-              : index % 3 == 0 && index % 2 != 0 && index % 4 != 0
-              ? "#BDEDFE"
-              : index % 4 == 0 && index % 3 != 0 && index % 2 == 0
-              ? "#FEDCBD"
-              : index % 5 == 0
-              ? "#A6EFC8"
-              : index % 2 != 0
-              ? "#BDEDFE"
-              : "#A6EFC8",
-          padding: 8,
+              ? "#A6EFC7"
+              : index % 4 && !index % 2
+              ? "#BCECFE"
+              : index % 2
+              ? "#BCECFE"
+              : "#FEDBBC",
+          padding: 12,
           borderRadius: 50,
         }}>
         <Image
@@ -51,21 +45,22 @@ function CategoryItem({item, index}) {
                 : item.image.src
               : "https://source.unsplash.com/1600x900/?" + item.name,
           }}
-          style={{width: 60, height: 60, borderRadius: 30}}
+          style={{width: 40, height: 40}}
           resizeMode="cover"
         />
       </View>
-      <Text
-        style={{
-          color: "black",
-          textAlign: "center",
-          fontSize: 10,
-          width: 68,
-          paddingVertical: 2,
-          fontWeight: "700",
-        }}>
-        {item.name.toUpperCase()}
-      </Text>
+      <View style={{width: 76}}>
+        <Text
+          style={{
+            color: "black",
+            textAlign: "center",
+            fontSize: 10,
+            paddingVertical: 2,
+            fontWeight: "700",
+          }}>
+          {item.name.toUpperCase()}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 }

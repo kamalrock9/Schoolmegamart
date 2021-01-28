@@ -17,7 +17,7 @@ function Coupon({onBackButtonPress, applyCoupon}) {
 
   useEffect(() => {
     trackScreenView("Coupon");
-    ApiClient.get("/get-coupons")
+    ApiClient.post("/get-coupons")
       .then(({data}) => {
         setLoding(false);
         console.log(data);
@@ -93,7 +93,7 @@ function Coupon({onBackButtonPress, applyCoupon}) {
             <View>
               <Text style={{fontSize: 12, color: "grey"}}>Validity:</Text>
               <Text style={{fontSize: 12, color: "grey"}}>
-                {item.expiry_date ? moment(item.expiry_date).format("MMMM DD,YYYY") : "no limit"}
+                {item.expiry_date ? moment(item.expiry_date.date).format("MMMM DD,YYYY") : "no limit"}
               </Text>
             </View>
           </View>
@@ -148,7 +148,7 @@ function Coupon({onBackButtonPress, applyCoupon}) {
         renderItem={_renderItem}
         keyExtractor={_keyExtractor}
         contentContainerStyle={{padding: 4, flexGrow: 1}}
-        ListEmptyComponent={<EmptyList loading={loading} />}
+        ListEmptyComponent={<EmptyList loading={loading} label={"No coupons are available"} />}
       />
     </Container>
   );

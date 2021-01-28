@@ -130,9 +130,12 @@ class PostRegisterOTP extends React.Component {
     const {appSettings} = this.props;
     return (
       <View>
-        <Toolbar title="OTP Screen" backButton />
+        <Toolbar
+          title={this.props.navigation.state.params.key == "Login" ? "Login" : "Register"}
+          backButton
+        />
         <Text style={styles.login_txt}>
-          We will send you the otp to {"\n"}authenticate your account
+          We will send you the OTP to {"\n"}authenticate your account
         </Text>
 
         <View style={styles.rowView}>

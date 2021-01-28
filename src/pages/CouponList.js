@@ -3,6 +3,7 @@ import {View, StyleSheet, FlatList} from "react-native";
 import {Text, Toolbar, EmptyList} from "components";
 import {ApiClient} from "service";
 import analytics from "@react-native-firebase/analytics";
+import moment from "moment";
 
 function CouponList({navigation}) {
   const [coupons, setCoupons] = useState([]);
@@ -10,7 +11,7 @@ function CouponList({navigation}) {
 
   useEffect(() => {
     trackScreenView("Coupon List Page");
-    ApiClient.post("/get-coupons")
+    ApiClient.get("/get-coupons")
       .then(({data}) => {
         setLoding(false);
         console.log(data);
@@ -58,7 +59,7 @@ function CouponList({navigation}) {
             <View>
               <Text style={{fontSize: 12, color: "grey"}}>Validity:</Text>
               <Text style={{fontSize: 12, color: "grey"}}>
-                {item.expiry_date ? moment(item.expiry_date).format("MMMM DD,YYYY") : "no limit"}
+                {item.expiry_date ? moment(item.expiry_date.date).format("MMMM DD,YYYY") : "no limit"}
               </Text>
             </View>
           </View>

@@ -25,6 +25,14 @@ function CartPriceBreakup({applyCoupon, data, removeCoupon, shippingMethod}) {
     shippingMethod && shippingMethod(item.id);
   };
 
+  const gotoSum = item => {
+    let value = 0;
+    for (let i = 0; i < item.length; i++) {
+      value += item[i].subtotal_discount;
+    }
+    return value;
+  };
+
   return (
     <>
       <View style={styles.card}>
@@ -104,12 +112,18 @@ function CartPriceBreakup({applyCoupon, data, removeCoupon, shippingMethod}) {
       <View style={[styles.card, {marginBottom: 8}]}>
         <Text style={styles.heading}>Order Summary</Text>
         <View style={[styles.view, {marginTop: 5}]}>
+        <Text style={{fontWeight: "600"}}>Products Discount</Text>
+        <Text style={{ fontWeight: "600"}}>
+                      {"₹"+gotoSum(data.cart_data)}
+                    </Text>
+                    </View>
+        <View style={[styles.view]}>
           <Text style={{fontWeight: "600"}}>Subtotal</Text>
           <HTMLRender html={data.cart_subtotal} baseFontStyle={{fontWeight: "600"}} />
         </View>
         {data.hasOwnProperty("shipping_method") && (
           <View style={styles.view}>
-            <Text>Shipping Charge</Text>
+            <Text style={{ fontWeight: "600"}}>Shipping Charge</Text>
             <HTMLRender
               html={
                 data.shipping_method.find(item => item.id == data.chosen_shipping_method)
@@ -123,13 +137,13 @@ function CartPriceBreakup({applyCoupon, data, removeCoupon, shippingMethod}) {
           <Text style={{fontWeight: "600"}}>Tax</Text>
           <HTMLRender html={data.taxes} baseFontStyle={{fontWeight: "600"}} />
         </View>
-        <View style={styles.view}>
+       {data.hasOwnProperty("discount_total_amount") && data.discount_total_amount>0 && <View style={styles.view}>
           <Text style={{color: "green", fontWeight: "600"}}>Total Discount</Text>
           <HTMLRender
             html={data.discount_total}
             baseFontStyle={{color: "green", fontWeight: "600"}}
           />
-        </View>
+        </View>}
         <View style={[styles.line, {marginVertical: 3}]} />
         <View style={styles.view}>
           <Text style={[styles.heading, {marginBottom: 0, fontWeight: "600"}]}>Total</Text>

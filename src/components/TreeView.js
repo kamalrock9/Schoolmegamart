@@ -160,7 +160,7 @@ class TreeView extends React.PureComponent {
         key={item + "sap" + index}
         onPress={this.gotoPage(item)}>
         <Image
-          style={{width: width / 2 - 16, height: 150, resizeMode: "contain", borderRadius: 16}}
+          style={{width: width / 2 - 16, height: 150, resizeMode: "contain"}}
           source={{
             uri:
               item.image != null

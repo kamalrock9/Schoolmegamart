@@ -44,6 +44,7 @@ import Constants from "../../service/Config";
 import InAppBrowser from "react-native-inappbrowser-reborn";
 import SwiperFlatList from "react-native-swiper-flatlist";
 import analytics from "@react-native-firebase/analytics";
+import ImageZoom from 'react-native-image-pan-zoom';
 
 const {width} = Dimensions.get("window");
 const aspectHeight = (nWidth, oHeight, oWidth) => (nWidth * oHeight) / oWidth;
@@ -76,6 +77,7 @@ class ProductDetailScreen extends React.PureComponent {
       phone: "",
       qty: "",
       enquiry: "",
+      scroll:true
     };
   }
   componentDidMount() {
@@ -483,18 +485,8 @@ class ProductDetailScreen extends React.PureComponent {
     ApiClient.post("/cart/add", data)
       .then(({data}) => {
         this.setState({loading: false});
-        this.setState({
-          cartMsg: Array.isArray(data) ? data.map(e => e.message).join(", ") : data.message,
-        });
-        if (this.isError(data)) {
-          //console.log("error");
-        } else {
-          this.props.getCartCount();
-          if (isBuyNow) {
-            this.props.navigation.navigate("Cart", this.state);
-          } else {
-            this.setState({modalVisible: true});
-          }
+        if (data.code) {
+          Toast.show(data.message, Toast.LONG);
         }
       })
       .catch(error => {
@@ -522,8 +514,18 @@ class ProductDetailScreen extends React.PureComponent {
   _submitEnquiry = () => {
     const {id} = this.props.user;
     const {qty, enquiry, phone, product, name, email} = this.state;
+    const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const verifyMob = /^[0]?[6789]\d{9}$/;
     if (qty == "" || enquiry == "" || phone == "" || name == "" || email == "") {
-      Toast.show("Enter all the fields");
+      Toast.show("Enter all the fields", Toast.SHORT);
+      return;
+    }
+    if (reg.test(email) === false) {
+      Toast.show("Enter the correct email address.", Toast.SHORT);
+      return;
+    }
+    if (verifyMob.test(phone) === false && phone.length != 10) {
+      Toast.show("Enter the correct Phone Number.", Toast.SHORT);
       return;
     }
     let param = {
@@ -659,11 +661,35 @@ class ProductDetailScreen extends React.PureComponent {
 
   _keyExtractor = (index, item) => index + item;
 
+//   gotoZoom= (images)=>{
+//     <ImageZoom cropWidth={Dimensions.get('window').width}
+//     cropHeight={Dimensions.get('window').height}
+//     imageWidth={200}
+//     imageHeight={200}>
+//      { images.map((item,index)=>{
+//         return(
+// <Image style={{width:200, height:200}}
+//     source={{uri:'http://v1.qzone.cc/avatar/201407/07/00/24/53b9782c444ca987.jpg!200x200.jpg'}}/>
+//         )
+//       })}
+// </ImageZoom>
+//   }
+
   renderItemSlider = ({item, index}) => (
-    <Image
-      style={{width, height: width, resizeMode: "contain"}}
-      source={{uri: item.banner_url || item.src}}
-    />
+        <ImageZoom key={item+"sap"+index} cropWidth={width}
+        cropHeight={width}
+        imageWidth={width}
+        imageHeight={width}>
+     <Image style={{width, height: width, resizeMode: "contain"}}
+  source={{uri: item.banner_url || item.src}}/>
+  
+</ImageZoom>
+    // <TouchableOpacity>
+    // <Image
+    //   style={{width, height: width, resizeMode: "contain"}}
+    //   source={{uri: item.banner_url || item.src}}
+    // />
+    // </TouchableOpacity>
   );
 
   keyExtractorSlider = item => item.id.toString();
@@ -675,6 +701,52 @@ class ProductDetailScreen extends React.PureComponent {
   goToProductDetails = item => () => {
     //console.log(item);
     this.props.navigation.push("ProductDetailScreen", item);
+  };
+
+  _addToCart = product => () => {
+    console.log(product);
+    let data = {id: product.id, quantity:1};
+
+    if (product.in_stock == false) {
+      Toast.show("Product is out of stock.", Toast.SHORT);
+      return;
+    }
+
+    switch (product.type) {
+      case "simple":
+        data.quantity = 1;
+        break;
+      default:
+        this.props.navigation.navigate("ProductDetailScreen", {item: product});
+    }
+
+    //console.log(JSON.stringify(data));
+    this.setState({showLoader: true});
+    ApiClient.post("/cart/add", data)
+      .then(({data}) => {
+        console.log(data);
+        this.setState({showLoader: false});
+        if (data.code) {
+          Toast.show(data.message, Toast.LONG);
+        }
+        this.setState({
+          cartMsg: Array.isArray(data) ? data.map(e => e.message).join(", ") : data.message,
+        });
+        if (this.isError(data)) {
+          //console.log("error");
+        } else {
+          this.props.getCartCount();
+          if (isBuyNow) {
+            this.props.navigation.navigate("Cart", this.state);
+          } else {
+            this.setState({modalVisible: true});
+          }
+        }
+      })
+      .catch(error => {
+        this.setState({loading: true});
+        //console.log(error);
+      });
   };
 
   _renderFlatItem = ({item, index}) => {
@@ -691,7 +763,7 @@ class ProductDetailScreen extends React.PureComponent {
                 paddingVertical: 20,
                 borderRadius: 8,
                 marginTop: 8,
-                marginStart: 8,
+                marginStart: index == 0 ? 16 : 8,
                 alignItems: "center",
               },
             ]}>
@@ -772,12 +844,9 @@ class ProductDetailScreen extends React.PureComponent {
                   baseFontStyle={{fontSize: 12}}
                 />
               )}
-
-              <Image
-                resizeMode="contain"
-                source={require("../../assets/imgs/cart.png")}
-                style={{width: 25, height: 25}}
-              />
+<Button onPress={this._addToCart(item)}>
+                <Icon name="handbag" type="SimpleLineIcons" size={24} />
+              </Button>
             </View>
           </View>
         </View>
@@ -845,20 +914,34 @@ class ProductDetailScreen extends React.PureComponent {
                 source={{uri: variation.image.src}}
               />
             ) : (
-              <SwiperFlatList
-                data={product.images}
-                nestedScrollEnabled={true}
-                paginationActiveColor="red"
-                showPagination={product.images.length > 1 ? true : false}
-                paginationStyleItem={{
-                  width: 50,
-                  height: 50,
-                  marginHorizontal: 5,
-                }}
-                keyExtractor={this.keyExtractorSlider}
-                renderItem={this.renderItemSlider}
-                style={{width, height: width}}
-              />
+              
+               product.images.map((item,index)=>{
+                 return(
+                  <ImageZoom style={{flexDirection:"column"}} key={item+"sap"+index} cropWidth={width}
+                  cropHeight={width}
+                  imageWidth={width}
+                  imageHeight={width}>
+                  <Image style={{width, height: width, resizeMode: "contain"}}
+                  source={{uri: item.banner_url || item.src}}/>
+                  
+               </ImageZoom>
+                 )
+               })
+        
+              // <SwiperFlatList
+              //   data={product.images}
+              //   nestedScrollEnabled={true}
+              //   paginationActiveColor="red"
+              //   showPagination={product.images.length > 1 ? true : false}
+              //   paginationStyleItem={{
+              //     width: 50,
+              //     height: 50,
+              //     marginHorizontal: 5,
+              //   }}
+              //   keyExtractor={this.keyExtractorSlider}
+              //   renderItem={this.renderItemSlider}
+              //   style={{width, height: width}}
+              // />
             )}
             <WishlistIcon style={[styles.right, {backgroundColor: "transparent"}]} item={product} />
             <Button
@@ -891,20 +974,22 @@ class ProductDetailScreen extends React.PureComponent {
                 {product.sku}
               </Text> */}
               <View style={[{flexDirection: "row", alignItems: "center", paddingHorizontal: 16}]}>
-                <StarRating
-                  disabled
-                  maxStars={5}
-                  rating={parseInt(product.average_rating)}
-                  containerStyle={{justifyContent: "flex-start"}}
-                  starStyle={{marginEnd: 5}}
-                  starSize={12}
-                  halfStarEnabled
-                  emptyStarColor={accent_color}
-                  fullStarColor={accent_color}
-                  halfStarColor={accent_color}
-                />
-                <Text>({product.rating_count || 0})</Text>
-                <Button onPress={this.gotoReviews(product)}>
+                <Button
+                  onPress={this.gotoReviews(product)}
+                  style={{flexDirection: "row", alignItems: "center"}}>
+                  <StarRating
+                    disabled
+                    maxStars={5}
+                    rating={parseInt(product.average_rating)}
+                    containerStyle={{justifyContent: "flex-start"}}
+                    starStyle={{marginEnd: 5}}
+                    starSize={12}
+                    halfStarEnabled
+                    emptyStarColor={accent_color}
+                    fullStarColor={accent_color}
+                    halfStarColor={accent_color}
+                  />
+                  <Text>({product.rating_count || 0})</Text>
                   <Text> See all reviews</Text>
                 </Button>
               </View>
@@ -1148,83 +1233,84 @@ class ProductDetailScreen extends React.PureComponent {
                       </Fragment>
                     )
                   )}
-
-                  <View
-                    style={{flexDirection: "row", justifyContent: "space-between", marginTop: 30}}>
-                    <Button onPress={this.setIndex(0)}>
-                      <Text style={{fontWeight: "600", color: index == 0 ? accent_color : "#000"}}>
-                        Short{"\n"}Description
-                      </Text>
-                    </Button>
-                    <Button onPress={this.setIndex(1)}>
-                      <Text style={{fontWeight: "600", color: index == 1 ? accent_color : "#000"}}>
-                        Description
-                      </Text>
-                    </Button>
-                    <Button onPress={this.setIndex(2)}>
-                      <Text style={{fontWeight: "600", color: index == 2 ? accent_color : "#000"}}>
-                        Specification
-                      </Text>
-                    </Button>
-                  </View>
-                  {index == 0 ? (
-                    <HTMLRender
-                      html={product.short_description ? product.short_description : "<b />"}
-                      containerStyle={[styles.cardItem, {marginTop: 30}]}
-                    />
-                  ) : index == 1 ? (
-                    <HTMLRender
-                      html={product.description ? product.description : "<b />"}
-                      containerStyle={[styles.cardItem, {marginTop: 30}]}
-                    />
-                  ) : index == 2 ? (
-                    <View style={[styles.cardItem, {marginTop: 30}]}>
-                      {/* <SpecificationRow
+                </View>
+              )}
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginTop: 30,
+                  paddingHorizontal: 16,
+                }}>
+                <Button onPress={this.setIndex(0)}>
+                  <Text style={{fontWeight: "600", color: index == 0 ? accent_color : "#000"}}>
+                    Short{"\n"}Description
+                  </Text>
+                </Button>
+                <Button onPress={this.setIndex(1)}>
+                  <Text style={{fontWeight: "600", color: index == 1 ? accent_color : "#000"}}>
+                    Description
+                  </Text>
+                </Button>
+                <Button onPress={this.setIndex(2)}>
+                  <Text style={{fontWeight: "600", color: index == 2 ? accent_color : "#000"}}>
+                    Specification
+                  </Text>
+                </Button>
+              </View>
+              {index == 0 ? (
+                <HTMLRender
+                  html={product.short_description ? product.short_description : "<b />"}
+                  containerStyle={[styles.cardItem, {marginTop: 30}]}
+                />
+              ) : index == 1 ? (
+                <HTMLRender
+                  html={product.description ? product.description : "<b />"}
+                  containerStyle={[styles.cardItem, {marginTop: 30}]}
+                />
+              ) : index == 2 ? (
+                <View style={[styles.cardItem, {marginTop: 30}]}>
+                  {/* <SpecificationRow
                         leftContent="Categories"
                         rightContent={product.categories.map(item => item.name).join(", ")}
                       /> */}
 
-                      {/* {product.hasOwnProperty("total_sales") && (
+                  {/* {product.hasOwnProperty("total_sales") && (
                         <SpecificationRow
                           leftContent="Total Sales"
                           rightContent={product.total_sales}
                         />
                       )} */}
 
-                      {/* {product.hasOwnProperty("stock_quantity") && (
+                  {/* {product.hasOwnProperty("stock_quantity") && (
                         <SpecificationRow
                           leftContent="Stock Quantity"
                           rightContent={product.stock_quantity}
                         />
                       )} */}
 
-                      {/* {product.hasOwnProperty("sku") && product.sku != "" && (
+                  {/* {product.hasOwnProperty("sku") && product.sku != "" && (
                         <SpecificationRow leftContent="SKU" rightContent={product.sku} />
                       )} */}
-                      {product.hasOwnProperty("weight") && product.weight != "" && (
-                        <SpecificationRow
-                          leftContent="Weight"
-                          rightContent={product.weight + " kg"}
-                        />
-                      )}
-
-                      {product.hasOwnProperty("attributes_specification") &&
-                        !isEmpty(product.attributes_specification) &&
-                        product.attributes_specification.map((item, index) => (
-                          <SpecificationRow
-                            leftContent={item.name}
-                            rightContent={item.value}
-                            // rightContent={item.options
-                            //   .map(opt => (opt.slug ? opt.name : opt))
-                            //   .join(", ")}
-                            key={item.name + index}
-                          />
-                        ))}
-                    </View>
-                  ) : (
-                    <View />
+                  {product.hasOwnProperty("weight") && product.weight != "" && (
+                    <SpecificationRow leftContent="Weight" rightContent={product.weight + " kg"} />
                   )}
+
+                  {product.hasOwnProperty("attributes_specification") &&
+                    !isEmpty(product.attributes_specification) &&
+                    product.attributes_specification.map((item, index) => (
+                      <SpecificationRow
+                        leftContent={item.name}
+                        rightContent={item.value}
+                        // rightContent={item.options
+                        //   .map(opt => (opt.slug ? opt.name : opt))
+                        //   .join(", ")}
+                        key={item.name + index}
+                      />
+                    ))}
                 </View>
+              ) : (
+                <View />
               )}
             </View>
 
@@ -1338,7 +1424,7 @@ class ProductDetailScreen extends React.PureComponent {
               </View>
             )}
             {product.related && product.related.length > 0 && (
-              <View style={[styles.card, {paddingHorizontal: 16}]}>
+              <View style={[styles.card, {}]}>
                 <Text style={styles.cardItemHeader}>Related Products</Text>
                 <FlatList
                   horizontal
@@ -1413,6 +1499,7 @@ class ProductDetailScreen extends React.PureComponent {
             <View style={styles.view}>
               <Text style={[styles.txt, {width: 58}]}>Phone*</Text>
               <TextInput
+                keyboardType="numeric"
                 style={styles.textinput}
                 value={this.state.phone}
                 onChangeText={this.onchangephone}
@@ -1421,6 +1508,7 @@ class ProductDetailScreen extends React.PureComponent {
             <View style={styles.view}>
               <Text style={[styles.txt, {width: 74}]}>Qunatity*</Text>
               <TextInput
+                keyboardType="numeric"
                 style={styles.textinput}
                 value={this.state.qty}
                 onChangeText={this.onchangequantity}
@@ -1512,7 +1600,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
   },
   cardItem: {
-    // paddingHorizontal: 16,
+    paddingHorizontal: 16,
   },
   pincodeView: {
     flex: 1,

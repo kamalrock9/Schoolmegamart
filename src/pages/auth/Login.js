@@ -274,12 +274,14 @@ function Auth({navigation}) {
               // onClose && onClose();
               if (NeedLogin) {
                 navigation.goBack();
+                navigation.navigate("AccountSett");
               }
             } else {
               Toast.show({
                 type: "error",
                 position: "bottom",
                 text1: "Error",
+                visibilityTime: 4000,
                 text2: data.message,
               });
             }
@@ -291,7 +293,13 @@ function Auth({navigation}) {
         Toast.show(error);
       }
     } else {
-      Toast.show(error);
+      Toast.show({
+        type: "error",
+        position: "bottom",
+        text1: "Error",
+        text2: "Please fill all the details.",
+        visibilityTime: 4000,
+      });
     }
   };
 
@@ -301,6 +309,7 @@ function Auth({navigation}) {
 
   const _register = () => {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const verifyMob = /^[0]?[6789]\d{9}$/;
     var bodyFormData = new FormData();
     bodyFormData.append("fname", state.firstname);
     bodyFormData.append("lname", state.lastname);
@@ -309,29 +318,46 @@ function Auth({navigation}) {
 
     if (state.firstname != "" && state.signUpEmail != "" && state.password != "") {
       if (reg.test(state.signUpEmail) === true) {
-        setLoading(true);
-        ApiClient.post("/register", bodyFormData, {
-          config: {headers: {"Content-Type": "multipart/form-data"}},
-        })
-          .then(({data}) => {
-            console.log(data);
-            setLoading(false);
-            if (data.status == 1) {
-              goToFirstIndex();
-            } else {
-              setLoading(false);
-              //Toast.show(data.error, Toast.LONG);
-            }
+        if (verifyMob.test(state.signUpPhone) === true && state.signUpPhone.length == 10) {
+          setLoading(true);
+          ApiClient.post("/register", bodyFormData, {
+            config: {headers: {"Content-Type": "multipart/form-data"}},
           })
-          .catch(error => {
-            setLoading(false);
+            .then(({data}) => {
+              console.log(data);
+              setLoading(false);
+              if (data.status == 1) {
+                goToFirstIndex();
+              } else {
+                setLoading(false);
+                Toast.show({
+                  type: "error",
+                  position: "bottom",
+                  text1: "Error",
+                  text2: data.error,
+                  visibilityTime: 4000,
+                });
+              }
+            })
+            .catch(error => {
+              setLoading(false);
+            });
+        } else {
+          Toast.show({
+            type: "error",
+            position: "bottom",
+            text1: "Error",
+            text2: "Please enter the correct Mobile Number.",
+            visibilityTime: 4000,
           });
+        }
       } else {
         Toast.show({
           type: "error",
           position: "bottom",
           text1: "Error",
           text2: "Please enter the correct email address.",
+          visibilityTime: 4000,
         });
       }
     } else {
@@ -340,6 +366,7 @@ function Auth({navigation}) {
         position: "bottom",
         text1: "Error",
         text2: "Please fill all the details.",
+        visibilityTime: 4000,
       });
     }
   };
@@ -430,7 +457,7 @@ function Auth({navigation}) {
               />
 
               <TextInput
-                //  caretHidden
+                caretHidden={true}
                 placeholder="Email"
                 style={[styles.textinput, {marginTop: 3}]}
                 value={state.loginEmail}
@@ -550,7 +577,7 @@ function Auth({navigation}) {
               />
 
               <TextInput
-                //caretHidden
+                caretHidden={true}
                 placeholder="Email"
                 style={[styles.textinput]}
                 value={state.signUpEmail}
@@ -565,6 +592,7 @@ function Auth({navigation}) {
               />
 
               <TextInput
+                keyboardType="numeric"
                 placeholder="Phone"
                 style={[styles.textinput]}
                 value={state.signUpPhone}
@@ -720,6 +748,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 2,
     paddingStart: 8,
+    flex: 1,
   },
   textinputview: {
     flexDirection: "row",

@@ -89,6 +89,7 @@ const HomeStack = createStackNavigator(
     NewPassword,
     CouponList,
     TrackYourOrder,
+    AccountSetting,
   },
   {
     defaultNavigationOptions: {
@@ -148,6 +149,16 @@ const OrderStack = createStackNavigator({
   OrderDetails,
 });
 
+const AccountSett = createStackNavigator({
+  AccountSetting,
+  HomeScreen,
+}, {
+  initialRouteName: "AccountSetting",
+  defaultNavigationOptions: {
+    headerShown: false,
+  },
+},)
+
 const WalletStack = createStackNavigator(
   {
     Wallet,
@@ -204,7 +215,7 @@ const TabNavigator = createBottomTabNavigator(
       },
     },
     AccountSetting: {
-      screen: AccountSetting,
+      screen: AccountSett,
       navigationOptions: {
         title: "Profile",
         tabBarIcon: ({tintColor}) => (
@@ -236,6 +247,7 @@ const DrawerNavigator = createDrawerNavigator(
     ProductStack,
     CategoryStack,
     OrderStack,
+    AccountSett,
     TawkToChat,
     TermAndCondition,
     AccountSetting,

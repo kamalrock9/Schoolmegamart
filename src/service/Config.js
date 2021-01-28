@@ -26,8 +26,8 @@ const ConstantsDemo = {
   //baseURL: "https://school.themiixx.com",
   path: "/wp-json/wc/v2",
   keys: {
-    consumerKey: "ck_ac568ef2cab011e2482e7284392da836e1e0bddb",
-    consumerSecret: "cs_d99ee57159386a5b10347b232b89238360653c50",
+    consumerKey: "ck_5125f9f994e205f8c9bb7997631db0f9f0acf47d",
+    consumerSecret: "cs_c936a92279a9da8187245085ed664f5389759e00",
   },
 };
 

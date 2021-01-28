@@ -1,4 +1,4 @@
-import {View, StyleSheet, FlatList} from "react-native";
+import {View, StyleSheet, FlatList, ActivityIndicator, Dimensions} from "react-native";
 import {Text, Toolbar, HTMLRender, Icon, Button, ProgressDialog} from "components";
 import React, {useState, useEffect} from "react";
 import {useTranslation} from "react-i18next";
@@ -10,6 +10,7 @@ import {useSelector} from "react-redux";
 import moment from "moment";
 import analytics from "@react-native-firebase/analytics";
 
+const {width, height} = Dimensions.get("screen");
 function Reviews({navigation}) {
   console.log(navigation.state.params);
 
@@ -90,7 +91,7 @@ function Reviews({navigation}) {
             rating={parseInt(item.rating)}
             containerStyle={{justifyContent: "flex-start", marginVertical: 2}}
             starStyle={{marginEnd: 5}}
-            starSize={10}
+            starSize={12}
             halfStarEnabled
             emptyStarColor={accent_color}
             fullStarColor={accent_color}
@@ -117,7 +118,9 @@ function Reviews({navigation}) {
   return (
     <View style={{flex: 1}}>
       <Toolbar title="Reviews" backButton />
-      {!isEmpty(reviews) ? (
+      {loading ? (
+        <ActivityIndicator color={accent_color} size="large" style={{padding: 16, flex: 1}} />
+      ) : !isEmpty(reviews) ? (
         <FlatList
           contentContainerStyle={{flex: 1}}
           data={reviews}
@@ -125,9 +128,17 @@ function Reviews({navigation}) {
           keyExtractor={keyExtractor}
           ItemSeparatorComponent={itemSep}
         />
+      ) : isEmpty(reviews) ? (
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+          <Text>Be the first to write a review.</Text>
+        </View>
       ) : (
         <View style={{alignItems: "center", justifyContent: "center", flex: 1}}>
-          <Text style={styles.txt}>There is no review yet.</Text>
           {reviewSettings.enable_reviews &&
             (!reviewSettings.review_rating_verification_required ||
               (reviewSettings.review_rating_verification_required &&
@@ -154,7 +165,6 @@ function Reviews({navigation}) {
             </Text>
           </Button>
         )}
-      <ProgressDialog loading={loading} />
     </View>
   );
 }

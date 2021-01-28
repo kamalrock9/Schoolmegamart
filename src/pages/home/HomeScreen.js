@@ -24,7 +24,7 @@ import {
 import {useSelector, useDispatch} from "react-redux";
 import {isEmpty} from "lodash";
 import CategoryItem from "./CategoryItem";
-import {saveHomeLayout, saveNotification} from "store/actions";
+import {saveHomeLayout, saveNotification, getCartCount} from "store/actions";
 import {ApiClient} from "service";
 import {useTranslation} from "react-i18next";
 import OneSignal from "react-native-onesignal";
@@ -32,6 +32,7 @@ import Carousel, {Pagination} from "react-native-snap-carousel";
 import StarRating from "react-native-star-rating";
 import {FlatGrid} from "react-native-super-grid";
 import analytics from "@react-native-firebase/analytics";
+import Toast from "react-native-simple-toast";
 
 const {width} = Dimensions.get("window");
 
@@ -124,7 +125,7 @@ function HomeScreen({navigation}) {
     return (
       <TouchableOpacity onPress={gotoProductPage(item)}>
         <Image
-          style={{width: "100%", height: 150, borderRadius: 4}}
+          style={{width: "100%", height: 150}}
           source={{
             uri: item.banner_url
               ? item.banner_url
@@ -279,9 +280,7 @@ function HomeScreen({navigation}) {
             <WishlistIcon style={styles.right} item={item} />
           </View>
           <View style={{marginHorizontal: 4}}>
-            <Text style={[styles.itemMargin, {fontWeight: "600", fontSize: 12}]} numberOfLines={1}>
-              {item.name}
-            </Text>
+            <Text style={[styles.itemMargin, {fontWeight: "600", fontSize: 12}]}>{item.name}</Text>
             <View
               style={{
                 flexDirection: "row",
@@ -310,7 +309,9 @@ function HomeScreen({navigation}) {
                   />
                 )}
               </View>
-              <Icon style={{marginTop: 8}} name="handbag" type="SimpleLineIcons" size={24} />
+              <Button onPress={_addToCart(item)}>
+                <Icon style={{marginTop: 8}} name="handbag" type="SimpleLineIcons" size={24} />
+              </Button>
             </View>
           </View>
         </>
@@ -347,6 +348,40 @@ function HomeScreen({navigation}) {
 
   let carousel = null;
 
+  const _addToCart = product => () => {
+    console.log(product);
+    let data = {id: product.id, quantity: 1};
+
+    if (product.in_stock == false) {
+      Toast.show("Porduct is out of stock.", Toast.SHORT);
+      return;
+    }
+
+    switch (product.type) {
+      case "simple":
+        data.quantity = 1;
+        break;
+      default:
+        this.props.navigation.navigate("ProductDetailScreen", {item: product});
+        break;
+    }
+    //console.log(JSON.stringify(data));
+    setLoading(true);
+    ApiClient.post("/cart/add", data)
+      .then(({data}) => {
+        console.log(data);
+        setLoading(false);
+        if (data.code) {
+          Toast.show(data.message, Toast.LONG);
+        }
+        dispatch(getCartCount());
+      })
+      .catch(error => {
+        setLoading(false);
+        //console.log(error);
+      });
+  };
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -377,7 +412,7 @@ function HomeScreen({navigation}) {
             removeClippedSubviews={true}
           />
           <View style={{backgroundColor: "#d2d2d2", height: 4}} />
-          <View style={{marginTop: 16}}>
+          <View style={{marginTop: 8}}>
             <Carousel
               layout={"default"}
               ref={ref => {
@@ -386,7 +421,7 @@ function HomeScreen({navigation}) {
               data={layout.banner}
               sliderWidth={width}
               sliderHeight={250}
-              itemWidth={width - 32}
+              itemWidth={width - 16}
               itemHeight={150}
               // pagingEnabled={true}
               renderItem={_renderItemCrousel}
@@ -429,7 +464,7 @@ function HomeScreen({navigation}) {
               {layout.section_banners.map((item, index) => {
                 return item.layout_type == 2 && item.banner.length >= 2 ? (
                   <View key={item.id + "SAP" + index}>
-                    <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 16}} />
+                    <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 8}} />
                     <View
                       style={{
                         backgroundColor:
@@ -464,11 +499,11 @@ function HomeScreen({navigation}) {
                           <Image
                             resizeMode={"contain"}
                             style={{
-                              width: width / 2 - 24,
+                              width: width / 2 - 20,
                               height: width / 2 - 8,
                               borderWidth: 1,
                               borderColor: "#d2d2d2",
-                              marginEnd: 8,
+                              marginEnd: 4,
                             }}
                             source={{
                               uri: item.banner[0].banner_url
@@ -481,11 +516,11 @@ function HomeScreen({navigation}) {
                           <Image
                             resizeMode={"contain"}
                             style={{
-                              width: width / 2 - 24,
+                              width: width / 2 - 20,
                               height: width / 2 - 8,
                               borderWidth: 1,
                               borderColor: "#d2d2d2",
-                              marginStart: 8,
+                              marginStart: 4,
                             }}
                             source={{uri: item.banner[1].banner_url}}
                           />
@@ -495,7 +530,7 @@ function HomeScreen({navigation}) {
                   </View>
                 ) : item.layout_type == 3 && item.banner.length >= 3 ? (
                   <View key={item.id + "SAP" + index}>
-                    <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 16}} />
+                    <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 8}} />
                     <View
                       style={{
                         backgroundColor:
@@ -550,11 +585,11 @@ function HomeScreen({navigation}) {
                               resizeMode={"contain"}
                               style={{
                                 width: width / 3 + 16,
-                                height: width / (8 / 3) - 8,
+                                height: width / (8 / 3) - 4,
                                 borderWidth: 1,
                                 borderColor: "#d2d2d2",
-                                marginStart: 8,
-                                marginBottom: 8,
+                                // marginStart: 4,
+                                marginBottom: 4,
                               }}
                               source={{
                                 uri: item.banner[1].banner_url
@@ -568,11 +603,11 @@ function HomeScreen({navigation}) {
                               resizeMode={"contain"}
                               style={{
                                 width: width / 3 + 16,
-                                height: width / (8 / 3) - 8,
+                                height: width / (8 / 3) - 4,
                                 borderWidth: 1,
                                 borderColor: "#d2d2d2",
-                                marginStart: 8,
-                                marginTop: 8,
+                                // marginStart: 4,
+                                marginTop: 4,
                               }}
                               source={{
                                 uri: item.banner[2].banner_url
@@ -587,7 +622,7 @@ function HomeScreen({navigation}) {
                   </View>
                 ) : item.layout_type == 4 && item.banner.length >= 4 ? (
                   <View key={item.id + "SAP" + index}>
-                    <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 16}} />
+                    <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 8}} />
                     <View
                       style={{
                         backgroundColor:
@@ -622,11 +657,11 @@ function HomeScreen({navigation}) {
                           <Image
                             resizeMode={"contain"}
                             style={{
-                              width: width / 2 - 24,
+                              width: width / 2 - 20,
                               height: width / 2 - 8,
                               borderWidth: 1,
                               borderColor: "#d2d2d2",
-                              marginEnd: 8,
+                              marginEnd: 4,
                             }}
                             source={{
                               uri: item.banner[0].banner_url
@@ -639,11 +674,11 @@ function HomeScreen({navigation}) {
                           <Image
                             resizeMode={"contain"}
                             style={{
-                              width: width / 2 - 24,
+                              width: width / 2 - 20,
                               height: width / 2 - 8,
                               borderWidth: 1,
                               borderColor: "#d2d2d2",
-                              marginStart: 8,
+                              marginStart: 4,
                             }}
                             source={{
                               uri: item.banner[1].banner_url
@@ -658,12 +693,12 @@ function HomeScreen({navigation}) {
                           <Image
                             resizeMode={"contain"}
                             style={{
-                              width: width / 2 - 24,
+                              width: width / 2 - 20,
                               height: width / 2 - 8,
                               borderWidth: 1,
                               borderColor: "#d2d2d2",
-                              marginTop: 16,
-                              marginEnd: 8,
+                              marginTop: 8,
+                              marginEnd: 4,
                             }}
                             source={{
                               uri: item.banner[2].banner_url
@@ -676,12 +711,12 @@ function HomeScreen({navigation}) {
                           <Image
                             resizeMode={"contain"}
                             style={{
-                              width: width / 2 - 24,
+                              width: width / 2 - 20,
                               height: width / 2 - 8,
                               borderWidth: 1,
                               borderColor: "#d2d2d2",
-                              marginTop: 16,
-                              marginStart: 8,
+                              marginTop: 8,
+                              marginStart: 4,
                             }}
                             source={{
                               uri: item.banner[3].banner_url
@@ -695,7 +730,7 @@ function HomeScreen({navigation}) {
                   </View>
                 ) : item.layout_type == 1 && item.banner.length >= 1 ? (
                   <View key={item.id + "SAP" + index}>
-                    <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 16}} />
+                    <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 8}} />
                     <View
                       style={{
                         backgroundColor:

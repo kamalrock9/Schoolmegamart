@@ -30,7 +30,7 @@ import {isEmpty} from "lodash";
 import CategoryItem from "../home/CategoryItem";
 import SortOptions from "./SortOptions";
 import StarRating from "react-native-star-rating";
-import {brand, rating} from "store/actions";
+import {brand, rating, getCartCount} from "store/actions";
 import analytics from "@react-native-firebase/analytics";
 
 const {width} = Dimensions.get("screen");
@@ -46,6 +46,9 @@ class ProductScreen extends React.PureComponent {
     const {price} = props.appSettings;
 
     this.state = {
+      quantity: 1,
+      variation: {},
+      selectedAttrs: {},
       products: [],
       loading: true,
       hasMore: false,
@@ -56,6 +59,7 @@ class ProductScreen extends React.PureComponent {
       gridView: false,
       title: "",
       header: category_id ? category_id.name : "",
+      showLoader: false,
     };
     this.params = {
       page: 1,
@@ -265,6 +269,70 @@ class ProductScreen extends React.PureComponent {
     this.props.navigation.navigate("ProductDetailScreen", item);
   };
 
+  _addToCart = product => () => {
+    console.log(product);
+    const {quantity} = this.state;
+    let data = {id: product.id, quantity: this.state.quantity};
+
+    if (product.in_stock == false) {
+      Toast.show("Product is out of stock.", Toast.SHORT);
+      return;
+    }
+
+    switch (product.type) {
+      case "simple":
+        data.quantity = quantity;
+        break;
+      default:
+        this.props.navigation.navigate("ProductDetailScreen", {item: product});
+    }
+
+    if (this.props.appSettings.pincode_active) {
+      if (this.state.postcode == "") {
+        Toast.show("Please select a pincode first.", Toast.SHORT);
+        return;
+      }
+      if (isEmpty(this.state.deliverDetails)) {
+        Toast.show("Please apply the pincode first.", Toast.SHORT);
+        return;
+      }
+      if (
+        this.state.deliverDetails.hasOwnProperty("delivery") &&
+        !this.state.deliverDetails.delivery
+      ) {
+        Toast.show("Delivery is not available for your location.", Toast.SHORT);
+        return;
+      }
+    }
+    //console.log(JSON.stringify(data));
+    this.setState({showLoader: true});
+    ApiClient.post("/cart/add", data)
+      .then(({data}) => {
+        console.log(data);
+        this.setState({showLoader: false});
+        if (data.code) {
+          Toast.show(data.message, Toast.LONG);
+        }
+        this.setState({
+          cartMsg: Array.isArray(data) ? data.map(e => e.message).join(", ") : data.message,
+        });
+        if (this.isError(data)) {
+          //console.log("error");
+        } else {
+          this.props.getCartCount();
+          if (isBuyNow) {
+            this.props.navigation.navigate("Cart", this.state);
+          } else {
+            this.setState({modalVisible: true});
+          }
+        }
+      })
+      .catch(error => {
+        this.setState({loading: true});
+        //console.log(error);
+      });
+  };
+
   _renderItem = ({item, index}) => {
     // var discount = Math.ceil(((item.regular_price - item.price) / item.regular_price) * 100);
     const {
@@ -290,15 +358,11 @@ class ProductScreen extends React.PureComponent {
             />
           )}
           <View style={{flex: 1, marginEnd: 16}}>
-            <Text
-              style={[styles.itemMargin, {fontWeight: "600", fontSize: 12, marginBottom: 4}]}
-              numberOfLines={1}>
+            <Text style={[styles.itemMargin, {fontWeight: "600", fontSize: 12, marginBottom: 4}]}>
               {item.name.toUpperCase()}
             </Text>
             {item.sku != "" && (
-              <Text
-                style={[styles.itemMargin, {fontWeight: "600", fontSize: 12, marginBottom: 4}]}
-                numberOfLines={1}>
+              <Text style={[styles.itemMargin, {fontWeight: "600", fontSize: 12, marginBottom: 4}]}>
                 {item.sku}
               </Text>
             )}
@@ -322,7 +386,9 @@ class ProductScreen extends React.PureComponent {
                   baseFontStyle={{fontSize: 12, fontWeight: "700"}}
                 />
               )}
-              <Icon name="handbag" type="SimpleLineIcons" size={24} />
+              <Button onPress={this._addToCart(item)}>
+                <Icon name="handbag" type="SimpleLineIcons" size={24} />
+              </Button>
               {/* <Image
                 resizeMode="contain"
                 source={require("../../assets/imgs/cart.png")}
@@ -391,9 +457,12 @@ class ProductScreen extends React.PureComponent {
             <WishlistIcon style={styles.right} item={item} />
           </View>
           <View style={{marginHorizontal: 4}}>
-            <Text style={[styles.itemMargin, {fontWeight: "600", fontSize: 12}]} numberOfLines={1}>
-              {item.name}
-            </Text>
+            <Text style={[styles.itemMargin, {fontWeight: "600", fontSize: 12}]}>{item.name}</Text>
+            {item.sku != "" && (
+              <Text style={[styles.itemMargin, {fontWeight: "600", fontSize: 12, marginBottom: 4}]}>
+                {item.sku}
+              </Text>
+            )}
             <StarRating
               disabled
               maxStars={5}
@@ -420,7 +489,9 @@ class ProductScreen extends React.PureComponent {
                   baseFontStyle={{fontSize: 12}}
                 />
               )}
-              <Icon name="handbag" type="SimpleLineIcons" size={24} />
+              <Button onPress={this._addToCart(item)}>
+                <Icon name="handbag" type="SimpleLineIcons" size={24} />
+              </Button>
               {/* <Image
                 resizeMode="contain"
                 source={require("../../assets/imgs/cart.png")}
@@ -492,6 +563,7 @@ class ProductScreen extends React.PureComponent {
       gridView,
       title,
       header,
+      showLoader,
     } = this.state;
     const {
       appSettings: {accent_color},
@@ -599,7 +671,12 @@ class ProductScreen extends React.PureComponent {
         ) : isEmpty(products) && loading ? (
           <ActivityIndicator color={accent_color} size="large" style={{padding: 16, flex: 1}} />
         ) : (
-          isEmpty(products) && !loading && <Text>Products not available</Text>
+          isEmpty(products) &&
+          !loading && (
+            <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+              <Text>Products not available...</Text>
+            </View>
+          )
         )}
 
         <Modal
@@ -634,6 +711,15 @@ class ProductScreen extends React.PureComponent {
             onBackButtonPress={this.closeSort}
             sortData={this.sortData}
           />
+        </Modal>
+        <Modal
+          animationType="slide"
+          isVisible={showLoader}
+          hasBackdrop
+          useNativeDriver
+          hideModalContentWhileAnimating
+          style={{margin: 0}}>
+          <ActivityIndicator color={accent_color} size="large" style={{padding: 16, flex: 1}} />
         </Modal>
       </Container>
     );
@@ -732,6 +818,7 @@ const mapStateToProps = state => ({appSettings: state.appSettings});
 const mapDispatchToProps = {
   brand,
   rating,
+  getCartCount,
 };
 
 export default connect(

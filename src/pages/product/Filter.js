@@ -71,11 +71,11 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
     const key =
       isEmpty(brandArr) && isEmpty(ratingArr)
         ? attributes[tabIndex - 2].slug
-        : !isEmpty(brandArr) && !isEmpty(brandArr)
+        : !isEmpty(brandArr) && !isEmpty(ratingArr)
         ? attributes[tabIndex - 4].slug
-        : isEmpty(brandArr) && !isEmpty(brandArr)
+        : isEmpty(brandArr) && !isEmpty(ratingArr)
         ? attributes[tabIndex - 3].slug
-        : !isEmpty(brandArr) && isEmpty(brandArr)
+        : !isEmpty(brandArr) && isEmpty(ratingArr)
         ? attributes[tabIndex - 3].slug
         : attributes[tabIndex - 3].slug;
 
@@ -111,6 +111,7 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
       brand,
       rating,
     };
+    console.log(attr);
     onFilter && onFilter(params, attr);
   };
 

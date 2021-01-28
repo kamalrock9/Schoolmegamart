@@ -1,5 +1,14 @@
 import React from "react";
-import {ScrollView, View, StyleSheet, Linking, Platform, Alert, Image} from "react-native";
+import {
+  ScrollView,
+  View,
+  StyleSheet,
+  Linking,
+  Platform,
+  Alert,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import {Button, Text, Icon} from "components";
 import {connect} from "react-redux";
 import {withTranslation} from "react-i18next";
@@ -11,6 +20,24 @@ import {logout} from "store/actions";
 import {ApiClient} from "service";
 import {GoogleSignin} from "@react-native-community/google-signin";
 import {LoginManager} from "react-native-fbsdk";
+import {
+  SvgHome,
+  SvgShop,
+  SvgCategories,
+  SvgOrder,
+  SvgCoupon,
+  SvgAccount,
+  SvgManageAddress,
+  SvgNotification,
+  SvgWishList,
+  SvgDownload,
+  SvgContactus,
+  SvgTOS,
+  SvgFeedback,
+  SvgWallet,
+  SvgLogout,
+  SvgChat
+} from "../../assets/svgs";
 
 class Drawer extends React.PureComponent {
   constructor(props) {
@@ -39,7 +66,7 @@ class Drawer extends React.PureComponent {
     switch (route) {
       case "giveFeedback":
         Alert.alert(
-          "Do You like using Schoolmegamart",
+          "Do you like using School Megamart?",
           null,
           [
             {text: "NOT REALLY", onPress: () => console.log("Cancel Pressed"), style: "cancel"},
@@ -47,12 +74,12 @@ class Drawer extends React.PureComponent {
               text: "YES!",
               onPress: () => {
                 if (Platform.OS != "ios") {
-                  Linking.openURL(`market://details?id=${"com.schoolmegamart"}`).catch(err =>
+                  Linking.openURL(`market://details?id=${"com.in.schoolmegamart"}`).catch(err =>
                     alert("Please check for the Google Play Store"),
                   );
                 } else {
                   Linking.openURL(
-                    `itms://itunes.apple.com/in/app/apple-store/${com.schoolmegamart}`,
+                    `itms://itunes.apple.com/in/app/apple-store/${com.in.schoolmegamart}`,
                   ).catch(err => alert("Please check for the App Store"));
                 }
               },
@@ -72,6 +99,7 @@ class Drawer extends React.PureComponent {
         this.props.logout();
         GoogleSignin.signOut();
         LoginManager.logOut();
+        navigation.navigate("Home");
         navigation.closeDrawer();
         break;
       default:
@@ -98,17 +126,25 @@ class Drawer extends React.PureComponent {
       <>
         <View style={styles.container}>
           <View style={styles.header}>
-            <Icon
+            <Image
+              style={{width: 60, height: 60, marginEnd: 10, borderRadius: 30}}
+              source={{
+                uri: user.avatar_url
+                  ? user.avatar_url
+                  : "https://st.depositphotos.com/1779253/5140/v/600/depositphotos_51405259-stock-illustration-male-avatar-profile-picture-use.jpg",
+              }}
+            />
+            {/* <Icon
               name="account-circle"
               type="MaterialCommunityIcons"
               style={{fontSize: 54, marginEnd: 10}}
-            />
+            /> */}
             {isEmpty(user) ? (
               <Text style={{fontSize: 16, fontWeight: "500"}} onPress={this.openModal}>
                 {t("LOGIN/REGISTER")}
               </Text>
             ) : (
-              <View>
+              <TouchableOpacity onPress={this.navigateToScreen("AccountSetting")}>
                 <Text style={{fontSize: 16, fontWeight: "500"}}>
                   {user.first_name && user.last_name
                     ? user.first_name + " " + user.last_name
@@ -118,59 +154,70 @@ class Drawer extends React.PureComponent {
                     ? user.username
                     : ""}
                 </Text>
-                <Text style={{fontSize: 12, color: "grey"}}>{user.email}</Text>
-              </View>
+                <Text style={{fontSize: 12,marginTop:-5, color: "grey"}}>{user.email}</Text>
+              </TouchableOpacity>
             )}
           </View>
           <ScrollView>
             <Button style={styles.button} onPress={this.navigateToScreen("HomeStack")}>
-              <Image source={require("../../assets/imgs/home.png")} style={styles.img} />
+              <SvgHome style={styles.drawerItemIcon} width={20} height={20} />
+              {/* <Image source={require("../../assets/imgs/home.png")} style={styles.img} /> */}
               <Text style={styles.text}>{t("HOME")}</Text>
             </Button>
 
             <Button style={styles.button} onPress={this.navigateToScreen("ProductScreen")}>
-              <Image source={require("../../assets/imgs/shop.png")} style={styles.img} />
+              <SvgShop style={styles.drawerItemIcon} width={20} height={20} />
+              {/* <Image source={require("../../assets/imgs/shop.png")} style={styles.img} /> */}
               <Text style={styles.text}>{t("SHOP")}</Text>
             </Button>
 
             <Button style={styles.button} onPress={this.navigateToScreen("CategoryScreen")}>
-              <Image source={require("../../assets/imgs/category.png")} style={styles.img} />
+              <SvgCategories style={styles.drawerItemIcon} width={20} height={20} />
+              {/* <Image source={require("../../assets/imgs/category.png")} style={styles.img} /> */}
               <Text style={styles.text}>Shop by category</Text>
             </Button>
             <View style={styles.divider} />
             {!isEmpty(user) && (
               <>
                 <Button style={styles.button} onPress={this.navigateToScreen("OrderStack")}>
-                  <Image source={require("../../assets/imgs/order.png")} style={styles.img} />
+                  <SvgOrder style={styles.drawerItemIcon} width={20} height={20} />
+                  {/* <Image source={require("../../assets/imgs/order.png")} style={styles.img} /> */}
                   <Text style={styles.text}>{t("ORDERS")}</Text>
                 </Button>
                 <Button style={styles.button} onPress={this.navigateToScreen("CouponList")}>
-                  <Image source={require("../../assets/imgs/order.png")} style={styles.img} />
+                  <SvgCoupon style={styles.drawerItemIcon} width={20} height={20} />
+                  {/* <Image source={require("../../assets/imgs/order.png")} style={styles.img} /> */}
                   <Text style={styles.text}>Coupons</Text>
                 </Button>
                 <Button style={styles.button} onPress={this.navigateToScreen("AccountSetting")}>
-                  <Image source={require("../../assets/imgs/setting.png")} style={styles.img} />
+                  <SvgAccount style={styles.drawerItemIcon} width={20} height={20} />
+                  {/* <Image source={require("../../assets/imgs/setting.png")} style={styles.img} /> */}
                   <Text style={styles.text}>{t("ACCOUNT")}</Text>
                 </Button>
                 <Button style={styles.button} onPress={this.navigateToScreen("ManageAddress")}>
-                  <Image source={require("../../assets/imgs/address.png")} style={styles.img} />
+                  <SvgManageAddress style={styles.drawerItemIcon} width={20} height={20} />
+                  {/* <Image source={require("../../assets/imgs/address.png")} style={styles.img} /> */}
                   <Text style={styles.text}>{t("MANAGE_ADDRESS")}</Text>
                 </Button>
                 <Button style={styles.button} onPress={this.navigateToScreen("Notification")}>
-                  <Image source={require("../../assets/imgs/bell.png")} style={styles.img} />
+                  <SvgNotification style={styles.drawerItemIcon} width={20} height={20} />
+                  {/* <Image source={require("../../assets/imgs/bell.png")} style={styles.img} /> */}
                   <Text style={styles.text}>{t("NOTIFICATIONS")}</Text>
                 </Button>
                 <Button style={styles.button} onPress={this.navigateToScreen("WishlistScreen")}>
-                  <Image source={require("../../assets/imgs/love.png")} style={styles.img} />
+                  <SvgWishList style={styles.drawerItemIcon} width={20} height={20} />
+                  {/* <Image source={require("../../assets/imgs/love.png")} style={styles.img} /> */}
                   <Text style={styles.text}>Wishlist</Text>
                 </Button>
                 <Button style={styles.button} onPress={this.navigateToScreen("Download")}>
-                  <Image source={require("../../assets/imgs/download.png")} style={styles.img} />
+                  <SvgDownload style={styles.drawerItemIcon} width={20} height={20} />
+                  {/* <Image source={require("../../assets/imgs/download.png")} style={styles.img} /> */}
                   <Text style={styles.text}>{t("DOWNLOAD")}</Text>
                 </Button>
                 {wallet_active && (
                   <Button style={styles.button} onPress={this.navigateToScreen("WalletStack")}>
-                    <Image source={require("../../assets/imgs/wallet.png")} style={styles.img} />
+                  <SvgWallet style={styles.drawerItemIcon} width={20} height={20} />
+                    {/* <Image source={require("../../assets/imgs/wallet.png")} style={styles.img} /> */}
                     <Text style={styles.text}>{t("WALLET")}</Text>
                   </Button>
                 )}
@@ -182,25 +229,31 @@ class Drawer extends React.PureComponent {
               <Button
                 style={styles.button}
                 onPress={this.navigateToScreen("TawkToChat", {uri: direct_tawk_id})}>
-                <Image source={require("../../assets/imgs/chat.png")} style={styles.img} />
+                 <SvgChat style={styles.drawerItemIcon} width={20} height={20} />
+                {/* <Image source={require("../../assets/imgs/chat.png")} style={styles.img} /> */}
                 <Text style={styles.text}>{t("CHAT_SUPPORT")}</Text>
               </Button>
             )}
             <Button style={styles.button} onPress={this.contactUs}>
-              <Image source={require("../../assets/imgs/telephone.png")} style={styles.img} />
+            <SvgContactus style={styles.drawerItemIcon} width={20} height={20} />
+
+              {/* <Image source={require("../../assets/imgs/telephone.png")} style={styles.img} /> */}
               <Text style={styles.text}>{t("CONTACT")}</Text>
             </Button>
             <Button style={styles.button} onPress={this.navigateToScreen("TermAndCondition")}>
-              <Image source={require("../../assets/imgs/term.png")} style={styles.img} />
+            <SvgTOS style={styles.drawerItemIcon} width={20} height={20} />
+              {/* <Image source={require("../../assets/imgs/term.png")} style={styles.img} /> */}
               <Text style={styles.text}>{t("TOS")}</Text>
             </Button>
             <Button style={styles.button} onPress={this.navigateToScreen("giveFeedback")}>
-              <Image source={require("../../assets/imgs/review.png")} style={styles.img} />
+            <SvgFeedback style={styles.drawerItemIcon} width={20} height={20} />
+              {/* <Image source={require("../../assets/imgs/review.png")} style={styles.img} /> */}
               <Text style={styles.text}>{t("GIVE_FEEDBACK")}</Text>
             </Button>
             {!isEmpty(user) && (
               <Button style={styles.button} onPress={this.navigateToScreen("Logout")}>
-                <Image source={require("../../assets/imgs/logout.png")} style={styles.img} />
+                 <SvgLogout style={styles.drawerItemIcon} width={20} height={20} />
+                {/* <Image source={require("../../assets/imgs/logout.png")} style={styles.img} /> */}
                 <Text style={styles.text}>{t("SIGN_OUT")}</Text>
               </Button>
             )}
@@ -318,8 +371,8 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "#000000",
-    fontWeight: "500",
-    fontSize: 12,
+    fontWeight: "400",
+    fontSize: 14,
   },
   footer: {
     width: "100%",
@@ -347,7 +400,17 @@ const styles = StyleSheet.create({
     height: 40,
     paddingHorizontal: 60,
   },
-  img: {height: 22, width: 22, resizeMode: "contain", marginHorizontal: 16},
+  img: {
+    height: 22,
+    width: 22,
+    resizeMode: "contain",
+    marginHorizontal: 16,
+  },
+  drawerItemIcon: {
+    marginHorizontal: 20,
+    color: "#F47C20",
+    fontWeight: "900",
+  },
 });
 
 const mapStateToProps = state => ({

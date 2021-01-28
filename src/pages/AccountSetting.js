@@ -6,6 +6,7 @@ import {useSelector, useDispatch} from "react-redux";
 import Toast from "react-native-simple-toast";
 import {WooCommerce, ApiClient} from "service";
 import {updateUser} from "../store/actions";
+import {isEmpty} from "lodash";
 
 function AccountSetting({navigation}) {
   const {t} = useTranslation();
@@ -13,6 +14,10 @@ function AccountSetting({navigation}) {
   const appSettings = useSelector(state => state.appSettings);
   const dispatch = useDispatch();
   const user = useSelector(state => state.user);
+
+  // let fn = isEmpty(user) ? "" : user.first_name;
+  // let ln = isEmpty(user) ? "" : user.last_name;
+  // let e = isEmpty(user) ? "" : user.email;
 
   const [firstname, setFirstname] = useState(user.first_name);
   const [lastname, setLastname] = useState(user.last_name);

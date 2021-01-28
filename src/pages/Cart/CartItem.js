@@ -62,8 +62,13 @@ function CartItem({item, index, manageQuanity, deleteCartItem}) {
           }}
         />
         <View style={{marginStart: 16, flex: 1}}>
+
           <View style={{flexDirection: "row", justifyContent: "space-between"}}>
             <Text style={{fontWeight: "600", flex: 1}}>{item.name.toUpperCase()}</Text>
+          </View>
+          <View style={{flexDirection:"row"}}>
+            <Text style={{fontWeight: "500"}}>Price : </Text>
+          <HTMLRender baseFontStyle={{fontWeight: "400"}} html={item.html_price} />
           </View>
           <HTMLRender baseFontStyle={{fontWeight: "700"}} html={item.subtotal} />
           <View

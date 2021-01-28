@@ -8,6 +8,7 @@ import {useSelector} from "react-redux";
 import {useNavigation, useNavigationState} from "react-navigation-hooks";
 import {useTranslation} from "react-i18next";
 import {isEmpty, isArray} from "lodash";
+import {SvgMenu} from "../assets/svgs";
 
 function Toolbar({
   title,
@@ -52,7 +53,8 @@ function Toolbar({
       <View style={[styles.container, {backgroundColor: "#fff"}]}>
         {menuButton && (
           <Button onPress={navigation.openDrawer} style={styles.menuButton}>
-            <Icon color={"#000"} name="md-menu" size={24} />
+            <SvgMenu style={styles.drawerItemIcon} width={20} height={20} />
+            {/* <Icon color={"#000"} name="md-menu" size={24} /> */}
           </Button>
         )}
         {backButton && (
@@ -71,7 +73,7 @@ function Toolbar({
           </Button>
         )}
 
-        <Text style={[styles.title, {color: "#000"}]} numberOfLines={1} ellipsizeMode="tail">
+        <Text style={[styles.title, {color: "#000", width: "100%"}]} ellipsizeMode="tail">
           {t(title) || t(routeName)}
         </Text>
 
@@ -140,7 +142,8 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    height: 56,
+    paddingVertical: 4,
+    // height: 56,
   },
   badge: {
     position: "absolute",
@@ -160,14 +163,17 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "600",
     fontSize: 16,
-    paddingHorizontal: 16,
-    //flex: 1,
+    flex: 1,
   },
   right: {
     flexDirection: "row",
-    marginStart: "auto",
+    marginStart: 0,
   },
   menuButton: {padding: 16},
+  drawerItemIcon: {
+    color: "#000000",
+    fontWeight: "900",
+  },
 });
 
 export default Toolbar;

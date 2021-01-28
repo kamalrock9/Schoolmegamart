@@ -69,11 +69,12 @@ function AddReview({navigation}) {
     <View>
       <Toolbar title="Add a Review" backButton />
       <View
-        style={{elevation: 2, backgroundColor: "#fff", margin: 10, padding: 10, borderRadius: 4}}>
-        <Text style={{fontSize: 12}}>
-          Your email address will not be published. Required fields are marked *
+        style={{ marginHorizontal:16}}>
+        <Text style={{fontWeight:"500"}}>
+  Your email address will not be published.
         </Text>
-        <Text style={{marginTop: 20, fontSize: 10}}>Your Rating*</Text>
+        <Text style={{fontWeight:"500"}}>Required fields are marked*</Text>
+        <Text style={{marginTop: 20,fontSize:12,fontWeight:"600"}}>Your Rating*</Text>
         <StarRating
           disabled={false}
           maxStars={5}
@@ -82,17 +83,21 @@ function AddReview({navigation}) {
           emptyStarColor={accent_color}
           fullStarColor={accent_color}
           halfStarColor={accent_color}
-          starSize={12}
+          starSize={16}
           containerStyle={{justifyContent: "flex-start", marginVertical: 10}}
           selectedStar={rating => onStarRatingPress(rating)}
         />
-        <Text style={{marginTop: 10, fontSize: 10}}>Your Review*</Text>
-        <TextInput onChangeText={text => setReview(text)} />
+        <Text style={{marginTop: 20,fontSize:12,fontWeight:"600"}}>Your Review*</Text>
+        <TextInput 
+        multiline={true}
+        style={{textAlignVertical: 'top',backgroundColor:"#F8F8F8",height:100,borderRadius:4,borderWidth:1,borderColor:"grey",marginVertical:16,padding:10}}
+        placeholder={"Would you like to write anything about product?"}
+        onChangeText={text => setReview(text)} />
       </View>
       <Button
         style={{
           backgroundColor: accent_color,
-          marginHorizontal: 10,
+          marginHorizontal: 16,
           alignItems: "center",
           justifyContent: "center",
           borderRadius: 2,

@@ -6,9 +6,9 @@ import {ApiClient} from "service";
 import {useSelector} from "react-redux";
 import analytics from "@react-native-firebase/analytics";
 function Review({cartData, orderData, navigation}) {
-  console.log(cartData);
-  console.log(orderData);
-  console.log(navigation);
+  //console.log(cartData);
+  //console.log(orderData);
+  //console.log(navigation);
 
   const user = useSelector(state => state.user);
   const {accent_color} = useSelector(state => state.appSettings);
@@ -19,7 +19,9 @@ function Review({cartData, orderData, navigation}) {
   const [isSelectShipping, setShippingMethod] = useState(data.chosen_shipping_method);
   const [paymentMethods, setPaymentMethds] = useState([]);
   const [shipping_method, setShipping_method] = useState("");
-  const [chosen_payment_method, setChosen] = useState("");
+  const [chosen_payment_method, setChosen] = useState(
+    paymentMethods.length == 1 ? paymentMethods[0].gateway_id : "",
+  );
   const [pay_via_wallet, set_pay_via_wallet] = useState("");
 
   useEffect(() => {
@@ -33,6 +35,29 @@ function Review({cartData, orderData, navigation}) {
   };
 
   function Apicall(item) {
+    setChosen(item);
+    let param = {
+      shipping_method: shipping_method != "" ? shipping_method : "",
+      chosen_payment_method: chosen_payment_method != "" ? item : "",
+      pay_via_wallet: pay_via_wallet != "" ? pay_via_wallet : "",
+    };
+    setloading(true);
+    ApiClient.get("/checkout/review-order", param)
+      .then(({data}) => {
+        setloading(false);
+        console.log(data);
+        setCart(data);
+        orderData && orderData(data);
+        setChosen(data.payment_gateway.length == 1 ? data.payment_gateway[0].gateway_id : "");
+        setPaymentMethds(data.payment_gateway);
+      })
+      .catch(error => {
+        setloading(false);
+        console.log(error);
+      });
+  }
+
+  function ApicallOnlyPayment(item) {
     setChosen(item);
     let param = {
       shipping_method: shipping_method != "" ? shipping_method : "",
@@ -78,7 +103,7 @@ function Review({cartData, orderData, navigation}) {
 
   const selectPaymentMethod = item => () => {
     setChosen(item.gateway_id);
-    Apicall(item.gateway_id);
+    ApicallOnlyPayment(item.gateway_id);
   };
 
   const _renderItem = ({item}) => {

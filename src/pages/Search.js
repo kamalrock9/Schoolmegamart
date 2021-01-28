@@ -1,4 +1,12 @@
-import {View, StyleSheet, StatusBar, TextInput, FlatList, TouchableOpacity} from "react-native";
+import {
+  View,
+  StyleSheet,
+  StatusBar,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import {Text, Icon, Button, HTMLRender, Toolbar} from "components";
 import React, {useState, useEffect, useCallback} from "react";
 import {useSelector} from "react-redux";
@@ -9,13 +17,12 @@ import {debounce} from "lodash";
 import analytics from "@react-native-firebase/analytics";
 
 function Search({navigation}) {
-  const {primary_color, primary_color_dark, primary_color_text} = useSelector(
-    state => state.appSettings,
-  );
+  const {primary_color, primary_color_dark, accent_color} = useSelector(state => state.appSettings);
 
   const [textinput, setTextInput] = useState("");
   const [results, setResults] = useState([]);
   const [cate, setCate] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     trackScreenView("Search Page");
@@ -45,8 +52,10 @@ function Search({navigation}) {
         search: text,
         per_page: 4,
       };
+      setLoading(true);
       ApiClient.get("custom-search", param).then(({data}) => {
         console.log(data);
+        setLoading(false);
         setCate(data.categories);
         setResults(data.products);
       });
@@ -127,6 +136,13 @@ function Search({navigation}) {
         </View>
       </View>
       <View style={{marginHorizontal: 16}}>
+        {loading && (
+          <ActivityIndicator
+            color={accent_color}
+            size="large"
+            style={{padding: 16, marginTop: 16, flex: 1}}
+          />
+        )}
         {!isEmpty(cate) && (
           <FlatList
             data={cate}
