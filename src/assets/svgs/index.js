@@ -15,6 +15,8 @@ import SvgFeedback from "./Feedback";
 import SvgLogout from "./Logout";
 import SvgWallet from "./Wallet";
 import SvgChat from "./Chat";
+import SvgCart from "./Cart";
+import SvgRefresh from "./Refresh";
 
 export {
   SvgMenu,
@@ -33,5 +35,7 @@ export {
   SvgFeedback,
   SvgLogout,
   SvgWallet,
-  SvgChat
+  SvgChat,
+  SvgCart,
+  SvgRefresh,
 };

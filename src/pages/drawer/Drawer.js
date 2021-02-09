@@ -140,9 +140,15 @@ class Drawer extends React.PureComponent {
               style={{fontSize: 54, marginEnd: 10}}
             /> */}
             {isEmpty(user) ? (
-              <Text style={{fontSize: 16, fontWeight: "500"}} onPress={this.openModal}>
-                {t("LOGIN/REGISTER")}
+              <TouchableOpacity style={{flexDirection:"row",alignItems:"center"}} onPress={this.openModal}>
+              <Text style={{fontSize: 16, fontWeight: "500"}} >
+                Login
               </Text>
+              <View style={{height:14,width:2,backgroundColor:"#000000",marginHorizontal:4}}></View>
+              <Text style={{fontSize: 16, fontWeight: "500"}}>
+                Register
+              </Text>
+              </TouchableOpacity>
             ) : (
               <TouchableOpacity onPress={this.navigateToScreen("AccountSetting")}>
                 <Text style={{fontSize: 16, fontWeight: "500"}}>
@@ -214,13 +220,12 @@ class Drawer extends React.PureComponent {
                   {/* <Image source={require("../../assets/imgs/download.png")} style={styles.img} /> */}
                   <Text style={styles.text}>{t("DOWNLOAD")}</Text>
                 </Button>
-                {wallet_active && (
+                {/* {wallet_active && (
                   <Button style={styles.button} onPress={this.navigateToScreen("WalletStack")}>
                   <SvgWallet style={styles.drawerItemIcon} width={20} height={20} />
-                    {/* <Image source={require("../../assets/imgs/wallet.png")} style={styles.img} /> */}
                     <Text style={styles.text}>{t("WALLET")}</Text>
                   </Button>
-                )}
+                )} */}
                 <View style={styles.divider} />
               </>
             )}

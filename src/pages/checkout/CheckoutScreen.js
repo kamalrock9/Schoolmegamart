@@ -45,7 +45,8 @@ const customStyles = {
 function CheckoutScreen({navigation}) {
   console.log(navigation.state.params);
   const [stepPos, setStepPos] = useState(0);
-  const [shipToDifferent, setShipToDifferent] = useState(true);
+  const [shipToDifferent, setShipToDifferent] = useState(false);
+  const [gst, setGst] = useState("");
 
   const {accent_color, primary_color, pincode_active} = useSelector(state => state.appSettings);
   const user = useSelector(state => state.user);
@@ -116,6 +117,11 @@ function CheckoutScreen({navigation}) {
     } else {
       navigation.goBack(null);
     }
+  };
+
+  const getGst = text => {
+    console.log(text);
+    setGst(text);
   };
 
   const gotoShipping = () => {
@@ -209,11 +215,12 @@ function CheckoutScreen({navigation}) {
             billing_state: billing.state,
             billing_postcode: billing.postcode,
             billing_country: billing.country,
+            billing_gst_number: gst,
             checkbox: 0,
           };
 
           setloading(true);
-          //console.log("Update billing shipping");
+          console.log("Update billing shipping c");
           ApiClient.post("/checkout/update-billing", data)
             .then(res => {
               setloading(false);
@@ -256,12 +263,13 @@ function CheckoutScreen({navigation}) {
             billing_state: billing.state,
             billing_postcode: billing.postcode,
             billing_country: billing.country,
+            billing_gst_number: gst,
             checkbox: 0,
           };
-          //console.log(param);
+          // console.log(param);
 
           setloading(true);
-          //console.log("Update billing");
+          console.log("Update billing che");
           ApiClient.post("/checkout/update-billing", param)
             .then(res => {
               setloading(false);
@@ -304,11 +312,12 @@ function CheckoutScreen({navigation}) {
             billing_state: billing.state,
             billing_postcode: billing.postcode,
             billing_country: billing.country,
+            billing_gst_number: gst,
             checkbox: 0,
           };
 
           setloading(true);
-          //console.log("Update billing shipping");
+          console.log("Update billing shipping");
           ApiClient.post("/checkout/update-billing", data)
             .then(res => {
               setloading(false);
@@ -327,6 +336,17 @@ function CheckoutScreen({navigation}) {
         } else {
           let param = {
             user_id: user.id,
+            shipping_first_name: shipping.first_name,
+            shipping_last_name: shipping.last_name,
+            shipping_email: shipping.email,
+            shipping_phone: shipping.phone,
+            shipping_company: shipping.company,
+            shipping_address_1: shipping.address_1,
+            shipping_address_2: shipping.address_2,
+            shipping_city: shipping.city,
+            shipping_state: shipping.state,
+            shipping_postcode: shipping.postcode,
+            shipping_country: shipping.country,
             billing_first_name: billing.first_name,
             billing_last_name: billing.last_name,
             billing_company: billing.company,
@@ -338,12 +358,13 @@ function CheckoutScreen({navigation}) {
             billing_state: billing.state,
             billing_postcode: billing.postcode,
             billing_country: billing.country,
-            checkbox: 1,
+            billing_gst_number: gst,
+            checkbox: 0,
           };
           //console.log(param);
 
           setloading(true);
-          //console.log("Update billing");
+          console.log("Update billing");
           ApiClient.post("/checkout/update-billing", param)
             .then(res => {
               setloading(false);
@@ -390,12 +411,13 @@ function CheckoutScreen({navigation}) {
           billing_state: billing.state,
           billing_postcode: billing.postcode,
           billing_country: billing.country,
+          billing_gst_number: gst,
           checkbox: 1,
         };
         //console.log(param);
 
         setloading(true);
-        //console.log("Update billing");
+        console.log("Update billing check");
         ApiClient.post("/checkout/update-billing", param)
           .then(res => {
             setloading(false);
@@ -415,20 +437,21 @@ function CheckoutScreen({navigation}) {
         const {billing, shipping} = user;
         let param = {
           user_id: user.id,
-          billing_first_name: shipping.first_name,
-          billing_last_name: shipping.last_name,
-          billing_company: shipping.company,
-          billing_email: "",
-          billing_phone: "",
-          billing_address_1: shipping.address_1,
-          billing_address_2: shipping.address_2,
-          billing_city: shipping.city,
-          billing_state: shipping.state,
-          billing_postcode: shipping.postcode,
-          billing_country: shipping.country,
+          billing_first_name: billing.first_name,
+          billing_last_name: billing.last_name,
+          billing_company: billing.company,
+          billing_email: billing.email,
+          billing_phone: billing.phone,
+          billing_address_1: billing.address_1,
+          billing_address_2: billing.address_2,
+          billing_city: billing.city,
+          billing_state: billing.state,
+          billing_postcode: billing.postcode,
+          billing_country: billing.country,
+          billing_gst_number: gst,
           checkbox: 1,
         };
-        //console.log(param);
+        console.log(param);
 
         setloading(true);
         //console.log("Update billing");
@@ -496,7 +519,7 @@ function CheckoutScreen({navigation}) {
       <SwiperFlatList>
         {stepPos == 0 && (
           <View style={{paddingVertical: 16, width}}>
-            <BillingAddress />
+            <BillingAddress getGst={getGst} />
           </View>
         )}
 
@@ -524,7 +547,7 @@ function CheckoutScreen({navigation}) {
               alignItems: "center",
             }}>
             <Text style={{fontWeight: "500"}}>Same For Shipping</Text>
-            <Switch value={shipToDifferent} />
+            <Switch value={shipToDifferent} onChange={onChangeShipToDifferent} />
           </View>
         )}
         <View style={{flexDirection: "row", width: "100%"}}>

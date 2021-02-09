@@ -174,7 +174,7 @@ function SplashScreen({navigation}) {
           />
           <Text style={{fontWeight: "500", fontSize: 20}}>Under Maintenance</Text>
           <Text style={{textAlign: "center", marginVertical: 20}}>
-            Something is Wrong Try After Some Time
+            Something is wrong try after some time
           </Text>
           <Button
             style={{

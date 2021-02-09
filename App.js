@@ -18,6 +18,7 @@ import CategoryScreen from "./src/pages/CategoryScreen";
 import SplashScreen from "./src/pages/SplashScreen";
 import ProductScreen from "./src/pages/product/ProductScreen";
 import ProductDetailScreen from "./src/pages/product/ProductDetailScreen";
+import SliderImageZoom from "./src/pages/product/SliderImageZoom";
 import Cart from "./src/pages/Cart/Cart";
 import WishlistScreen from "./src/pages/WishlistScreen";
 import TermAndCondition from "./src/pages/TermAndCondition";
@@ -70,6 +71,7 @@ const HomeStack = createStackNavigator(
     HomeScreen,
     ProductScreen,
     ProductDetailScreen,
+    SliderImageZoom,
     Cart,
     CheckoutScreen,
     BillingAddress,
@@ -90,6 +92,7 @@ const HomeStack = createStackNavigator(
     CouponList,
     TrackYourOrder,
     AccountSetting,
+    Download,
   },
   {
     defaultNavigationOptions: {
@@ -149,15 +152,31 @@ const OrderStack = createStackNavigator({
   OrderDetails,
 });
 
-const AccountSett = createStackNavigator({
-  AccountSetting,
-  HomeScreen,
-}, {
-  initialRouteName: "AccountSetting",
-  defaultNavigationOptions: {
-    headerShown: false,
+const AccountSett = createStackNavigator(
+  {
+    AccountSetting,
+    HomeScreen,
+    Auth,
   },
-},)
+  {
+    initialRouteName: "AccountSetting",
+    defaultNavigationOptions: {
+      headerShown: false,
+    },
+  },
+);
+
+const CartStack = createStackNavigator(
+  {
+    Cart,
+  },
+  {
+    initialRouteName: "Cart",
+    defaultNavigationOptions: {
+      headerShown: false,
+    },
+  },
+);
 
 const WalletStack = createStackNavigator(
   {
@@ -182,7 +201,7 @@ const TabNavigator = createBottomTabNavigator(
           title: "Home",
           tabBarVisible: routeName === "HomeScreen" ? true : false,
           tabBarIcon: ({tintColor}) => (
-            <Icon size={22} type="SimpleLineIcons" name="home" color={tintColor} />
+            <Icon size={20} type="SimpleLineIcons" name="home" color={tintColor} />
           ),
         };
       },
@@ -193,7 +212,7 @@ const TabNavigator = createBottomTabNavigator(
         title: "Category",
         tabBarIcon: ({tintColor}) => (
           <Icon
-            size={24}
+            size={22}
             type="MaterialCommunityIcons"
             name="content-duplicate"
             color={tintColor}
@@ -206,7 +225,7 @@ const TabNavigator = createBottomTabNavigator(
       navigationOptions: {
         title: "Order",
         tabBarIcon: ({tintColor}) => (
-          <Icon size={28} type="SimpleLineIcons" name="list" color={tintColor} />
+          <Icon size={26} type="SimpleLineIcons" name="list" color={tintColor} />
           // <Image
           //   source={require("../schoolmegamart/src/assets/imgs/cart.png")}
           //   tintColor={tintColor}
@@ -215,11 +234,11 @@ const TabNavigator = createBottomTabNavigator(
       },
     },
     AccountSetting: {
-      screen: AccountSett,
+      screen: CartStack,
       navigationOptions: {
-        title: "Profile",
+        title: "Cart",
         tabBarIcon: ({tintColor}) => (
-          <Icon name="user" type="EvilIcons" size={34} color={tintColor} />
+          <Icon name="cart" type="EvilIcons" size={32} color={tintColor} />
           // <Icon size={24} type="AntDesign" name="user" color={tintColor} />
           // <Image
           //   source={require("../schoolmegamart/src/assets/imgs/bottomProfile.png")}
@@ -254,10 +273,10 @@ const DrawerNavigator = createDrawerNavigator(
     ManageAddress,
     BillingAddress,
     ShippingAddress,
-    Download,
     WalletStack,
     Notification,
     Review,
+    CartStack,
   },
   {
     initialRouteName: "TabNavigator",

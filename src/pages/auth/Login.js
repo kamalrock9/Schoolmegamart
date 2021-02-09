@@ -52,6 +52,8 @@ function reducer(state = initialState, action) {
       return {...state, confirmPassword: action.payload};
     case "changeSignupPhone":
       return {...state, signUpPhone: action.payload};
+    case "changeCouponCode":
+      return {...state, couponcode: action.payload};
     default:
       return state;
   }
@@ -59,6 +61,8 @@ function reducer(state = initialState, action) {
 
 function Auth({navigation}) {
   const [loading, setLoading] = useState(false);
+  const [checked, setChecked] = useState(false);
+  const [checkedReg, setCheckedReg] = useState(false);
   const {NeedLogin, NeedRegister} = navigation.state.params;
   console.log(NeedRegister);
   const {t} = useTranslation();
@@ -66,10 +70,6 @@ function Auth({navigation}) {
   const {accent_color} = useSelector(state => state.appSettings);
   const [state, dispatch] = useReducer(reducer, initialState);
   const scrollRef = useRef(null);
-
-  useEffect(() => {
-    trackScreenView("Login Screen");
-  }, []);
 
   const trackScreenView = async screen => {
     // Set & override the MainActivity screen name
@@ -125,6 +125,10 @@ function Auth({navigation}) {
 
   const onChangepassword = text => {
     dispatch({type: "changePasswordSignup", payload: text});
+  };
+
+  const onChangeCouponCode = text => {
+    dispatch({type: "changeCouponCode", payload: text});
   };
 
   const socialLogin = social => () => {
@@ -218,7 +222,7 @@ function Auth({navigation}) {
                         saveDetails(data.details);
                         //onClose && onClose();
                         if (NeedLogin) {
-                          navigation.goBack();
+                          navigation.goBack(null);
                         }
                         Toast.show({
                           type: "success",
@@ -263,6 +267,8 @@ function Auth({navigation}) {
             console.log(data);
             setLoading(false);
             if (data.code == 1) {
+              saveDetails(data.details);
+              // onClose && onClose();
               Toast.show({
                 type: "success",
                 position: "bottom",
@@ -270,11 +276,10 @@ function Auth({navigation}) {
                 text2: "Login Successfully.",
                 visibilityTime: 2000,
               });
-              saveDetails(data.details);
-              // onClose && onClose();
+
               if (NeedLogin) {
-                navigation.goBack();
-                navigation.navigate("AccountSett");
+                navigation.goBack(null);
+                // navigation.replace("AccountSetting");
               }
             } else {
               Toast.show({
@@ -328,6 +333,36 @@ function Auth({navigation}) {
               setLoading(false);
               if (data.status == 1) {
                 goToFirstIndex();
+                if (state.couponcode != "") {
+                  var param = new FormData();
+                  param.append("user_id", data.details.id);
+                  param.append("refer_code", state.couponcode);
+                  console.log(param);
+                  ApiClient.post("/referapply", param)
+                    .then(({data}) => {
+                      console.log(data);
+                      if (data.status) {
+                        Toast.show({
+                          type: "success",
+                          position: "bottom",
+                          text1: "Success",
+                          text2: data.message,
+                          visibilityTime: 2000,
+                        });
+                      } else {
+                        Toast.show({
+                          type: "error",
+                          position: "bottom",
+                          text1: "Error",
+                          text2: data.message,
+                          visibilityTime: 4000,
+                        });
+                      }
+                    })
+                    .catch(error => {
+                      console.log(error);
+                    });
+                }
               } else {
                 setLoading(false);
                 Toast.show({
@@ -385,6 +420,14 @@ function Auth({navigation}) {
 
   const navigateToScreen = key => () => {
     navigation.navigate("PostRegisterOTP", {key: key});
+  };
+
+  const _onCheck = () => {
+    setChecked(!checked);
+  };
+
+  const _onCheckReg = () => {
+    setCheckedReg(!checkedReg);
   };
 
   return (
@@ -471,13 +514,24 @@ function Auth({navigation}) {
                 source={require("../../assets/imgs/key.png")}
               />
               <TextInput
-                secureTextEntry={true}
+                secureTextEntry={!checked}
                 placeholder="Password"
                 style={[styles.textinput]}
                 value={state.loginPassword}
                 onChangeText={onChangePassword}
               />
             </View>
+            <TouchableOpacity
+              style={{flexDirection: "row", alignItems: "center", marginTop: 8}}
+              onPress={_onCheck}>
+              <Icon
+                type="MaterialCommunityIcons"
+                color={checked ? accent_color : "grey"}
+                size={24}
+                name={checked ? "checkbox-marked" : "checkbox-blank-outline"}
+              />
+              <Text style={{color: "grey", marginStart: 8}}>Show Password</Text>
+            </TouchableOpacity>
 
             <View style={{flexDirection: "row", justifyContent: "space-between"}}>
               <Button
@@ -492,13 +546,14 @@ function Auth({navigation}) {
               </Button>
             </View>
 
-            <View
+            <TouchableOpacity
               style={{
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "flex-end",
                 marginTop: 20,
-              }}>
+              }}
+              onPress={_login}>
               <Text style={[styles.btnText, {color: "#000", marginRight: 8}]}>{t("SIGN_IN")}</Text>
 
               <TouchableOpacity onPress={_login}>
@@ -507,22 +562,23 @@ function Auth({navigation}) {
                   style={{width: 60, resizeMode: "contain"}}
                 />
               </TouchableOpacity>
-            </View>
-            <View
+            </TouchableOpacity>
+            <TouchableOpacity
               style={{
                 width: "100%",
                 flexDirection: "row",
                 marginTop: 50,
                 alignItems: "center",
                 justifyContent: "center",
-              }}>
+              }}
+              onPress={goToLastIndex}>
               <Text style={styles.socialBtnText}>{t("DONT_HAVE_ACCOUNT")}</Text>
               <Button style={{paddingHorizontal: 8, marginStart: 2}} onPress={goToLastIndex}>
                 <Text style={[styles.socialBtnText, {fontWeight: "600", color: "#F47C20"}]}>
                   Create
                 </Text>
               </Button>
-            </View>
+            </TouchableOpacity>
             {loading && (
               <ActivityIndicator
                 color={accent_color}
@@ -563,6 +619,7 @@ function Auth({navigation}) {
               />
 
               <TextInput
+                secureTextEntry={!checkedReg}
                 placeholder="Password"
                 style={[styles.textinput]}
                 value={state.password}
@@ -600,6 +657,31 @@ function Auth({navigation}) {
               />
             </View>
 
+            <View style={[styles.textinputview, {marginTop: 20}]}>
+              <Image
+                style={{resizeMode: "contain", width: 16, height: 16, marginHorizontal: 12}}
+                source={require("../../assets/imgs/refer.png")}
+              />
+
+              <TextInput
+                placeholder="Coupon Code (optional)"
+                style={[styles.textinput]}
+                value={state.couponcode}
+                onChangeText={onChangeCouponCode}
+              />
+            </View>
+            <TouchableOpacity
+              style={{flexDirection: "row", alignItems: "center", marginTop: 8}}
+              onPress={_onCheckReg}>
+              <Icon
+                type="MaterialCommunityIcons"
+                color={checkedReg ? accent_color : "grey"}
+                size={24}
+                name={checkedReg ? "checkbox-marked" : "checkbox-blank-outline"}
+              />
+              <Text style={{color: "grey", marginStart: 8}}>Show Password</Text>
+            </TouchableOpacity>
+
             <View
               style={{
                 flexDirection: "row",
@@ -612,7 +694,9 @@ function Auth({navigation}) {
                 onPress={navigateToScreen("Register")}>
                 <Text style={[styles.socialBtnText, {color: "#F47C20"}]}>Register with OTP</Text>
               </Button>
-              <View style={{flexDirection: "row", alignItems: "center"}}>
+              <TouchableOpacity
+                style={{flexDirection: "row", alignItems: "center"}}
+                onPress={_register}>
                 <Text style={[styles.btnText, {color: "#000", marginRight: 8}]}>Create</Text>
 
                 <TouchableOpacity onPress={_register}>
@@ -621,7 +705,7 @@ function Auth({navigation}) {
                     style={{width: 60, resizeMode: "contain"}}
                   />
                 </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             </View>
 
             <Text
@@ -652,14 +736,15 @@ function Auth({navigation}) {
               </Button>
             </View>
 
-            <View
+            <TouchableOpacity
               style={{
                 width: "100%",
                 flexDirection: "row",
                 marginTop: 50,
                 alignItems: "center",
                 justifyContent: "center",
-              }}>
+              }}
+              onPress={goToFirstIndex}>
               <Text style={styles.socialBtnText}>{t("HAVE_AN_ACCOUNT")}</Text>
 
               <Button style={{paddingHorizontal: 8, marginStart: 8}} onPress={goToFirstIndex}>
@@ -667,7 +752,7 @@ function Auth({navigation}) {
                   {t("SIGN_IN")}
                 </Text>
               </Button>
-            </View>
+            </TouchableOpacity>
             {/* </View> */}
             {loading && (
               <ActivityIndicator

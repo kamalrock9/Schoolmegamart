@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from "react";
+import React, {useState, useCallback, useEffect} from "react";
 import {View, StyleSheet, Image, ScrollView, ActivityIndicator} from "react-native";
 import {Text, Toolbar, FloatingTextinput, Button, CustomTextInput} from "components";
 import {useTranslation} from "react-i18next";
@@ -11,13 +11,9 @@ import {isEmpty} from "lodash";
 function AccountSetting({navigation}) {
   const {t} = useTranslation();
 
-  const appSettings = useSelector(state => state.appSettings);
   const dispatch = useDispatch();
   const user = useSelector(state => state.user);
-
-  // let fn = isEmpty(user) ? "" : user.first_name;
-  // let ln = isEmpty(user) ? "" : user.last_name;
-  // let e = isEmpty(user) ? "" : user.email;
+  const appSettings = useSelector(state => state.appSettings);
 
   const [firstname, setFirstname] = useState(user.first_name);
   const [lastname, setLastname] = useState(user.last_name);
@@ -26,9 +22,6 @@ function AccountSetting({navigation}) {
   const [newP, setNewp] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
-  const onChangeFirstname = useCallback(text => {
-    setFirstname(text);
-  });
 
   const onChangeLastname = useCallback(text => {
     setLastname(text);
@@ -112,7 +105,7 @@ function AccountSetting({navigation}) {
             image={require("../assets/imgs/user.png")}
             placeholder={t("FIRST_NAME")}
             value={firstname}
-            onChangeText={onChangeFirstname}
+            onChangeText={setFirstname}
           />
 
           <CustomTextInput

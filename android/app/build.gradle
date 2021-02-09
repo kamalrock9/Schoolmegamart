@@ -182,7 +182,11 @@ android {
                 output.versionCodeOverride =
                         versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
             }
-
+            def buildDate = new Date().format("dd_MM_yyyy")
+            def buildType = variant.getBuildType().name
+            def versionCode= variant.getVersionCode()
+            def appName = "SchoolMegaMart_v${versionCode}_${buildDate}_${buildType}.apk"
+            output.outputFileName = appName
         }
     }
 }

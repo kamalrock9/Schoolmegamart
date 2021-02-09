@@ -6,6 +6,8 @@ import {useTranslation} from "react-i18next";
 import WishListItem from "./WishListItem";
 import {isArray, isEmpty} from "lodash";
 import {useNavigation} from "react-navigation-hooks";
+import analytics from "@react-native-firebase/analytics";
+
 
 function WishlistScreen() {
   const {t} = useTranslation();

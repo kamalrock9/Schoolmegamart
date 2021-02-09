@@ -68,13 +68,10 @@ function AddReview({navigation}) {
   return (
     <View>
       <Toolbar title="Add a Review" backButton />
-      <View
-        style={{ marginHorizontal:16}}>
-        <Text style={{fontWeight:"500"}}>
-  Your email address will not be published.
-        </Text>
-        <Text style={{fontWeight:"500"}}>Required fields are marked*</Text>
-        <Text style={{marginTop: 20,fontSize:12,fontWeight:"600"}}>Your Rating*</Text>
+      <View style={{marginHorizontal: 16, marginTop: 16}}>
+        <Text style={{fontWeight: "500"}}>Your email address will not be published.</Text>
+        <Text style={{fontWeight: "500"}}>Required fields are marked*</Text>
+        <Text style={{marginTop: 20, fontSize: 12, fontWeight: "600"}}>Your Rating*</Text>
         <StarRating
           disabled={false}
           maxStars={5}
@@ -87,12 +84,22 @@ function AddReview({navigation}) {
           containerStyle={{justifyContent: "flex-start", marginVertical: 10}}
           selectedStar={rating => onStarRatingPress(rating)}
         />
-        <Text style={{marginTop: 20,fontSize:12,fontWeight:"600"}}>Your Review*</Text>
-        <TextInput 
-        multiline={true}
-        style={{textAlignVertical: 'top',backgroundColor:"#F8F8F8",height:100,borderRadius:4,borderWidth:1,borderColor:"grey",marginVertical:16,padding:10}}
-        placeholder={"Would you like to write anything about product?"}
-        onChangeText={text => setReview(text)} />
+        <Text style={{marginTop: 20, fontSize: 12, fontWeight: "600"}}>Your Review*</Text>
+        <TextInput
+          multiline={true}
+          style={{
+            textAlignVertical: "top",
+            backgroundColor: "#F8F8F8",
+            height: 100,
+            borderRadius: 4,
+            borderWidth: 1,
+            borderColor: "grey",
+            marginVertical: 16,
+            padding: 10,
+          }}
+          placeholder={"Would you like to write anything about product?"}
+          onChangeText={text => setReview(text)}
+        />
       </View>
       <Button
         style={{

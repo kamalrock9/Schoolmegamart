@@ -50,6 +50,9 @@ function Review({cartData, orderData, navigation}) {
         orderData && orderData(data);
         setChosen(data.payment_gateway.length == 1 ? data.payment_gateway[0].gateway_id : "");
         setPaymentMethds(data.payment_gateway);
+        if (data.payment_gateway.length == 1) {
+          ApicallOnlyPayment(data.payment_gateway[0].gateway_id);
+        }
       })
       .catch(error => {
         setloading(false);
@@ -58,12 +61,14 @@ function Review({cartData, orderData, navigation}) {
   }
 
   function ApicallOnlyPayment(item) {
+    console.log(item);
     setChosen(item);
     let param = {
       shipping_method: shipping_method != "" ? shipping_method : "",
-      chosen_payment_method: chosen_payment_method != "" ? item : "",
+      chosen_payment_method: item != "" ? item : "",
       pay_via_wallet: pay_via_wallet != "" ? pay_via_wallet : "",
     };
+    console.log(param);
     setloading(true);
     ApiClient.get("/checkout/review-order", param)
       .then(({data}) => {
@@ -71,7 +76,7 @@ function Review({cartData, orderData, navigation}) {
         console.log(data);
         setCart(data);
         orderData && orderData(data);
-        setPaymentMethds(data.payment_gateway);
+        // setPaymentMethds(data.payment_gateway);
       })
       .catch(error => {
         setloading(false);
@@ -290,14 +295,17 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   card: {
-    elevation: 2,
+    //elevation: 2,
     shadowRadius: 2,
     shadowOpacity: 0.5,
     shadowOffset: {width: 0, height: 2},
-    backgroundColor: "#fff",
-    borderRadius: 2,
+    // backgroundColor: "#fff",
+    borderColor: "#adadad",
+    borderWidth: 1,
+    borderRadius: 8,
     padding: 10,
     marginTop: 16,
+    marginHorizontal: 16,
   },
   flexdirection: {flexDirection: "row", justifyContent: "space-between"},
   footer: {

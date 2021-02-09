@@ -21,6 +21,7 @@ function Toolbar({
   walletBalance,
   searchButton,
   paymentpage,
+  image
 }) {
   const navigation = useNavigation();
   const {routeName} = useNavigationState();
@@ -50,10 +51,10 @@ function Toolbar({
   return (
     <>
       <StatusBar backgroundColor={primary_color_dark} barStyle="light-content" />
-      <View style={[styles.container, {backgroundColor: "#fff"}]}>
+      <View style={[styles.container, {backgroundColor:primary_color}]}>
         {menuButton && (
           <Button onPress={navigation.openDrawer} style={styles.menuButton}>
-            <SvgMenu style={styles.drawerItemIcon} width={20} height={20} />
+            <SvgMenu style={styles.drawerItemIcon} width={18} height={18} />
             {/* <Icon color={"#000"} name="md-menu" size={24} /> */}
           </Button>
         )}
@@ -74,15 +75,18 @@ function Toolbar({
         )}
 
         <Text style={[styles.title, {color: "#000", width: "100%"}]} ellipsizeMode="tail">
-          {t(title) || t(routeName)}
+          {title != "" ?  t(title) || t(routeName) : ""}
         </Text>
+
+        {/* {image && <Image source={require("../assets/imgs/HomeIcon.png")} resizeMode="contain" style={{width:80,height:40}} />} */}
+
 
         <View style={styles.right}>
           {searchButton && (
             <Button
               style={[styles.right, {paddingVertical: 16, paddingHorizontal: 6}]}
               onPress={goTo("Search")}>
-              <Icon name="search" type="EvilIcons" size={34} />
+              <Icon name="search" type="EvilIcons" size={30} />
               {/* <Image
                 resizeMode="contain"
                 source={{width: "100%", height: 15}}
@@ -94,7 +98,7 @@ function Toolbar({
             <Button
               onPress={goTo("WishlistScreen")}
               style={[styles.menuButton, {paddingVertical: 16, paddingHorizontal: 6}]}>
-              <Icon name="heart" type="EvilIcons" size={34} />
+              <Icon name="heart" type="EvilIcons" size={30} />
               {/* <Image
                 resizeMode="contain"
                 source={{width: "100%", height: 20}}
@@ -111,7 +115,7 @@ function Toolbar({
             <Button
               onPress={goTo("Cart")}
               style={[styles.menuButton, {paddingVertical: 16, paddingHorizontal: 6}]}>
-              <Icon name="cart" type="EvilIcons" size={34} />
+              <Icon name="cart" type="EvilIcons" size={30} />
               {/* <Image
                 resizeMode="contain"
                 source={{width: "100%", height: 15}}
@@ -143,6 +147,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 4,
+    paddingHorizontal:2
     // height: 56,
   },
   badge: {

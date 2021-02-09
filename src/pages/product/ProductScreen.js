@@ -244,13 +244,13 @@ class ProductScreen extends React.PureComponent {
     };
     this.setState({loading: true});
     ApiClient.get("products/custom-attributes/?show_all=yes", paramsData).then(({data}) => {
-      this.setState({loading: false});
+      //this.setState({loading: false});
       console.log("Attributes Filter");
       this.setState({attributes: data});
     });
     this.setState({loading: true});
     ApiClient.get("products/all-brands?hide_empty", paramsData).then(({data}) => {
-      this.setState({loading: false});
+      //this.setState({loading: false});
       console.log("Brand Filter");
       this.props.brand(data);
       // let newData = [...this.state.attributes, ...data];
@@ -402,7 +402,7 @@ class ProductScreen extends React.PureComponent {
   };
 
   _renderItemGridView = ({item, index}) => {
-    var discount = Math.ceil(((item.regular_price - item.price) / item.regular_price) * 100);
+    var discount = Math.round(((item.regular_price - item.price) / item.regular_price) * 100, 2);
     const {
       appSettings: {accent_color},
     } = this.props;
@@ -414,17 +414,19 @@ class ProductScreen extends React.PureComponent {
               index % 2 == 0 ? {marginStart: 12} : {marginStart: 8},
               {
                 width: width / 2 - 30,
-                backgroundColor: "#EAEAF1",
+                //backgroundColor: "#EAEAF1",
                 paddingVertical: 20,
                 borderRadius: 8,
                 marginTop: 8,
                 alignItems: "center",
+                borderColor: "#f8f8fa",
+                borderWidth: 4,
               },
             ]}>
             {item.images.length > 0 && (
               <Image
                 resizeMode="contain"
-                style={{width: 150, height: 150}}
+                style={{width: width / 3, height: 150}}
                 source={{
                   uri: item.images[0].src
                     ? item.images[0].src
@@ -437,66 +439,73 @@ class ProductScreen extends React.PureComponent {
             {item.on_sale && (
               <View
                 style={{
-                  marginStart: 5,
-                  marginTop: 5,
+                  marginStart: 2,
+                  marginTop: 2,
                   position: "absolute",
                   top: 0,
                   start: 0,
-                  backgroundColor: accent_color,
-                  width: 30,
-                  height: 30,
-                  borderRadius: 15,
+                  backgroundColor: "#EB6969",
+                  width: 34,
+                  height: 34,
+                  borderRadius: 17,
                   alignItems: "center",
                   justifyContent: "center",
+                  padding: 2,
+                  elevation: 8,
                 }}>
                 <Text style={{fontSize: 10, color: "#fff", fontWeight: "600"}}>
-                  {isFinite(discount) ? discount + "%" : "SALE"}
+                  {isFinite(discount)
+                    ? Math.round((discount + Number.EPSILON) * 10) / 10 + "%"
+                    : "SALE"}
                 </Text>
               </View>
             )}
-            <WishlistIcon style={styles.right} item={item} />
+            <WishlistIcon style={styles.right} item={item} size={20} />
           </View>
-          <View style={{marginHorizontal: 4}}>
+          <View style={{marginHorizontal: 4, borderTopWidth: 2, borderColor: "#f8f8f8"}}>
             <Text style={[styles.itemMargin, {fontWeight: "600", fontSize: 12}]}>{item.name}</Text>
             {item.sku != "" && (
-              <Text style={[styles.itemMargin, {fontWeight: "600", fontSize: 12, marginBottom: 4}]}>
+              <Text
+                style={[
+                  styles.itemMargin,
+                  {fontWeight: "600", fontSize: 12, marginBottom: 4, color: "#000"},
+                ]}>
                 {item.sku}
               </Text>
             )}
-            <StarRating
-              disabled
-              maxStars={5}
-              rating={parseInt(item.average_rating)}
-              containerStyle={[styles.itemMargin, styles.star]}
-              starStyle={{marginEnd: 5}}
-              starSize={10}
-              halfStarEnabled
-              emptyStarColor={accent_color}
-              fullStarColor={accent_color}
-              halfStarColor={accent_color}
-            />
+
             <View
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
                 paddingEnd: 16,
                 marginBottom: 8,
+                alignItems: "flex-end",
               }}>
-              {item.price_html != "" && (
-                <HTMLRender
-                  html={item.price_html}
-                  containerStyle={styles.itemMargin}
-                  baseFontStyle={{fontSize: 12}}
+              <View>
+                {item.price_html != "" && (
+                  <HTMLRender
+                    html={item.price_html}
+                    containerStyle={styles.itemMargin}
+                    baseFontStyle={{fontSize: 12, fontWeight: "700"}}
+                  />
+                )}
+                <StarRating
+                  disabled
+                  maxStars={5}
+                  rating={parseInt(item.average_rating)}
+                  containerStyle={[styles.itemMargin, styles.star]}
+                  starStyle={{marginEnd: 5}}
+                  starSize={14}
+                  halfStarEnabled
+                  emptyStarColor={accent_color}
+                  fullStarColor={accent_color}
+                  halfStarColor={accent_color}
                 />
-              )}
-              <Button onPress={this._addToCart(item)}>
+              </View>
+              <Button style={{paddingBottom: 2}} onPress={this._addToCart(item)}>
                 <Icon name="handbag" type="SimpleLineIcons" size={24} />
               </Button>
-              {/* <Image
-                resizeMode="contain"
-                source={require("../../assets/imgs/cart.png")}
-                style={{width: 25, height: 25}}
-              /> */}
             </View>
           </View>
         </>
@@ -570,7 +579,13 @@ class ProductScreen extends React.PureComponent {
     } = this.props;
     return (
       <Container>
-        <View style={{width: "100%", flexDirection: "row", alignItems: "center"}}>
+        <View
+          style={{
+            width: "100%",
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: "#FAECE2",
+          }}>
           <Button onPress={this.goBack} style={{padding: 16}}>
             <Icon color={"#000"} name="keyboard-backspace" type="MaterialIcons" size={24} />
           </Button>
@@ -587,11 +602,25 @@ class ProductScreen extends React.PureComponent {
                 fontSize: 16,
                 paddingHorizontal: 16,
                 color: "#000",
+                flex: 1,
               }}>
               {header != "" ? header : "Product"}
             </Text>
             {title == "" && (
-              <View style={{flexDirection: "row"}}>
+              <View style={{flexDirection: "row", alignItems: "center"}}>
+                <TouchableOpacity style={{}} onPress={this._gotoChangeGrid}>
+                  {gridView ? (
+                    <Image
+                      style={{width: 30, height: 30, marginHorizontal: 10, resizeMode: "contain"}}
+                      source={require("../../assets/imgs/grid.png")}
+                    />
+                  ) : (
+                    <Image
+                      style={{width: 30, height: 30, marginHorizontal: 10, resizeMode: "contain"}}
+                      source={require("../../assets/imgs/listing.png")}
+                    />
+                  )}
+                </TouchableOpacity>
                 <Button onPress={this.openSort}>
                   <Image
                     style={{width: 30, height: 30, resizeMode: "contain"}}
@@ -615,25 +644,13 @@ class ProductScreen extends React.PureComponent {
             <Text style={styles.btntext}>Categories</Text>
           </Button>
         </View> */}
-        <TouchableOpacity
-          style={{
-            padding: 8,
-            width: "100%",
-            alignItems: "flex-end",
-          }}
-          onPress={this._gotoChangeGrid}>
-          {gridView ? (
-            <Icon name="list" type="SimpleLineIcons" size={24} />
-          ) : (
-            <Icon name="grid" type="SimpleLineIcons" size={24} />
-          )}
-        </TouchableOpacity>
+
         {title != "" && (
           <Text style={{marginHorizontal: 16, fontWeight: "600", alignSelf: "center"}}>
             {title}
           </Text>
         )}
-        {!isEmpty(products) && !gridView ? (
+        {!isEmpty(products) && gridView ? (
           <FlatList
             data={products}
             renderItem={this._renderItem}
@@ -736,6 +753,10 @@ function Categories({item, index, navigation}) {
         {
           marginTop: 10,
           marginBottom: 15,
+          backgroundColor: "#ED7833",
+          alignItems: "center",
+          borderRadius: 8,
+          padding: 8,
         },
         index == 0 ? {marginStart: 18, marginEnd: 16} : {marginEnd: 16},
       ]}
@@ -748,12 +769,12 @@ function Categories({item, index, navigation}) {
               : item.image.src
             : "https://source.unsplash.com/1600x900/?" + item.name,
         }}
-        style={{width: 60, height: 60, borderRadius: 30}}
+        style={{width: 40, height: 40}}
         resizeMode="cover"
       />
       <Text
         style={{
-          color: "black",
+          color: "#fff",
           textAlign: "center",
           fontSize: 10,
           width: 60,
@@ -810,6 +831,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     end: 0,
     top: 0,
+    marginEnd: 2,
+    marginTop: 2,
+    borderRadius: 4,
+    backgroundColor: "#f8f8fa",
   },
 });
 

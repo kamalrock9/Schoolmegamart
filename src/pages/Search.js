@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import {Text, Icon, Button, HTMLRender, Toolbar} from "components";
+import {Text, Icon, Button, HTMLRender, EmptyList, Toolbar} from "components";
 import React, {useState, useEffect, useCallback} from "react";
 import {useSelector} from "react-redux";
 import {ApiClient} from "service";
@@ -50,15 +50,20 @@ function Search({navigation}) {
       setTextInput(text);
       let param = {
         search: text,
-        per_page: 4,
+        per_page: 200,
       };
       setLoading(true);
-      ApiClient.get("custom-search", param).then(({data}) => {
-        console.log(data);
-        setLoading(false);
-        setCate(data.categories);
-        setResults(data.products);
-      });
+      ApiClient.get("custom-search", param)
+        .then(({data}) => {
+          console.log(data);
+          setLoading(false);
+          setCate(data.categories);
+          setResults(data.products);
+        })
+        .catch(error => {
+          setLoading(false);
+          console.log(error);
+        });
     }, 1000),
     [],
   );
@@ -78,16 +83,16 @@ function Search({navigation}) {
         onPress={goToPage("ProductDetailScreen", item)}>
         <FitImage
           source={{uri: item.images[0].src}}
-          style={{width: 60, height: 50, borderRadius: 4}}
+          style={{width: 50, height: 50, borderRadius: 4}}
           resizeMode="contain"
         />
-        <View style={{marginStart: 10}}>
-          <Text style={{fontWeight: "600", lineHeight: 16, fontSize: 12}}>{item.name}</Text>
-          <HTMLRender
+        {/* <View style={{marginStart: 10, flex: 1}}> */}
+        <Text style={{fontWeight: "600", fontSize: 12, flex: 1, marginStart: 8}}>{item.name}</Text>
+        {/* <HTMLRender
             html={item.price_html || "<b></b>"}
             baseFontStyle={{fontSize: 10, lineHeight: 16, fontWeight: "700"}}
-          />
-        </View>
+          /> */}
+        {/* </View> */}
       </TouchableOpacity>
     );
   };
@@ -105,14 +110,15 @@ function Search({navigation}) {
   const keyExtractorResult = item => "products_" + item.id;
 
   return (
-    <View>
+    <View style={{flex: 1}}>
       <StatusBar backgroundColor={primary_color_dark} barStyle="light-content" />
-      <View style={[styles.view, {backgroundColor: primary_color}]}>
-        {/* <Button onPress={goBack} style={styles.menuButton}>
+
+      {/* <Button onPress={goBack} style={styles.menuButton}>
           <Icon color={primary_color_text} name="md-arrow-back" size={24} />
         </Button> */}
-        <Toolbar backButton title={"SEARCH"} />
-        <View style={[styles.textinputview, {backgroundColor: primary_color, marginTop: 16}]}>
+      <Toolbar backButton title={"SEARCH"} />
+      <View style={styles.viewMain}>
+        <View style={[styles.textinputview, {backgroundColor: primary_color}]}>
           <View
             style={[
               styles.view,
@@ -135,14 +141,14 @@ function Search({navigation}) {
           </View>
         </View>
       </View>
-      <View style={{marginHorizontal: 16}}>
-        {loading && (
+      <View style={{marginHorizontal: 16, flex: 1}}>
+        {/* {loading && (
           <ActivityIndicator
             color={accent_color}
             size="large"
             style={{padding: 16, marginTop: 16, flex: 1}}
           />
-        )}
+        )} */}
         {!isEmpty(cate) && (
           <FlatList
             data={cate}
@@ -151,19 +157,22 @@ function Search({navigation}) {
             ItemSeparatorComponent={itemSeparatorComponentCate}
           />
         )}
-        {!isEmpty(results) && (
-          <FlatList
-            data={results}
-            renderItem={renderItemResult}
-            keyExtractor={keyExtractorResult}
-            ItemSeparatorComponent={itemSeparatorComponent}
-          />
-        )}
-        {textinput != "" && (
+        {/* {!isEmpty(results) && ( */}
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={results}
+          // contentContainerStyle={{flex: 1}}
+          renderItem={renderItemResult}
+          keyExtractor={keyExtractorResult}
+          ItemSeparatorComponent={itemSeparatorComponent}
+          ListEmptyComponent={<EmptyList loading={loading} label={"No products are available"} />}
+        />
+        {/* )} */}
+        {/* {textinput != "" && (
           <Text style={{alignSelf: "center", fontWeight: "300", marginTop: 16}}>
             {"Search More for " + textinput}
           </Text>
-        )}
+        )} */}
       </View>
     </View>
   );
@@ -182,10 +191,17 @@ const styles = StyleSheet.create({
     // paddingVertical: 10,
     paddingRight: 10,
   },
+  viewMain: {
+    backgroundColor: "#000",
+    //  width: "100%",
+    //flexDirection: "row",
+    // paddingVertical: 10,
+    // paddingRight: 10,
+  },
   input: {
     flex: 1,
     paddingTop: 5,
-    paddingRight: 10,
+    marginEnd: 20,
     paddingBottom: 5,
     paddingLeft: 10,
     borderRadius: 2,
@@ -196,8 +212,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "#fff",
     alignItems: "center",
-    paddingStart: 10,
-    borderRadius: 2,
+    paddingHorizontal: 16,
+    //  borderRadius: 2,
+    marginTop: -10,
+    paddingBottom: 16,
   },
   seperator: {backgroundColor: "#d2d2d2", height: 1.35, width: "100%"},
 });

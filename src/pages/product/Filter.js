@@ -7,6 +7,7 @@ import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import {getAllCategories, filterCategory} from "store/actions";
 import {isEmpty} from "lodash";
 import ApiClient from "../../service/ApiClient";
+import {SvgRefresh} from "../../assets/svgs";
 
 function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}}) {
   const [priceFilter, setPriceFilter] = useState({
@@ -151,13 +152,14 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
       <StatusBar backgroundColor={primary_color_dark} barStyle="light-content" />
       <View style={[styles.toolbar, {backgroundColor: primary_color, paddingStart: 8}]}>
         <Button style={{paddingHorizontal: 8}} onPress={reset}>
-          <Image
+          <SvgRefresh style={styles.drawerItemIcon} width={30} height={30} />
+          {/* <Image
             resizeMode="contain"
             source={require("../../assets/imgs/refresh.png")}
             style={{width: 25, height: 25}}
-          />
+          /> */}
         </Button>
-        <Text style={[styles.title, {color: "#000"}]}>FILTER</Text>
+        <Text style={[styles.title, {color: "#000"}]}>Filter</Text>
 
         <Button onPress={onBackPress} style={styles.menuButton}>
           <Icon color={"#000"} type="Entypo" name="cross" size={24} />
@@ -200,7 +202,7 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
                   height: 20,
                   width: 20,
                 }}
-                sliderLength={170}
+                sliderLength={150}
                 min={price.min}
                 max={price.max}
                 values={[priceFilter.min_price, priceFilter.max_price]}
@@ -209,7 +211,7 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
               />
               <View
                 style={{
-                  width: "100%",
+                  width: 170,
                   justifyContent: "space-between",
                   flexDirection: "row",
                   marginTop: -10,
@@ -450,7 +452,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingStart: 16,
   },
-  menuButton: {padding: 16},
+  menuButton: {paddingStart: 16, paddingVertical: 16, paddingEnd: 8},
   filterTabs: {
     width: "100%",
     paddingHorizontal: 16,
@@ -473,6 +475,11 @@ const styles = StyleSheet.create({
     borderTopStartRadius: 8,
     borderTopEndRadius: 8,
     // marginHorizontal: 10,
+  },
+  drawerItemIcon: {
+    //marginHorizontal: 20,
+    color: "#F47C20",
+    fontWeight: "900",
   },
 });
 

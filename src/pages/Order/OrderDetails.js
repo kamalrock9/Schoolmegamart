@@ -9,7 +9,7 @@ import {
   Alert,
   TextInput,
 } from "react-native";
-import {Text, Toolbar, Button, ProgressDialog} from "components";
+import {Text, Toolbar, Button, ProgressDialog, HTMLRender} from "components";
 import {isEmpty} from "lodash";
 import {useTranslation} from "react-i18next";
 import {ApiClient} from "service";
@@ -200,8 +200,10 @@ function OrderDetails({navigation}) {
           marginHorizontal: 16,
           borderTopStartRadius: 8,
           borderTopEndRadius: 8,
-          elevation: 2,
-          backgroundColor: "#fff",
+          // elevation: 2,
+          // backgroundColor: "#fff",
+          borderColor: "#adadad",
+          borderWidth: 1,
           padding: 16,
           marginTop: index == 0 ? 8 : 0,
           borderBottomLeftRadius: data.line_items.length - 1 == index ? 8 : 0,
@@ -219,6 +221,10 @@ function OrderDetails({navigation}) {
         />
         <View style={{marginStart: 10, flex: 1}}>
           <Text style={{fontWeight: "600", fontSize: 14}}>{item.name}</Text>
+          <HTMLRender
+            html={item.html_price ? item.html_price : <b />}
+            baseFontStyle={{fontWeight: "600"}}
+          />
           <View style={{flexDirection: "row", justifyContent: "space-between"}}>
             <Text style={styles.txt}>{data.currency_symbol + "" + item.price}</Text>
             <Text style={styles.txt}>{"Qty:" + item.quantity}</Text>
@@ -237,6 +243,13 @@ function OrderDetails({navigation}) {
   };
 
   const _listFooter = () => {
+    const gotoSum = item => {
+      let value = 0;
+      for (let i = 0; i < item.length; i++) {
+        value += item[i].product_discount_amount;
+      }
+      return value;
+    };
     return (
       <View style={{marginBottom: 16}}>
         {/* <View style={styles.line} /> */}
@@ -244,7 +257,34 @@ function OrderDetails({navigation}) {
           <Text style={styles.heading}>{t("ORDER_SUMMARY")}</Text>
           <View style={styles.footerSummaryView}>
             <Text style={styles.text}>Status</Text>
-            <Text style={[styles.text, {color: "#000000"}]}>{data.status}</Text>
+            <Text
+              style={[
+                styles.text,
+                {
+                  backgroundColor:
+                    data.status == "processing"
+                      ? "#76A42E"
+                      : data.status == "cancelled" ||
+                        data.status == "cancel-request" ||
+                        data.status == "failed"
+                      ? "#ff0000"
+                      : data.status == "completed"
+                      ? "#39A3CA"
+                      : data.status == "refunded"
+                      ? "#76A42E"
+                      : data.status == "on-hold"
+                      ? "#D0C035"
+                      : "#FDB82B",
+                  color: "#fff",
+                  paddingHorizontal: 8,
+                  borderRadius: 4,
+                  fontSize: 12,
+                  alignSelf: "center",
+                  fontWeight: "500",
+                },
+              ]}>
+              {data.status}
+            </Text>
           </View>
           <View style={styles.footerSummaryView}>
             <Text style={styles.text}>{t("PAYMENT_METHODS")}</Text>
@@ -264,6 +304,14 @@ function OrderDetails({navigation}) {
             <Text style={styles.text}>{t("TAX")}</Text>
             <Text style={[styles.text, {color: "#000000"}]}>
               {data.currency_symbol + "" + data.total_tax}
+            </Text>
+          </View>
+          <View style={styles.footerSummaryView}>
+            <Text style={styles.text}>Product Discount</Text>
+            <Text style={[styles.text, {color: "#000000"}]}>
+              {data.currency_symbol +
+                "" +
+                Math.round((gotoSum(data.line_items) + Number.EPSILON) * 100) / 100}
             </Text>
           </View>
           {!isEmpty(data.coupon_lines) &&
@@ -399,7 +447,7 @@ function OrderDetails({navigation}) {
               <Text style={{color: "#fff", fontWeight: "600"}}>Cancel Order</Text>
             </Button>
           )}
-        {data.show_refund_button == 1 && (
+        {data.show_refund_button == 1 && data.status != "cancel-request" && (
           <Button
             style={[
               styles.card,
@@ -582,7 +630,7 @@ function OrderDetails({navigation}) {
 
   return (
     <View style={{flex: 1, backgroundColor: "f9f9f9"}}>
-      <Toolbar backButton title={t("ORDER") + " #" + data.id} />
+      <Toolbar backButton title={"Order" + " #" + data.id} />
       <FlatList
         contentContainerStyle={{backgroundColor: "#f9f9f9"}}
         data={data.line_items}
@@ -756,14 +804,16 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   card: {
-    elevation: 3,
+    // elevation: 3,
     shadowRadius: 2,
     padding: 10,
     marginHorizontal: 16,
     shadowOpacity: 0.5,
     shadowOffset: {width: 0, height: 2},
-    backgroundColor: "#fff",
+    //backgroundColor: "#fff",
     borderRadius: 8,
+    borderColor: "#adadad",
+    borderWidth: 1,
   },
   txt: {
     fontSize: 14,

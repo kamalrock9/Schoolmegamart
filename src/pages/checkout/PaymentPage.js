@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {View, StyleSheet, ScrollView, Linking} from "react-native";
+import {View, StyleSheet, ScrollView, Linking, ActivityIndicator} from "react-native";
 import {Text, Toolbar, Button} from "components";
 import {useTranslation} from "react-i18next";
 import moment from "moment";
@@ -23,6 +23,7 @@ function PaymentPage({navigation}) {
   const {Orderdata} = navigation.state.params;
   const [data, Setdata] = useState(Orderdata);
   const [id, Setid] = useState(data.id);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     trackScreenView("Payment Page");
@@ -228,8 +229,10 @@ function PaymentPage({navigation}) {
         transaction_id: payment_id || "",
       };
       console.log(id, param);
+      setLoading(true);
       ApiClient.post("/checkout/update-order", param)
         .then(res => {
+          setLoading(false);
           console.log(res);
           if (res.status == 200) {
             Setdata(res.data.data);
@@ -240,8 +243,10 @@ function PaymentPage({navigation}) {
         });
     } else {
       console.log(id);
+      setLoading(true);
       ApiClient.get("orders/" + id).then(
         res => {
+          setLoading(false);
           console.log(res);
           // this.orderDetails = res;
           // this.loader.dismiss();
@@ -260,7 +265,10 @@ function PaymentPage({navigation}) {
 
   return (
     <View style={{flex: 1}}>
-      <Toolbar title={t("ORDER_RECEIVED")} paymentpage />
+      <Toolbar
+        title={data.status == "pending" ? "Order Pending" : t("ORDER_RECEIVED")}
+        paymentpage
+      />
       <ScrollView>
         {(data.status == "processing" || data.status == "on-hold") && (
           <View style={styles.card}>
@@ -354,6 +362,7 @@ function PaymentPage({navigation}) {
           </View>
         </View>
       )}
+      {loading && <ActivityIndicator color={accent_color} size="large" style={{flex: 1}} />}
     </View>
   );
 }

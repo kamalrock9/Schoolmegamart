@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     textDecorationLine: "line-through",
     color: "#999999",
     marginLeft: 20,
+    fontSize: 10,
   },
   ins: {
     color: "#000000",

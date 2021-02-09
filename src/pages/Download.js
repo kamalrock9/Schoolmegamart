@@ -1,57 +1,70 @@
-import {View, StyleSheet, TouchableOpacity, FlatList,PermissionsAndroid,ActivityIndicator, Dimensions} from "react-native";
-import {Text, Icon, Toolbar,Button} from "components";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  PermissionsAndroid,
+  ActivityIndicator,
+  Dimensions,
+} from "react-native";
+import {Text, Icon, Toolbar, Button} from "components";
 import React, {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
 import {useTranslation} from "react-i18next";
 import Toast from "react-native-simple-toast";
 import moment from "moment";
 import analytics from "@react-native-firebase/analytics";
-import Constants from '../service/Config';
+import Constants from "../service/Config";
 import axios from "axios";
 import {isArray} from "lodash";
 import RNFetchBlob from "rn-fetch-blob";
 import base64 from "base-64";
 
-const {width,height} = Dimensions.get("screen");
+const {width, height} = Dimensions.get("screen");
 function Download({navigation}) {
   const {t} = useTranslation();
   const user = useSelector(state => state.user);
   const {accent_color} = useSelector(state => state.appSettings);
 
   const [download, setDwonload] = useState([]);
-  const [loading,setLoading] = useState(false);
-  const [refreshing,setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     trackScreenView("Download Page");
-    const subscription = navigation.addListener("willFocus", () => {
-     loadDownload();
-    });
-    return () => {
-      subscription.remove();
-    };
-    
+    // const subscription = navigation.addListener("willFocus", () => {
+    loadDownload();
+    // });
+    // return () => {
+    //   subscription.remove();
+    // };
   }, []);
 
-  const loadDownload = ()=>{
+  const loadDownload = () => {
     setLoading(true);
-    axios.get("https://schoolmegamart.com/wp-json/wc/v2/customers/" + user.id + "/downloads" ,{ headers: {
-      'Authorization': "Basic "+  base64.encode(Constants.keys.consumerKey + ":" +  Constants.keys.consumerSecret)
-    },
-  }).then(res => {
-    setLoading(false);
-    setRefreshing(false);
-    console.log(res);
-    if (res.status == 200) {
-      setDwonload(res.data);
-    } else {
-      Toast.show("data not found");
-    }
-  }).catch(error=>{
-    setLoading(false)
-    console.log(error);
-  })
-  }
+    axios
+      .get("https://schoolmegamart.com/wp-json/wc/v2/customers/" + user.id + "/downloads", {
+        headers: {
+          Authorization:
+            "Basic " +
+            base64.encode(Constants.keys.consumerKey + ":" + Constants.keys.consumerSecret),
+        },
+      })
+      .then(res => {
+        setLoading(false);
+        setRefreshing(false);
+        console.log(res);
+        if (res.status == 200) {
+          setDwonload(res.data);
+        } else {
+          Toast.show("data not found");
+        }
+      })
+      .catch(error => {
+        setLoading(false);
+        console.log(error);
+      });
+  };
 
   const _handleRefresh = () => {
     setRefreshing(true);
@@ -105,23 +118,23 @@ function Download({navigation}) {
       });
   };
 
-
-
   const _renderItem = ({item, index}) => {
     return (
       <TouchableOpacity
         style={{
           flexDirection: "row",
-          elevation: 2,
+          // elevation: 2,
           shadowRadius: 2,
           shadowOpacity: 0.5,
           shadowOffset: {width: 0, height: 2},
-          backgroundColor: "#fff",
+          // backgroundColor: "#fff",
+          borderColor: "#adadad",
+          borderWidth: 1,
           marginHorizontal: 16,
           marginTop: 16,
           marginBottom: index == download.length - 1 ? 16 : 0,
           padding: 10,
-          borderRadius: 4,
+          borderRadius: 8,
         }}>
         <Icon name="file-document-box-multiple-outline" type="MaterialCommunityIcons" size={60} />
         <View
@@ -130,17 +143,20 @@ function Download({navigation}) {
             marginStart: 10,
             alignItems: "center",
             justifyContent: "space-between",
-            flex:1
+            flex: 1,
           }}>
-          <View style={{flex:1}}>
+          <View style={{flex: 1}}>
             <Text style={[styles.text, {fontWeight: "600"}]}>{item.product_name}</Text>
             <Text style={styles.text}>File Name : {item.download_name}</Text>
             <Text style={styles.text}>
-              Expires : {item.access_expires_gmt != "never" ? moment(item.access_expires_gmt).format("MMM DD, YYYY") : item.access_expires_gmt}
+              Expires :{" "}
+              {item.access_expires_gmt != "never"
+                ? moment(item.access_expires_gmt).format("MMM DD, YYYY")
+                : item.access_expires_gmt}
             </Text>
           </View>
           <Button onPress={_download(item)}>
-          <Icon name="download" type="Entypo" size={30} color="blue" />
+            <Icon name="download" type="Entypo" size={30} color="blue" />
           </Button>
         </View>
       </TouchableOpacity>
@@ -150,23 +166,35 @@ function Download({navigation}) {
   const _keyExtractor = item => item.download_id;
 
   return (
-    <View>
+    <View style={{flex: 1}}>
       <Toolbar backButton title={t("DOWNLOAD")} />
-      <View style={{flex:1}}>
-      {loading ? (
-        <ActivityIndicator color={accent_color} size="large" style={{padding: 16, width,height:height-56}} />
-      ): download.length > 0 ? (
-        <FlatList data={download} renderItem={_renderItem} keyExtractor={_keyExtractor}  onRefresh={_handleRefresh} refreshing={refreshing} />
-      ) :  <View
-      style={{
-        height:height-56,
-        width,
-        alignItems: "center",
-        justifyContent: "center",
-      }}>
-      <Text>No Books are available for downloads.</Text>
-    </View>}
-    </View>
+      <View style={{flex: 1}}>
+        {loading ? (
+          <ActivityIndicator
+            color={accent_color}
+            size="large"
+            style={{padding: 16, width, height: height - 56}}
+          />
+        ) : download.length > 0 ? (
+          <FlatList
+            data={download}
+            renderItem={_renderItem}
+            keyExtractor={_keyExtractor}
+            onRefresh={_handleRefresh}
+            refreshing={refreshing}
+          />
+        ) : (
+          <View
+            style={{
+              height: height - 56,
+              width,
+              alignItems: "center",
+              justifyContent: "center",
+            }}>
+            <Text>No Books are available for downloads.</Text>
+          </View>
+        )}
+      </View>
     </View>
   );
 }

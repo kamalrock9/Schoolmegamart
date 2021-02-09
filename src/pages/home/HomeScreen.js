@@ -41,11 +41,10 @@ const aspectHeight = (nWidth, oHeight, oWidth) => (nWidth * oHeight) / oWidth;
 function HomeScreen({navigation}) {
   const [loading, setLoading] = useState(false);
   const layout = useSelector(state => state.homeLayout);
+  const {primary_color, accent_color} = useSelector(state => state.appSettings);
   const {t} = useTranslation();
   const dispatch = useDispatch();
   const [index, setIndex] = useState(0);
-
-  // const navigation = useNavigation();
 
   const _categoryKeyExtractor = (item, index) => item.id + "category_" + index;
 
@@ -125,7 +124,7 @@ function HomeScreen({navigation}) {
     return (
       <TouchableOpacity onPress={gotoProductPage(item)}>
         <Image
-          style={{width: "100%", height: 150}}
+          style={{height: 80, width: width - 32}}
           source={{
             uri: item.banner_url
               ? item.banner_url
@@ -137,10 +136,9 @@ function HomeScreen({navigation}) {
       </TouchableOpacity>
     );
   };
+  const _keyExtractorHorizontal = (item, index) => item.id + "sap" + index;
 
   const _keyExtractor = item => item.id + "sap";
-
-  const {accent_color} = useSelector(state => state.appSettings);
 
   const goToProductDetails = item => () => {
     if (item.type == "static") {
@@ -155,7 +153,7 @@ function HomeScreen({navigation}) {
   };
 
   const _renderFlatItem = ({item, index}) => {
-    var discount = Math.ceil(((item.regular_price - item.price) / item.regular_price) * 100);
+    var discount = Math.round(((item.regular_price - item.price) / item.regular_price) * 100, 2);
     return (
       <TouchableOpacity style={{paddingTop: 10, marginTop: 8}} onPress={goToProductDetails(item)}>
         <View
@@ -200,15 +198,18 @@ function HomeScreen({navigation}) {
                 position: "absolute",
                 top: 0,
                 end: 0,
-                backgroundColor: accent_color,
-                width: 36,
-                height: 36,
-                borderRadius: 18,
+                backgroundColor: "#FF7272",
+                width: 38,
+                height: 38,
+                borderRadius: 19,
+                padding: 2,
                 alignItems: "center",
                 justifyContent: "center",
               }}>
               <Text style={{fontSize: 10, color: "#fff", fontWeight: "600"}}>
-                {isFinite(discount) ? discount + "%\nOFF" : "SALE"}
+                {isFinite(discount)
+                  ? Math.round((discount + Number.EPSILON) * 10) / 10 + "%\nOFF"
+                  : "SALE"}
               </Text>
             </View>
           )}
@@ -226,28 +227,55 @@ function HomeScreen({navigation}) {
     );
   };
 
+  const _renderFlatItemHorizontal = ({item, index}) => {
+    return (
+      <TouchableOpacity
+        key={item.id + "Sap" + index}
+        style={{paddingTop: 10, marginTop: 8}}
+        onPress={gotoProductPage(item)}>
+        <View
+          style={[
+            styles.containerProduct,
+            {width: 90, height: 150, marginEnd: 16, marginStart: index == 0 ? 16 : 0},
+          ]}>
+          <Image
+            resizeMode="contain"
+            style={{width: 90, height: 150}}
+            source={{
+              uri: item.banner_url
+                ? item.banner_url
+                : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
+            }}
+            indicatorColor={accent_color}
+          />
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   const _renderItemProduct = ({item, index}) => {
-    var discount = Math.ceil(((item.regular_price - item.price) / item.regular_price) * 100);
+    var discount = Math.round(((item.regular_price - item.price) / item.regular_price) * 100, 2);
 
     return (
       <TouchableOpacity onPress={goToProductDetails(item)}>
         <>
           <View
-            style={[
-              index % 2 == 0 ? {marginStart: 12} : {marginStart: 8},
-              {
-                width: width / 2 - 30,
-                backgroundColor: "#EAEAF1",
-                paddingVertical: 20,
-                borderRadius: 8,
-                marginTop: 8,
-                alignItems: "center",
-              },
-            ]}>
+            style={{
+              marginStart: index == 0 ? 16 : 0,
+              marginEnd: 16,
+              //backgroundColor: "#EAEAF1",
+              paddingVertical: 7,
+              borderRadius: 8,
+              marginTop: 8,
+              width: 150,
+              alignItems: "center",
+              borderColor: "#f8f8fa",
+              borderWidth: 4,
+            }}>
             {item.images.length > 0 && (
               <Image
                 resizeMode="contain"
-                style={{width: 150, height: 150}}
+                style={{width: width / 3, height: 150}}
                 source={{
                   uri: item.images[0].src
                     ? item.images[0].src
@@ -260,32 +288,33 @@ function HomeScreen({navigation}) {
             {item.on_sale && (
               <View
                 style={{
-                  marginStart: 5,
-                  marginTop: 5,
+                  marginStart: 2,
+                  marginTop: 2,
                   position: "absolute",
                   top: 0,
                   start: 0,
-                  backgroundColor: accent_color,
-                  width: 30,
-                  height: 30,
-                  borderRadius: 15,
+                  backgroundColor: "#FF7272",
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
                   alignItems: "center",
                   justifyContent: "center",
                 }}>
                 <Text style={{fontSize: 10, color: "#fff", fontWeight: "600"}}>
-                  {isFinite(discount) ? discount + "%" : "SALE"}
+                  {isFinite(discount)
+                    ? Math.round((discount + Number.EPSILON) * 10) / 10 + "%"
+                    : "SALE"}
                 </Text>
               </View>
             )}
-            <WishlistIcon style={styles.right} item={item} />
+            <WishlistIcon style={styles.right} item={item} size={20} />
           </View>
-          <View style={{marginHorizontal: 4}}>
+          <View style={{width: 150, marginStart: index == 0 ? 16 : 0}}>
             <Text style={[styles.itemMargin, {fontWeight: "600", fontSize: 12}]}>{item.name}</Text>
             <View
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
-                paddingEnd: 16,
                 marginBottom: 8,
               }}>
               <View>
@@ -295,7 +324,7 @@ function HomeScreen({navigation}) {
                   rating={parseInt(item.average_rating)}
                   containerStyle={[styles.itemMargin, styles.star]}
                   starStyle={{marginEnd: 5}}
-                  starSize={10}
+                  starSize={14}
                   halfStarEnabled
                   emptyStarColor={accent_color}
                   fullStarColor={accent_color}
@@ -305,13 +334,13 @@ function HomeScreen({navigation}) {
                   <HTMLRender
                     html={item.price_html}
                     containerStyle={styles.itemMargin}
-                    baseFontStyle={{fontSize: 12}}
+                    baseFontStyle={{fontSize: 12, fontWeight: "700"}}
                   />
                 )}
               </View>
-              <Button onPress={_addToCart(item)}>
+              {/* <Button onPress={_addToCart(item)}>
                 <Icon style={{marginTop: 8}} name="handbag" type="SimpleLineIcons" size={24} />
-              </Button>
+              </Button> */}
             </View>
           </View>
         </>
@@ -393,7 +422,7 @@ function HomeScreen({navigation}) {
   } else {
     return (
       <Container>
-        <Toolbar menuButton cartButton wishListButton searchButton title="HOME" />
+        <Toolbar menuButton cartButton wishListButton searchButton title="" image={true} />
         <ScrollView nestedScrollEnabled={true}>
           {/* <SectonHeader
             title={t("ALL_CATEGORIES")}
@@ -401,28 +430,31 @@ function HomeScreen({navigation}) {
             onPress={openCategories}
             onPressArgs={["CategoryScreen"]}
           /> */}
-
-          <FlatList
-            style={{marginVertical: 15}}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={layout.categories}
-            keyExtractor={_categoryKeyExtractor}
-            renderItem={_renderItem}
-            removeClippedSubviews={true}
-          />
-          <View style={{backgroundColor: "#d2d2d2", height: 4}} />
-          <View style={{marginTop: 8}}>
+          <View
+            style={{paddingVertical: 15, backgroundColor: primary_color, paddingHorizontal: 16}}>
+            <Text style={{fontWeight: "600"}}>Collections</Text>
+            <FlatList
+              style={{paddingVertical: 15, backgroundColor: primary_color}}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              data={layout.categories}
+              keyExtractor={_categoryKeyExtractor}
+              renderItem={_renderItem}
+              removeClippedSubviews={true}
+            />
+          </View>
+          {/* <View style={{backgroundColor: "#d2d2d2", height: 4}} /> */}
+          <View style={{paddingVertical: 18, paddingHorizontal: 16, backgroundColor: "#f8f8f8"}}>
             <Carousel
               layout={"default"}
               ref={ref => {
                 carousel = ref;
               }}
               data={layout.banner}
-              sliderWidth={width}
-              sliderHeight={250}
-              itemWidth={width - 16}
-              itemHeight={150}
+              sliderWidth={width - 32}
+              sliderHeight={80}
+              itemWidth={width - 32}
+              itemHeight={80}
               // pagingEnabled={true}
               renderItem={_renderItemCrousel}
               onSnapToItem={index => setactiveIndex(index)}
@@ -430,7 +462,7 @@ function HomeScreen({navigation}) {
             <Pagination
               dotsLength={isEmpty(layout.banner) ? 1 : layout.banner.length}
               activeDotIndex={activeIndex}
-              containerStyle={{marginTop: -50, marginBottom: -24}}
+              containerStyle={{marginTop: -45, marginBottom: -24}}
               dotStyle={{
                 width: 8,
                 height: 8,
@@ -464,15 +496,13 @@ function HomeScreen({navigation}) {
               {layout.section_banners.map((item, index) => {
                 return item.layout_type == 2 && item.banner.length >= 2 ? (
                   <View key={item.id + "SAP" + index}>
-                    <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 8}} />
+                    <View style={{backgroundColor: "#f8f8f8", height: 4, marginTop: 16}} />
                     <View
                       style={{
                         backgroundColor:
                           item.background_color != "" ? item.background_color : "#FB7C00",
                         width: width,
                         padding: 16,
-                        marginBottom: 16,
-                        marginTop: 16,
                       }}>
                       <View
                         style={{
@@ -489,20 +519,27 @@ function HomeScreen({navigation}) {
                           {item.title}
                         </Text>
                         <Button
-                          style={{backgroundColor: "green", borderRadius: 4}}
+                          style={{borderRadius: 4, flexDirection: "row", alignItems: "center"}}
                           onPress={gotoProductPage("")}>
-                          <Text style={styles.viewAll}>View All</Text>
+                          <Text style={styles.viewAll}>SEE ALL</Text>
+                          <Icon
+                            style={{backgroundColor: "#ED7833", borderRadius: 12}}
+                            color="#fff"
+                            type="MaterialIcons"
+                            name="keyboard-arrow-right"
+                            size={20}
+                          />
                         </Button>
                       </View>
-                      <View style={{flexDirection: "row", marginTop: 16, marginBottom: -32}}>
+                      <View style={{flexDirection: "row", alignItems: "center"}}>
                         <TouchableOpacity onPress={gotoProductPage(item.banner[0])}>
                           <Image
                             resizeMode={"contain"}
                             style={{
-                              width: width / 2 - 20,
-                              height: width / 2 - 8,
-                              borderWidth: 1,
-                              borderColor: "#d2d2d2",
+                              width: width / 2 - 60,
+                              height: width / 3 + 16,
+                              // borderWidth: 1,
+                              // borderColor: "#d2d2d2",
                               marginEnd: 4,
                             }}
                             source={{
@@ -516,10 +553,10 @@ function HomeScreen({navigation}) {
                           <Image
                             resizeMode={"contain"}
                             style={{
-                              width: width / 2 - 20,
+                              width: width / 2 + 20,
                               height: width / 2 - 8,
-                              borderWidth: 1,
-                              borderColor: "#d2d2d2",
+                              // borderWidth: 1,
+                              // borderColor: "#d2d2d2",
                               marginStart: 4,
                             }}
                             source={{uri: item.banner[1].banner_url}}
@@ -530,14 +567,12 @@ function HomeScreen({navigation}) {
                   </View>
                 ) : item.layout_type == 3 && item.banner.length >= 3 ? (
                   <View key={item.id + "SAP" + index}>
-                    <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 8}} />
                     <View
                       style={{
                         backgroundColor:
                           item.background_color != "" ? item.background_color : "#FB7C00",
                         width: width,
                         //padding: 16,
-                        marginTop: 16,
                       }}>
                       <View
                         style={{
@@ -556,9 +591,16 @@ function HomeScreen({navigation}) {
                           {item.title}
                         </Text>
                         <Button
-                          style={{backgroundColor: "green", borderRadius: 4}}
+                          style={{borderRadius: 4, flexDirection: "row", alignItems: "center"}}
                           onPress={gotoProductPage("")}>
-                          <Text style={styles.viewAll}>View All</Text>
+                          <Text style={styles.viewAll}>SEE ALL</Text>
+                          <Icon
+                            style={{backgroundColor: "#ED7833", borderRadius: 12}}
+                            color="#fff"
+                            type="MaterialIcons"
+                            name="keyboard-arrow-right"
+                            size={20}
+                          />
                         </Button>
                       </View>
                       <View style={{flexDirection: "row", marginTop: 16}}>
@@ -566,11 +608,13 @@ function HomeScreen({navigation}) {
                           <Image
                             resizeMode={"contain"}
                             style={{
-                              width: width / (4 / 3) - 58,
+                              width: width / (4 / 3) - 97,
                               height: width / (4 / 3),
-                              borderWidth: 1,
-                              borderColor: "#d2d2d2",
+                              //  borderWidth: 1,
+                              //borderColor: "#d2d2d2",
+                              //  backgroundColor:"red",
                               marginEnd: 8,
+                              marginStart: 16,
                             }}
                             source={{
                               uri: item.banner[0].banner_url
@@ -585,11 +629,11 @@ function HomeScreen({navigation}) {
                               resizeMode={"contain"}
                               style={{
                                 width: width / 3 + 16,
-                                height: width / (8 / 3) - 4,
-                                borderWidth: 1,
-                                borderColor: "#d2d2d2",
-                                // marginStart: 4,
-                                marginBottom: 4,
+                                height: width / (8 / 3) - 8,
+                                // borderWidth: 1,
+                                //borderColor: "#d2d2d2",
+                                marginStart: 8,
+                                marginBottom: 8,
                               }}
                               source={{
                                 uri: item.banner[1].banner_url
@@ -602,12 +646,12 @@ function HomeScreen({navigation}) {
                             <Image
                               resizeMode={"contain"}
                               style={{
-                                width: width / 3 + 16,
-                                height: width / (8 / 3) - 4,
-                                borderWidth: 1,
-                                borderColor: "#d2d2d2",
-                                // marginStart: 4,
-                                marginTop: 4,
+                                width: width / 3 + 18,
+                                height: width / (8 / 3) - 8,
+                                //  borderWidth: 1,
+                                //  borderColor: "#d2d2d2",
+                                marginStart: 8,
+                                marginTop: 8,
                               }}
                               source={{
                                 uri: item.banner[2].banner_url
@@ -622,14 +666,12 @@ function HomeScreen({navigation}) {
                   </View>
                 ) : item.layout_type == 4 && item.banner.length >= 4 ? (
                   <View key={item.id + "SAP" + index}>
-                    <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 8}} />
                     <View
                       style={{
                         backgroundColor:
                           item.background_color != "" ? item.background_color : "#FB7C00",
                         width: width,
                         padding: 16,
-                        marginTop: 16,
                         marginBottom: 16,
                       }}>
                       <View
@@ -647,21 +689,28 @@ function HomeScreen({navigation}) {
                           {item.title}
                         </Text>
                         <Button
-                          style={{backgroundColor: "green", borderRadius: 4}}
+                          style={{alignItems: "center", flexDirection: "row", borderRadius: 4}}
                           onPress={gotoProductPage("")}>
-                          <Text style={styles.viewAll}>View All</Text>
+                          <Text style={styles.viewAll}>SEE ALL</Text>
+                          <Icon
+                            style={{backgroundColor: "#ED7833", borderRadius: 12}}
+                            color="#fff"
+                            type="MaterialIcons"
+                            name="keyboard-arrow-right"
+                            size={20}
+                          />
                         </Button>
                       </View>
-                      <View style={{flexDirection: "row", marginTop: 16}}>
+                      <View style={{flexDirection: "row"}}>
                         <TouchableOpacity onPress={gotoProductPage(item.banner[0])}>
                           <Image
                             resizeMode={"contain"}
                             style={{
-                              width: width / 2 - 20,
+                              width: width / 2 - 24,
                               height: width / 2 - 8,
-                              borderWidth: 1,
-                              borderColor: "#d2d2d2",
-                              marginEnd: 4,
+                              // borderWidth: 1,
+                              // borderColor: "#d2d2d2",
+                              marginEnd: 8,
                             }}
                             source={{
                               uri: item.banner[0].banner_url
@@ -674,11 +723,11 @@ function HomeScreen({navigation}) {
                           <Image
                             resizeMode={"contain"}
                             style={{
-                              width: width / 2 - 20,
+                              width: width / 2 - 24,
                               height: width / 2 - 8,
-                              borderWidth: 1,
-                              borderColor: "#d2d2d2",
-                              marginStart: 4,
+                              // borderWidth: 1,
+                              // borderColor: "#d2d2d2",
+                              marginStart: 8,
                             }}
                             source={{
                               uri: item.banner[1].banner_url
@@ -693,12 +742,11 @@ function HomeScreen({navigation}) {
                           <Image
                             resizeMode={"contain"}
                             style={{
-                              width: width / 2 - 20,
+                              width: width / 2 - 24,
                               height: width / 2 - 8,
-                              borderWidth: 1,
-                              borderColor: "#d2d2d2",
-                              marginTop: 8,
-                              marginEnd: 4,
+                              // borderWidth: 1,
+                              // borderColor: "#d2d2d2",
+                              marginEnd: 8,
                             }}
                             source={{
                               uri: item.banner[2].banner_url
@@ -711,12 +759,11 @@ function HomeScreen({navigation}) {
                           <Image
                             resizeMode={"contain"}
                             style={{
-                              width: width / 2 - 20,
+                              width: width / 2 - 24,
                               height: width / 2 - 8,
-                              borderWidth: 1,
-                              borderColor: "#d2d2d2",
-                              marginTop: 8,
-                              marginStart: 4,
+                              // borderWidth: 1,
+                              // borderColor: "#d2d2d2",
+                              marginStart: 8,
                             }}
                             source={{
                               uri: item.banner[3].banner_url
@@ -786,17 +833,67 @@ function HomeScreen({navigation}) {
               })}
             </View>
           )}
+          <View style={{backgroundColor: "#f8f8f8", height: 4, marginTop: 12}} />
+          {layout.section_banners.map((item, index) => {
+            return (
+              item.layout_type === "horigental" &&
+              item.banner.length >= 1 && (
+                <View key={item + "Sap" + index}>
+                  <View
+                    style={{
+                      backgroundColor:
+                        item.background_color != "" ? item.background_color : "#FB7C00",
+                      width: width,
+                      paddingHorizontal: 16,
+                      marginTop: 8,
+                    }}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}>
+                      <Text
+                        style={{
+                          fontWeight: "500",
+                          fontSize: 16,
+                          flex: 1,
+                          color: item.title_color != "" ? item.title_color : "#fff",
+                        }}>
+                        {item.title}
+                      </Text>
+                      <Button
+                        style={{flexDirection: "row", alignItems: "center", borderRadius: 4}}
+                        onPress={gotoProductPage("")}>
+                        <Text style={styles.viewAll}>SEE ALL</Text>
+                        <Icon
+                          style={{backgroundColor: "#ED7833", borderRadius: 12}}
+                          color="#fff"
+                          type="MaterialIcons"
+                          name="keyboard-arrow-right"
+                          size={20}
+                        />
+                      </Button>
+                    </View>
+                  </View>
+                  <FlatList
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    data={item.banner}
+                    keyExtractor={_keyExtractorHorizontal}
+                    renderItem={_renderFlatItemHorizontal}
+                    initialNumToRender={5}
+                    nestedScrollEnabled={true}
+                  />
+                </View>
+              )
+            );
+          })}
 
-          <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 16}} />
+          <View style={{backgroundColor: "#f8f8f8", height: 4, marginTop: 12}} />
 
           {layout.featured_products && layout.featured_products.length > 0 && (
             <>
-              {/* <SectonHeader
-                title={t("FEATURED")}
-                titleEnd={t("SEE_MORE")}
-                style={{marginTop: 8}}
-                onPress={goToPage("ProductScreen", {featured: true})}
-              /> */}
               <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -806,7 +903,6 @@ function HomeScreen({navigation}) {
                 initialNumToRender={5}
                 nestedScrollEnabled={true}
               />
-              {/* <ProductsRow keyPrefix="featured" products={layout.featured_products} /> */}
             </>
           )}
 
@@ -818,66 +914,7 @@ function HomeScreen({navigation}) {
             />
           )}
 
-          {/* <TouchableOpacity onPress={gotoProductPage(layout.second_banner[1])}>
-            <Image
-              source={{uri: layout.second_banner[1].second_banner_img}}
-              style={{
-                width: width - 32,
-                height: aspectHeight(width - 32, 325, 343),
-                marginStart: 16,
-                marginTop: 25,
-              }}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={gotoProductPage(layout.second_banner[2])}>
-            <Image
-              source={{uri: layout.second_banner[2].second_banner_img}}
-              style={{
-                width: width - 32,
-                height: aspectHeight(width - 32, 325, 343),
-                marginStart: 16,
-                marginTop: 25,
-              }}
-            />
-          </TouchableOpacity> */}
-          {/* 
-          {layout.top_rated_products && layout.top_rated_products.length > 0 && (
-            <>
-              <SectonHeader
-                title={t("TOP_SELLERS")}
-                titleEnd={t("SEE_MORE")}
-                style={{marginTop: 8}}
-                onPress={goToPage("ProductScreen", {sortby: "rating"})}
-              />
-              <ProductsRow keyPrefix="toprated" products={layout.top_rated_products} />
-            </>
-          )}
-
-          {layout.sale_products && layout.sale_products.length > 0 && (
-            <>
-              <SectonHeader
-                title={t("TRENDING_OFFERS")}
-                titleEnd={t("SEE_MORE")}
-                style={{marginTop: 8}}
-                onPress={goToPage("ProductScreen", {on_sale: "true"})}
-              />
-              <ProductsRow keyPrefix="sale" products={layout.sale_products} />
-            </>
-          )}
-
-          {layout.top_seller && layout.top_seller.length > 0 && (
-            <>
-              <SectonHeader
-                title={t("TOP_SELLERS")}
-                titleEnd={t("SEE_MORE")}
-                style={{marginTop: 8}}
-                onPress={goToPage("ProductScreen", {sortby: "popularity"})}
-              />
-              <ProductsRow keyPrefix="topseller" products={layout.top_seller} />
-            </>
-          )} */}
-          <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 16}} />
+          <View style={{backgroundColor: "#f8f8f8", height: 4, marginTop: 16}} />
           <View
             style={{
               flexDirection: "row",
@@ -889,6 +926,7 @@ function HomeScreen({navigation}) {
               <Text
                 style={[
                   styles.tab,
+                  {color: index == 0 ? accent_color : "#000"},
                   {fontWeight: index == 0 ? "600" : "500"},
                   {fontSize: index == 0 ? 16 : 12},
                 ]}>
@@ -899,6 +937,7 @@ function HomeScreen({navigation}) {
               <Text
                 style={[
                   styles.tab,
+                  {color: index == 1 ? accent_color : "#000"},
                   {fontWeight: index == 1 ? "600" : "500"},
                   {fontSize: index == 1 ? 16 : 12},
                 ]}>
@@ -909,6 +948,7 @@ function HomeScreen({navigation}) {
               <Text
                 style={[
                   styles.tab,
+                  {color: index == 2 ? accent_color : "#000"},
                   {fontWeight: index == 2 ? "600" : "500"},
                   {fontSize: index == 2 ? 16 : 12},
                 ]}>
@@ -919,32 +959,23 @@ function HomeScreen({navigation}) {
               <Text
                 style={[
                   styles.tab,
+                  {color: index == 3 ? accent_color : "#000"},
                   {fontWeight: index == 3 ? "600" : "500"},
                   {fontSize: index == 3 ? 16 : 12},
                 ]}>
-                Feature
+                Featured
               </Text>
             </Button>
           </View>
           {!isEmpty(gridData) && (
-            <FlatGrid
-              items={gridData}
+            <FlatList
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              data={gridData}
               keyExtractor={_keyExtractorProduct}
               renderItem={_renderItemProduct}
-              itemDimension={160}
-              spacing={8}
-              //  onEndReached={onEndReached}
-              onEndReachedThreshold={0.33}
-              contentContainerStyle={{flexGrow: 1}}
-              showsVerticalScrollIndicator={!loading}
-              itemContainerStyle={{justifyContent: "flex-start"}}
-              //  ListHeaderComponent={this.listHeaderComponent}
-              ListEmptyComponent={<EmptyList loading={loading} label="Products not available" />}
-              // ListFooterComponent={
-              //   products.length > 0 && loading ? (
-              //     <ActivityIndicator color={accent_color} size="large" style={{padding: 16}} />
-              //   ) : null
-              // }
+              initialNumToRender={5}
+              nestedScrollEnabled={true}
             />
           )}
         </ScrollView>
@@ -969,7 +1000,7 @@ function SecondBanner({item, index, navigation}) {
   };
   return (
     <View key={item.id + "Sap" + index}>
-      <View style={{backgroundColor: "#d2d2d2", height: 4, marginTop: 16}} />
+      <View style={{backgroundColor: "#f8f8f8", height: 4, marginTop: 16}} />
       <TouchableOpacity onPress={gotoProductPage(item)}>
         <Image
           source={{
@@ -983,7 +1014,7 @@ function SecondBanner({item, index, navigation}) {
             //flex: 1,
             height: aspectHeight(width - 32, 343, 343),
             marginStart: 16,
-            marginTop: 25,
+            marginTop: 16,
           }}
           resizeMode="contain"
         />
@@ -1012,18 +1043,18 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   itemMargin: {
-    marginStart: 8,
+    // marginStart: 8,
     marginTop: 4,
-    flex: 1,
+    //flex: 1,
   },
   right: {
     position: "absolute",
     end: 0,
     top: 0,
-    marginTop: 10,
-    marginEnd: 10,
+    marginEnd: 2,
+    marginTop: 2,
     borderRadius: 4,
-    backgroundColor: "#fff",
+    backgroundColor: "#f8f8fa",
   },
   tab: {
     fontSize: 12,
@@ -1031,11 +1062,11 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   viewAll: {
-    color: "#fff",
+    color: "#000",
     paddingHorizontal: 10,
     paddingVertical: 6,
-    fontSize: 13,
-    fontWeight: "500",
+    fontSize: 10,
+    fontWeight: "400",
   },
 });
 

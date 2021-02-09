@@ -266,7 +266,7 @@ function BillingAddress() {
 
           <CustomTextInputAddress
             viewstyle={{marginTop: 24}}
-            label={"Postcode*"}
+            label={"Pincode*"}
             value={state.postcode}
             onChangeText={onChangePostcode}
           />

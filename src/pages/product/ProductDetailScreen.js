@@ -44,7 +44,7 @@ import Constants from "../../service/Config";
 import InAppBrowser from "react-native-inappbrowser-reborn";
 import SwiperFlatList from "react-native-swiper-flatlist";
 import analytics from "@react-native-firebase/analytics";
-import ImageZoom from 'react-native-image-pan-zoom';
+import {SvgCart} from "../../assets/svgs";
 
 const {width} = Dimensions.get("window");
 const aspectHeight = (nWidth, oHeight, oWidth) => (nWidth * oHeight) / oWidth;
@@ -77,7 +77,7 @@ class ProductDetailScreen extends React.PureComponent {
       phone: "",
       qty: "",
       enquiry: "",
-      scroll:true
+      scroll: true,
     };
   }
   componentDidMount() {
@@ -208,7 +208,7 @@ class ProductDetailScreen extends React.PureComponent {
   share = base64image => {
     let shareOptions = {
       title: "Share " + this.state.product.name,
-      url: this.state.product.images[0].src,
+      //  url: this.state.product.images[0].src,
       message: this.state.product.permalink,
       subject: this.state.product.name,
     };
@@ -485,8 +485,19 @@ class ProductDetailScreen extends React.PureComponent {
     ApiClient.post("/cart/add", data)
       .then(({data}) => {
         this.setState({loading: false});
-        if (data.code) {
-          Toast.show(data.message, Toast.LONG);
+
+        this.setState({
+          cartMsg: Array.isArray(data) ? data.map(e => e.message).join(", ") : data.message,
+        });
+        if (this.isError(data)) {
+          //console.log("error");
+        } else {
+          this.props.getCartCount();
+          if (isBuyNow) {
+            this.props.navigation.navigate("Cart", this.state);
+          } else {
+            this.setState({modalVisible: true});
+          }
         }
       })
       .catch(error => {
@@ -661,35 +672,28 @@ class ProductDetailScreen extends React.PureComponent {
 
   _keyExtractor = (index, item) => index + item;
 
-//   gotoZoom= (images)=>{
-//     <ImageZoom cropWidth={Dimensions.get('window').width}
-//     cropHeight={Dimensions.get('window').height}
-//     imageWidth={200}
-//     imageHeight={200}>
-//      { images.map((item,index)=>{
-//         return(
-// <Image style={{width:200, height:200}}
-//     source={{uri:'http://v1.qzone.cc/avatar/201407/07/00/24/53b9782c444ca987.jpg!200x200.jpg'}}/>
-//         )
-//       })}
-// </ImageZoom>
-//   }
+  //   gotoZoom= (images)=>{
+  //     <ImageZoom cropWidth={Dimensions.get('window').width}
+  //     cropHeight={Dimensions.get('window').height}
+  //     imageWidth={200}
+  //     imageHeight={200}>
+  //      { images.map((item,index)=>{
+  //         return(
+  // <Image style={{width:200, height:200}}
+  //     source={{uri:'http://v1.qzone.cc/avatar/201407/07/00/24/53b9782c444ca987.jpg!200x200.jpg'}}/>
+  //         )
+  //       })}
+  // </ImageZoom>
+  //   }
 
   renderItemSlider = ({item, index}) => (
-        <ImageZoom key={item+"sap"+index} cropWidth={width}
-        cropHeight={width}
-        imageWidth={width}
-        imageHeight={width}>
-     <Image style={{width, height: width, resizeMode: "contain"}}
-  source={{uri: item.banner_url || item.src}}/>
-  
-</ImageZoom>
-    // <TouchableOpacity>
-    // <Image
-    //   style={{width, height: width, resizeMode: "contain"}}
-    //   source={{uri: item.banner_url || item.src}}
-    // />
-    // </TouchableOpacity>
+    <TouchableOpacity
+      onPress={() => this.props.navigation.navigate("SliderImageZoom", this.state.product.images)}>
+      <Image
+        style={{width, height: width, resizeMode: "contain"}}
+        source={{uri: item.banner_url || item.src}}
+      />
+    </TouchableOpacity>
   );
 
   keyExtractorSlider = item => item.id.toString();
@@ -705,7 +709,7 @@ class ProductDetailScreen extends React.PureComponent {
 
   _addToCart = product => () => {
     console.log(product);
-    let data = {id: product.id, quantity:1};
+    let data = {id: product.id, quantity: 1};
 
     if (product.in_stock == false) {
       Toast.show("Product is out of stock.", Toast.SHORT);
@@ -727,20 +731,8 @@ class ProductDetailScreen extends React.PureComponent {
         console.log(data);
         this.setState({showLoader: false});
         if (data.code) {
-          Toast.show(data.message, Toast.LONG);
-        }
-        this.setState({
-          cartMsg: Array.isArray(data) ? data.map(e => e.message).join(", ") : data.message,
-        });
-        if (this.isError(data)) {
-          //console.log("error");
-        } else {
           this.props.getCartCount();
-          if (isBuyNow) {
-            this.props.navigation.navigate("Cart", this.state);
-          } else {
-            this.setState({modalVisible: true});
-          }
+          Toast.show(data.message, Toast.LONG);
         }
       })
       .catch(error => {
@@ -759,18 +751,20 @@ class ProductDetailScreen extends React.PureComponent {
             style={[
               {
                 width: 170,
-                backgroundColor: "#EAEAF1",
+                //  backgroundColor: "#EAEAF1",
                 paddingVertical: 20,
                 borderRadius: 8,
                 marginTop: 8,
                 marginStart: index == 0 ? 16 : 8,
                 alignItems: "center",
+                borderColor: "#f8f8fa",
+                borderWidth: 4,
               },
             ]}>
             {item.images.length > 0 && (
               <Image
                 resizeMode="contain"
-                style={{width: 150, height: 150}}
+                style={{width: width/3, height: 150}}
                 source={{uri: item.images[0].src}}
                 indicatorColor={accent_color}
               />
@@ -779,8 +773,8 @@ class ProductDetailScreen extends React.PureComponent {
             {item.on_sale && (
               <View
                 style={{
-                  marginStart: 5,
-                  marginTop: 5,
+                  marginStart: 2,
+                  marginTop: 2,
                   position: "absolute",
                   top: 0,
                   start: 0,
@@ -792,7 +786,9 @@ class ProductDetailScreen extends React.PureComponent {
                   justifyContent: "center",
                 }}>
                 <Text style={{fontSize: 10, color: "#fff", fontWeight: "600"}}>
-                  {isFinite(discount) ? discount + "%" : " (SALE)"}
+                  {isFinite(discount)
+                    ? Math.round((discount + Number.EPSILON) * 10) / 10 + "%"
+                    : " (SALE)"}
                 </Text>
               </View>
             )}
@@ -803,11 +799,12 @@ class ProductDetailScreen extends React.PureComponent {
                 top: 0,
                 width: 30,
                 height: 30,
-                borderRadius: 15,
+                borderRadius: 4,
                 alignItems: "center",
                 justifyContent: "center",
-                marginEnd: 4,
-                marginTop: 4,
+                marginEnd: 2,
+                marginTop: 2,
+                backgroundColor: "#f8f8fa",
               }}
               item={item}
             />
@@ -824,7 +821,7 @@ class ProductDetailScreen extends React.PureComponent {
               rating={parseInt(item.average_rating)}
               containerStyle={[styles.itemMargin, styles.star]}
               starStyle={{marginEnd: 5}}
-              starSize={10}
+              starSize={14}
               halfStarEnabled
               emptyStarColor={accent_color}
               fullStarColor={accent_color}
@@ -841,10 +838,10 @@ class ProductDetailScreen extends React.PureComponent {
                 <HTMLRender
                   html={item.price_html}
                   containerStyle={styles.itemMargin}
-                  baseFontStyle={{fontSize: 12}}
+                  baseFontStyle={{fontSize: 12, fontWeight: "700"}}
                 />
               )}
-<Button onPress={this._addToCart(item)}>
+              <Button onPress={this._addToCart(item)}>
                 <Icon name="handbag" type="SimpleLineIcons" size={24} />
               </Button>
             </View>
@@ -891,9 +888,11 @@ class ProductDetailScreen extends React.PureComponent {
       }
       return value;
     };
-    var discount = Math.ceil(
+    var discount = Math.round(
       ((product.regular_price - product.price) / product.regular_price) * 100,
+      2,
     );
+
     return loading ? (
       <ProgressDialog loading={loading} />
     ) : !loading && isEmpty(product) ? (
@@ -906,7 +905,7 @@ class ProductDetailScreen extends React.PureComponent {
     ) : (
       <>
         <Container style={styles.container}>
-          <Toolbar backButton title={product.name} cartButton wishListButton searchButton />
+          <Toolbar backButton title={""} cartButton wishListButton searchButton />
           <ScrollView contentContainerStyle={{flexGrow: 1}}>
             {variation != "" && variation.hasOwnProperty("image") ? (
               <Image
@@ -914,34 +913,20 @@ class ProductDetailScreen extends React.PureComponent {
                 source={{uri: variation.image.src}}
               />
             ) : (
-              
-               product.images.map((item,index)=>{
-                 return(
-                  <ImageZoom style={{flexDirection:"column"}} key={item+"sap"+index} cropWidth={width}
-                  cropHeight={width}
-                  imageWidth={width}
-                  imageHeight={width}>
-                  <Image style={{width, height: width, resizeMode: "contain"}}
-                  source={{uri: item.banner_url || item.src}}/>
-                  
-               </ImageZoom>
-                 )
-               })
-        
-              // <SwiperFlatList
-              //   data={product.images}
-              //   nestedScrollEnabled={true}
-              //   paginationActiveColor="red"
-              //   showPagination={product.images.length > 1 ? true : false}
-              //   paginationStyleItem={{
-              //     width: 50,
-              //     height: 50,
-              //     marginHorizontal: 5,
-              //   }}
-              //   keyExtractor={this.keyExtractorSlider}
-              //   renderItem={this.renderItemSlider}
-              //   style={{width, height: width}}
-              // />
+              <SwiperFlatList
+                data={product.images}
+                nestedScrollEnabled={true}
+                paginationActiveColor="red"
+                showPagination={product.images.length > 1}
+                paginationStyleItem={{
+                  width: 50,
+                  height: 50,
+                  marginHorizontal: 5,
+                }}
+                keyExtractor={this.keyExtractorSlider}
+                renderItem={this.renderItemSlider}
+                style={{width, height: width}}
+              />
             )}
             <WishlistIcon style={[styles.right, {backgroundColor: "transparent"}]} item={product} />
             <Button
@@ -983,7 +968,7 @@ class ProductDetailScreen extends React.PureComponent {
                     rating={parseInt(product.average_rating)}
                     containerStyle={{justifyContent: "flex-start"}}
                     starStyle={{marginEnd: 5}}
-                    starSize={12}
+                    starSize={14}
                     halfStarEnabled
                     emptyStarColor={accent_color}
                     fullStarColor={accent_color}
@@ -1025,7 +1010,9 @@ class ProductDetailScreen extends React.PureComponent {
                           paddingTop: 8,
                           //position: "absolute",
                         }}>
-                        {isFinite(discount) ? "(-" + discount + "%)" : " (SALE)"}
+                        {isFinite(discount)
+                          ? "(-" + Math.round((discount + Number.EPSILON) * 10) / 10 + "%)"
+                          : " (SALE)"}
                       </Text>
                       // </View>
                     )}
@@ -1064,7 +1051,9 @@ class ProductDetailScreen extends React.PureComponent {
                           paddingTop: 8,
                           //position: "absolute",
                         }}>
-                        {isFinite(discount) ? "(-" + discount + "%)" : " (SALE)"}
+                        {isFinite(discount)
+                          ? "(-" + Math.round((discount + Number.EPSILON) * 10) / 10 + "%)"
+                          : " (SALE)"}
                       </Text>
                       // </View>
                     )}
@@ -1198,41 +1187,6 @@ class ProductDetailScreen extends React.PureComponent {
                       marginStart: 16,
                     }}
                   />
-                </View>
-              )}
-
-              {/* Footer Content */}
-              {(product.purchasable ||
-                (product.type === "external" && product.external_url) ||
-                product.type === "grouped") && (
-                <View style={{paddingHorizontal: 16}}>
-                  {product.type === "external" ? (
-                    <Fragment>
-                      <Button
-                        onPress={this._handleExternalProduct}
-                        style={[styles.footerButton, {backgroundColor: accent_color}]}>
-                        <Text style={{color: "white"}}>Buy External Product</Text>
-                      </Button>
-                    </Fragment>
-                  ) : (
-                    ((!isEmpty(variation) && variation.in_stock) || product.in_stock) && (
-                      <Fragment>
-                        <Button
-                          onPress={() => this._handleAddToCart(true)}
-                          style={[
-                            styles.footerButton,
-                            {backgroundColor: accent_color, marginTop: 20},
-                          ]}>
-                          <Text style={{fontWeight: "600", color: "#fff"}}>Buy Now</Text>
-                        </Button>
-                        <Button
-                          style={[styles.footerButton, {backgroundColor: "#F39248", marginTop: 10}]}
-                          onPress={() => this._handleAddToCart(false)}>
-                          <Text style={{color: "white", fontWeight: "600"}}>Add to Cart</Text>
-                        </Button>
-                      </Fragment>
-                    )
-                  )}
                 </View>
               )}
               <View
@@ -1439,6 +1393,65 @@ class ProductDetailScreen extends React.PureComponent {
             )}
             {loading && <ActivityIndicator style={{flex: 1}} />}
           </ScrollView>
+          {/* Footer Content */}
+          {(product.purchasable ||
+            (product.type === "external" && product.external_url) ||
+            product.type === "grouped") && (
+            <View style={{paddingHorizontal: 16, width: "100%", flexDirection: "row"}}>
+              {product.type === "external" ? (
+                <Fragment>
+                  <Button
+                    onPress={this._handleExternalProduct}
+                    style={[styles.footerButton, {backgroundColor: accent_color}]}>
+                    <Text style={{color: "white"}}>Buy External Product</Text>
+                  </Button>
+                </Fragment>
+              ) : (
+                ((!isEmpty(variation) && variation.in_stock) || product.in_stock) && (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      flex: 1,
+                      alignItems: "center",
+                    }}>
+                    {product.type != "bundle" ? (
+                      <HTMLRender
+                        html={variation.price_html || product.price_html}
+                        baseFontStyle={{fontSize: 14, fontWeight: "500", flex: 1}}
+                      />
+                    ) : (
+                      <View style={{flexDirection: "row"}}>
+                        <HTMLRender
+                          html={" " + product.currency_symbol}
+                          containerStyle={{}}
+                          baseFontStyle={{fontSize: 16, fontWeight: "500"}}
+                        />
+                        <Text style={{fontSize: 16, fontWeight: "500"}}>
+                          {gotoSum(product.bundled_items)}
+                        </Text>
+                      </View>
+                    )}
+                    <View style={{flexDirection: "row"}}>
+                      <Button
+                        style={[styles.footerButton, {backgroundColor: "#F39248", marginEnd: 8}]}
+                        onPress={() => this._handleAddToCart(false)}>
+                        <SvgCart style={styles.drawerItemIcon} width={20} height={20} />
+                      </Button>
+                      <Button
+                        onPress={() => this._handleAddToCart(true)}
+                        style={[
+                          styles.footerButton,
+                          {backgroundColor: accent_color, paddingHorizontal: 24},
+                        ]}>
+                        <Text style={{fontWeight: "600", color: "#fff"}}>Buy Now</Text>
+                      </Button>
+                    </View>
+                  </View>
+                )
+              )}
+            </View>
+          )}
         </Container>
         <ProgressDialog loading={loading} />
         <Modal
@@ -1571,15 +1584,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   footer: {
-    width: "100%",
     flexDirection: "row",
+    padding: 8,
+    borderRadius: 8,
+    marginHorizontal: 8,
   },
   footerButton: {
-    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 40,
-    borderRadius: 4,
+    minHeight: 48,
+    borderRadius: 8,
+    marginVertical: 8,
   },
   rowCenterSpaced: {
     flexDirection: "row",
@@ -1647,6 +1662,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   textinput: {paddingVertical: 4, paddingStart: 8},
+  drawerItemIcon: {
+    marginHorizontal: 20,
+    color: "#ffffff",
+    fontWeight: "900",
+  },
 });
 
 const mapStateToProps = state => ({

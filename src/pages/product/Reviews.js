@@ -73,7 +73,7 @@ function Reviews({navigation}) {
           marginHorizontal: 8,
           marginTop: 8,
           elevation: 2,
-          marginBottom: reviews.length == index - 1 ? 8 : 0,
+          marginBottom: reviews.length - 1 == index ? 8 : 0,
           backgroundColor: "#fff",
           borderRadius: 4,
         }}
@@ -105,6 +105,22 @@ function Reviews({navigation}) {
           html={item.value_data.comment_content || <b />}
           baseFontStyle={{fontSize: 12}}
         />
+        {!isEmpty(item.replys) && (
+          <View
+            style={{
+              fontSize: 12,
+              marginStart: 12,
+              backgroundColor: "#f8f8f8",
+              padding: 8,
+              borderRadius: 16,
+            }}>
+            <Text style={{marginEnd: 4, fontWeight: "600"}}>{item.replys[0].comment_author}</Text>
+            <HTMLRender
+              html={item.replys[0].comment_content || <b />}
+              baseFontStyle={{fontSize: 12}}
+            />
+          </View>
+        )}
       </View>
     );
   };
@@ -122,7 +138,6 @@ function Reviews({navigation}) {
         <ActivityIndicator color={accent_color} size="large" style={{padding: 16, flex: 1}} />
       ) : !isEmpty(reviews) ? (
         <FlatList
-          contentContainerStyle={{flex: 1}}
           data={reviews}
           renderItem={renderItem}
           keyExtractor={keyExtractor}

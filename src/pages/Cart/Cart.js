@@ -33,6 +33,7 @@ class Cart extends React.PureComponent {
       updating: false,
       isContactModalOpen: false,
       shipping_method: "",
+      refreshing: false,
     };
   }
 
@@ -45,6 +46,10 @@ class Cart extends React.PureComponent {
     this.trackScreenView("Cart");
     this.ApiCall(null);
   }
+
+  _handleRefresh = () => {
+    this.ApiCall(null);
+  };
 
   trackScreenView = async screen => {
     // Set & override the MainActivity screen name
@@ -136,8 +141,10 @@ class Cart extends React.PureComponent {
     return (
       <View
         style={{
-          elevation: 2,
-          backgroundColor: "white",
+          // elevation: 2,
+          // backgroundColor: "white",
+          borderColor: "#adadad",
+          borderWidth: 1,
           //marginHorizontal: 16,
           padding: 16,
           marginTop: index == 0 ? 16 : 0,
@@ -175,6 +182,8 @@ class Cart extends React.PureComponent {
         <Container>
           <Toolbar backButton title="CART" />
           <FlatList
+            refreshing={this.state.refreshing}
+            onRefresh={this._handleRefresh}
             data={cart_data.cart_data}
             renderItem={this.renderItem}
             keyExtractor={keyExtractor}
@@ -182,6 +191,7 @@ class Cart extends React.PureComponent {
             contentContainerStyle={{
               flexGrow: 1,
               backgroundColor: "#FAFAFA",
+              paddingHorizontal: 16,
             }}
             ListFooterComponent={isListAvailable && this.renderFooter}
             ListEmptyComponent={

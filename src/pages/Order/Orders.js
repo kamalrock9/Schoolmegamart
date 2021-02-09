@@ -102,7 +102,7 @@ function Orders({navigation}) {
   const _renderItem = ({item, index}) => {
     return (
       <TouchableOpacity
-        style={[styles.card, {marginTop: index == 0 ? 8 : 4}, {marginBottom: 4}]}
+        style={[styles.card, {marginTop: index == 0 ? 16 : 8}, {marginBottom: 8}]}
         onPress={gotoOrderDetailsPage(item)}>
         <View
           style={[
@@ -227,13 +227,15 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     padding: 10,
-    borderRadius: 4,
-    marginHorizontal: 8,
-    elevation: 2,
+    borderRadius: 8,
+    marginHorizontal: 16,
+    //elevation: 2,
     shadowRadius: 2,
     shadowOpacity: 0.5,
     shadowOffset: {width: 0, height: 2},
-    backgroundColor: "#fff",
+    //backgroundColor: "#fff",
+    borderColor: "#adadad",
+    borderWidth: 1,
   },
   view: {flexDirection: "row", justifyContent: "space-between"},
   text: {

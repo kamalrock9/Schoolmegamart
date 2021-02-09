@@ -151,16 +151,25 @@ class TreeView extends React.PureComponent {
     return (
       <TouchableOpacity
         style={{
-          width: width / 2 - 16,
-          marginTop: index > 1 ? 24 : 8,
-          marginEnd: index % 2 == 0 ? 8 : 0,
-          marginBottom: this.state.data.length - 2 ? 16 : 0,
+          width: width / 2 - 18,
+          marginTop: index <= 1 ? 12 : 0,
+          marginBottom: 12,
+          marginEnd: index % 2 == 0 ? 12 : 0,
           alignItems: "center",
+          backgroundColor: "#ED7833",
+          borderRadius: 8,
+          padding: 12,
+          paddingVertical: 50,
+          justifyContent: "center",
         }}
         key={item + "sap" + index}
         onPress={this.gotoPage(item)}>
         <Image
-          style={{width: width / 2 - 16, height: 150, resizeMode: "contain"}}
+          style={{
+            width: width / 6 - 16,
+            height: 50,
+            resizeMode: "contain",
+          }}
           source={{
             uri:
               item.image != null
@@ -168,7 +177,15 @@ class TreeView extends React.PureComponent {
                 : "https://user-images.githubusercontent.com/2351721/31314483-7611c488-ac0e-11e7-97d1-3cfc1c79610e.png",
           }}
         />
-        <Text style={{fontSize: 14, paddingStart: 10, fontWeight: "600"}} numberOfLines={1}>
+        <Text
+          style={{
+            fontSize: 14,
+            //  paddingStart: 10,
+            fontWeight: "600",
+            color: "#fff",
+            // alignSelf: "center",
+          }}
+          numberOfLines={1}>
           {item.name}
         </Text>
       </TouchableOpacity>

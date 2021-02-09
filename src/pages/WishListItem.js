@@ -46,6 +46,7 @@ function WishListItem({item, index}) {
             borderRadius: 8,
             marginTop: 8,
             alignItems: "center",
+            justifyContent: "center",
           },
         ]}>
         {item.images.length > 0 && (
@@ -66,14 +67,17 @@ function WishListItem({item, index}) {
               top: 0,
               start: 0,
               backgroundColor: accent_color,
-              width: 34,
-              height: 34,
-              borderRadius: 17,
+              width: 42,
+              height: 42,
+              borderRadius: 21,
               alignItems: "center",
               justifyContent: "center",
+              padding: 4,
             }}>
             <Text style={{fontSize: 10, color: "#fff", fontWeight: "600"}}>
-              {isFinite(discount) ? discount.toFixed(1) + "%" : "SALE"}
+              {isFinite(discount)
+                ? Math.round((discount + Number.EPSILON) * 10) / 10 + "%" + "\n" + "OFF"
+                : "SALE"}
             </Text>
           </View>
         )}

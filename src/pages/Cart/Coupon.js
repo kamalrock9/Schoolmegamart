@@ -41,8 +41,11 @@ function Coupon({onBackButtonPress, applyCoupon}) {
       coupon_code: couponCode,
       user_id: user.id,
     };
+    console.log(param);
+    setLoding(true);
     ApiClient.get("/cart/coupon", param)
       .then(({data}) => {
+        setLoding(false);
         if (data.code) {
           if (data.message && data.message.length > 0) {
             //Toast.show(data.message.join());
@@ -57,7 +60,9 @@ function Coupon({onBackButtonPress, applyCoupon}) {
           onBackButtonPress && onBackButtonPress();
         }
       })
-      .catch(error => {});
+      .catch(error => {
+        setLoding(false);
+      });
   }, [couponCode]);
 
   const setData = () => {
@@ -66,21 +71,27 @@ function Coupon({onBackButtonPress, applyCoupon}) {
 
   const _renderItem = ({item, index}) => {
     return (
-      <View style={[styles.itemContainer, {marginTop: index > 0 ? 8 : 0, flex: 1}]}>
+      <View style={[styles.itemContainer, {marginTop: index > 0 ? 8 : 8, flex: 1}]}>
         <View style={{flex: 1}}>
-          <Text style={{fontWeight: "600", fontSize: 14}}> {item.coupon_code.toUpperCase()}</Text>
-          {/* <Text style={{fontWeight: "700", fontSize: 18}}>{item.code.toUpperCase()}</Text> */}
+          <View style={{flexDirection: "row", justifyContent: "space-between", marginEnd: 8}}>
+            <Text style={{fontWeight: "600", fontSize: 14}}> {item.coupon_code.toUpperCase()}</Text>
+            <Text style={{fontSize: 12}}>Validity</Text>
+          </View>
+          <View style={{flexDirection: "row", justifyContent: "flex-end", marginEnd: 8}}>
+            <Text style={{fontSize: 12, fontWeight: "600"}}>
+              {item.expiry_date ? moment(item.expiry_date.date).format("MMMM") : "no limit"}
+            </Text>
+          </View>
           <View
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
-              flex: 1,
               paddingEnd: 8,
               alignItems: "flex-end",
             }}>
             <Text
               style={{
-                backgroundColor: "#FEB5B5",
+                backgroundColor: appSettings.primary_color,
                 borderRadius: 12,
                 paddingHorizontal: 8,
                 color: "red",
@@ -91,9 +102,10 @@ function Coupon({onBackButtonPress, applyCoupon}) {
               {item.coupon_code.toUpperCase()}
             </Text>
             <View>
-              <Text style={{fontSize: 12, color: "grey"}}>Validity:</Text>
-              <Text style={{fontSize: 12, color: "grey"}}>
-                {item.expiry_date ? moment(item.expiry_date.date).format("MMMM DD,YYYY") : "no limit"}
+              <Text style={{fontSize: 12, fontWeight: "600"}}>
+                {item.expiry_date
+                  ? moment(item.expiry_date, "YYYY-MM-DD").format("DD,YYYY")
+                  : "no limit"}
               </Text>
             </View>
           </View>
@@ -110,7 +122,7 @@ function Coupon({onBackButtonPress, applyCoupon}) {
           }}
         />
         <Button style={[styles.itemApplyButton]} onPress={() => setCouponCode(item.coupon_code)}>
-          <Text style={{fontWeight: "600"}}>Apply</Text>
+          <Text style={{fontWeight: "700"}}>Apply</Text>
         </Button>
       </View>
     );
@@ -119,14 +131,20 @@ function Coupon({onBackButtonPress, applyCoupon}) {
   const _keyExtractor = item => "Sap" + item.ID;
 
   return (
-    <Container style={{backgroundColor: "#FFF"}}>
-      <Toolbar onCancel={onBackButtonPress} cancelButton title="Apply Coupon" />
-      <View style={styles.headerContainer}>
-        {/* <Icon
-          name="brightness-percent"
-          type="MaterialCommunityIcons"
-          style={{paddingHorizontal: 5, fontSize: 24}}
-        /> */}
+    <Container style={{backgroundColor: "#f0f0f0"}}>
+      <View style={[styles.containerMain, {backgroundColor: appSettings.primary_color}]}>
+        <Text style={[styles.title, {color: "#000", width: "100%"}]} ellipsizeMode="tail">
+          Apply Coupon
+        </Text>
+        <Button onPress={onBackButtonPress} style={styles.menuButton}>
+          <Icon color={"#000"} name="cross" type="Entypo" size={24} />
+        </Button>
+      </View>
+      <View
+        style={[
+          styles.headerContainer,
+          {borderColor: "#adadad", borderWidth: 1, backgroundColor: "#fff"},
+        ]}>
         <Image
           source={require("../../assets/imgs/coupon.png")}
           style={{width: 25, height: 25, resizeMode: "contain", marginStart: 8}}
@@ -134,20 +152,20 @@ function Coupon({onBackButtonPress, applyCoupon}) {
         <TextInput
           underlineColorAndroid="transparent"
           onChangeText={text => setText(text)}
-          style={{height: 44, marginStart: -20}}
+          style={{height: 44, marginStart: 8, flex: 1}}
           placeholder="Apply Promo Code/Voucher"
         />
         <Button
           style={[styles.headerApplyButton, {backgroundColor: appSettings.accent_color}]}
           onPress={setData}>
-          <Text style={{color: "#fff", fontWeight: "600"}}>Apply</Text>
+          <Text style={{color: "#fff", fontWeight: "400"}}>Apply</Text>
         </Button>
       </View>
       <FlatList
         data={coupons}
         renderItem={_renderItem}
         keyExtractor={_keyExtractor}
-        contentContainerStyle={{padding: 4, flexGrow: 1}}
+        contentContainerStyle={{padding: 4, flexGrow: 1, backgroundColor: "#f0f0f0"}}
         ListEmptyComponent={<EmptyList loading={loading} label={"No coupons are available"} />}
       />
     </Container>
@@ -160,24 +178,28 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: "row",
-    borderColor: "#d2d2d2",
-    borderWidth: 1,
+    //borderColor: "#d2d2d2",
+    //borderWidth: 1,
     borderRadius: 4,
     alignItems: "center",
-    margin: 10,
+    marginHorizontal: 12,
+    marginTop: 12,
     justifyContent: "space-between",
   },
   headerApplyButton: {
     height: 44,
     paddingHorizontal: 30,
+    margin: 2,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 4,
   },
   itemContainer: {
     marginVertical: 4,
-    elevation: 2,
-    backgroundColor: "#fff",
+    // elevation: 2,
+    // backgroundColor: "#fff",
+    borderColor: "#adadad",
+    borderWidth: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -193,6 +215,44 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     paddingBottom: 3,
     marginHorizontal: 16,
+  },
+  containerMain: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    // paddingVertical: 4,
+    // paddingTop: 24,
+    paddingHorizontal: 12,
+    // height: 56,
+  },
+  badge: {
+    position: "absolute",
+    end: 6,
+    top: 6,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  badgeText: {
+    fontSize: 10,
+    color: "#FFF",
+    fontWeight: "600",
+  },
+  title: {
+    fontWeight: "600",
+    fontSize: 16,
+    flex: 1,
+  },
+  right: {
+    flexDirection: "row",
+    marginStart: 0,
+  },
+  menuButton: {paddingVertical: 16, paddingStart: 16},
+  drawerItemIcon: {
+    color: "#000000",
+    fontWeight: "900",
   },
 });
 

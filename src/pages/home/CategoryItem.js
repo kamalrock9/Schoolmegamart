@@ -1,9 +1,10 @@
 import React from "react";
-import {TouchableOpacity, Image, View} from "react-native";
+import {TouchableOpacity, Image, View, Dimensions} from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import {useNavigation} from "react-navigation-hooks";
 import {Text} from "components";
 
+const {width, height} = Dimensions.get("screen");
 function CategoryItem({item, index}) {
   const navigation = useNavigation();
 
@@ -15,27 +16,19 @@ function CategoryItem({item, index}) {
     <TouchableOpacity
       style={[
         {
-          marginTop: 10,
-          marginBottom: 15,
           alignItems: "center",
+          marginEnd: 8,
         },
-        index == 0 ? {marginStart: 18, marginEnd: 16} : {marginEnd: 16},
       ]}
       onPress={goToProductScreen}>
       <View
         style={{
-          backgroundColor:
-            index == 0
-              ? "#FEDBBC"
-              : index == 1
-              ? "#A6EFC7"
-              : index % 4 && !index % 2
-              ? "#BCECFE"
-              : index % 2
-              ? "#BCECFE"
-              : "#FEDBBC",
-          padding: 12,
-          borderRadius: 50,
+          backgroundColor: "#ED7833",
+          paddingVertical: 12,
+          paddingHorizontal: 4,
+          borderRadius: 8,
+          height: 110,
+          alignItems: "center",
         }}>
         <Image
           source={{
@@ -46,17 +39,16 @@ function CategoryItem({item, index}) {
               : "https://source.unsplash.com/1600x900/?" + item.name,
           }}
           style={{width: 40, height: 40}}
-          resizeMode="cover"
+          resizeMode="contain"
         />
-      </View>
-      <View style={{width: 76}}>
         <Text
           style={{
-            color: "black",
+            width: width / 5,
+            color: "white",
             textAlign: "center",
             fontSize: 10,
-            paddingVertical: 2,
-            fontWeight: "700",
+            marginTop: 8,
+            fontWeight: "500",
           }}>
           {item.name.toUpperCase()}
         </Text>

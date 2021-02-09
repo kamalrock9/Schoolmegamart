@@ -9,11 +9,11 @@ function MiniCart({close, message}) {
   const appSettings = useSelector(state => state.appSettings);
   const navigation = useNavigation();
 
-  goToHome = () => {
+  const goToHome = () => {
     close && close();
     navigation.navigate("HomeStack");
   };
-  goToCart = () => {
+  const goToCart = () => {
     close && close();
     navigation.navigate("Cart");
   };

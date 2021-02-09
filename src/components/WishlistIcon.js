@@ -19,7 +19,7 @@ class WishlistIcon extends React.PureComponent {
   };
 
   render() {
-    const {appSettings, style} = this.props;
+    const {appSettings, style, size} = this.props;
     return (
       <Button style={StyleSheet.flatten(style)} onPress={this._handleWishlist}>
         <Icon
@@ -28,7 +28,7 @@ class WishlistIcon extends React.PureComponent {
           style={{
             color: appSettings.accent_color,
             margin: 4,
-            fontSize: 24,
+            fontSize: size ? size : 24,
           }}
         />
       </Button>
@@ -46,4 +46,7 @@ mapDispatchToProps = {
   deleteWishlist,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(WishlistIcon);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(WishlistIcon);
