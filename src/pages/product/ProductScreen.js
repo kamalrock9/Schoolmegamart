@@ -32,6 +32,7 @@ import SortOptions from "./SortOptions";
 import StarRating from "react-native-star-rating";
 import {brand, rating, getCartCount} from "store/actions";
 import analytics from "@react-native-firebase/analytics";
+import {SvgCart, SvgList, SvgSort, SvgFilter, SvgGrid} from "../../assets/svgs";
 
 const {width} = Dimensions.get("screen");
 class ProductScreen extends React.PureComponent {
@@ -63,7 +64,7 @@ class ProductScreen extends React.PureComponent {
     };
     this.params = {
       page: 1,
-      per_page: 20,
+      per_page: 6,
       on_sale,
       sort: sortby || "popularity",
       featured,
@@ -132,7 +133,7 @@ class ProductScreen extends React.PureComponent {
           if (response.data.status) {
             ApiClient.get("/get-products-by-id?include=" + response.data.product_id)
               .then(({data}) => {
-                this.setState({title: response.data.page_title});
+                this.setState({header: response.data.page_title});
                 //this.fetchAttributes(data);
                 this.setState({loading: false, products: data});
               })
@@ -155,7 +156,7 @@ class ProductScreen extends React.PureComponent {
         //this.setState({loading: true});
         this.setState({attributes: data});
       });
-      this.setState({loading: true});
+      // this.setState({loading: true});
       ApiClient.get("products/all-brands?hide_empty", params).then(({data}) => {
         //this.setState({loading: true});
         console.log("Brand Filter");
@@ -164,7 +165,7 @@ class ProductScreen extends React.PureComponent {
         // this.setState({attributes: newData});
       });
       console.log(params);
-      this.setState({loading: true});
+      // this.setState({loading: true});
       ApiClient.get("products/ratings?", params).then(({data}) => {
         //this.setState({loading: false});
         console.log("Rating Filter");
@@ -195,7 +196,7 @@ class ProductScreen extends React.PureComponent {
     console.log(this.params);
     ApiClient.post("custom-products", this.attr, {params: this.params})
       .then(({data}) => {
-        // this.setState({loading: false});
+        this.setState({loading: false});
         this.fetchAttributes(data);
       })
       .catch(e => {
@@ -210,7 +211,7 @@ class ProductScreen extends React.PureComponent {
     await this.setState(prevState => ({
       products: [...prevState.products, ...data],
       hasMore: data.length == this.params.per_page,
-      loading: false,
+      // loading: false,
     }));
     //will use global attrributes
     /*const params = {
@@ -234,9 +235,7 @@ class ProductScreen extends React.PureComponent {
     this.paramsForCat.brand = params.brand;
     this.paramsForCat.rating = params.rating;
     this.attr = attr;
-    this.setState({showFilter: false, products: [], loading: true, hasMore: false}, () =>
-      this.loadProducts(),
-    );
+
     const paramsData = {
       hide_empty: true,
       show_all: true,
@@ -257,12 +256,16 @@ class ProductScreen extends React.PureComponent {
       // this.setState({attributes: newData});
     });
     ApiClient.get("products/ratings?", paramsData).then(({data}) => {
-      this.setState({loading: false});
+      //this.setState({loading: false});
       console.log("Rating Filter");
       this.props.rating(data);
       // let newData = [...this.state.attributes, ...data];
       // this.setState({attributes: newData});
     });
+
+    this.setState({showFilter: false, products: [], loading: true, hasMore: false}, () =>
+      this.loadProducts(),
+    );
   };
 
   goToProductDetails = item => () => {
@@ -311,6 +314,7 @@ class ProductScreen extends React.PureComponent {
         console.log(data);
         this.setState({showLoader: false});
         if (data.code) {
+          this.props.getCartCount();
           Toast.show(data.message, Toast.LONG);
         }
         this.setState({
@@ -319,7 +323,6 @@ class ProductScreen extends React.PureComponent {
         if (this.isError(data)) {
           //console.log("error");
         } else {
-          this.props.getCartCount();
           if (isBuyNow) {
             this.props.navigation.navigate("Cart", this.state);
           } else {
@@ -411,9 +414,9 @@ class ProductScreen extends React.PureComponent {
         <>
           <View
             style={[
-              index % 2 == 0 ? {marginStart: 12} : {marginStart: 8},
+              index % 2 == 0 ? {marginStart: 8, marginEnd: 8} : {marginStart: 4},
               {
-                width: width / 2 - 30,
+                width: width / 2 - 24,
                 //backgroundColor: "#EAEAF1",
                 paddingVertical: 20,
                 borderRadius: 8,
@@ -455,59 +458,59 @@ class ProductScreen extends React.PureComponent {
                 }}>
                 <Text style={{fontSize: 10, color: "#fff", fontWeight: "600"}}>
                   {isFinite(discount)
-                    ? Math.round((discount + Number.EPSILON) * 10) / 10 + "%"
+                    ? "-" + Math.round((discount + Number.EPSILON) * 10) / 10 + "%"
                     : "SALE"}
                 </Text>
               </View>
             )}
             <WishlistIcon style={styles.right} item={item} size={20} />
           </View>
-          <View style={{marginHorizontal: 4, borderTopWidth: 2, borderColor: "#f8f8f8"}}>
-            <Text style={[styles.itemMargin, {fontWeight: "600", fontSize: 12}]}>{item.name}</Text>
-            {item.sku != "" && (
-              <Text
-                style={[
-                  styles.itemMargin,
-                  {fontWeight: "600", fontSize: 12, marginBottom: 4, color: "#000"},
-                ]}>
-                {item.sku}
-              </Text>
-            )}
+          {/* <View style={{marginHorizontal: 4, borderTopWidth: 2, borderColor: "#f8f8f8"}}> */}
+          <Text style={[styles.itemMargin, {fontWeight: "600", fontSize: 12}]}>{item.name}</Text>
+          {item.sku != "" && (
+            <Text
+              style={[
+                styles.itemMargin,
+                {fontWeight: "600", fontSize: 12, marginBottom: 4, color: "#000"},
+              ]}>
+              {item.sku}
+            </Text>
+          )}
 
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                paddingEnd: 16,
-                marginBottom: 8,
-                alignItems: "flex-end",
-              }}>
-              <View>
-                {item.price_html != "" && (
-                  <HTMLRender
-                    html={item.price_html}
-                    containerStyle={styles.itemMargin}
-                    baseFontStyle={{fontSize: 12, fontWeight: "700"}}
-                  />
-                )}
-                <StarRating
-                  disabled
-                  maxStars={5}
-                  rating={parseInt(item.average_rating)}
-                  containerStyle={[styles.itemMargin, styles.star]}
-                  starStyle={{marginEnd: 5}}
-                  starSize={14}
-                  halfStarEnabled
-                  emptyStarColor={accent_color}
-                  fullStarColor={accent_color}
-                  halfStarColor={accent_color}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              paddingEnd: 16,
+              marginBottom: 8,
+              alignItems: "flex-end",
+            }}>
+            <View>
+              {item.price_html != "" && (
+                <HTMLRender
+                  html={item.price_html}
+                  containerStyle={styles.itemMargin}
+                  baseFontStyle={{fontSize: 12, fontWeight: "700"}}
                 />
-              </View>
-              <Button style={{paddingBottom: 2}} onPress={this._addToCart(item)}>
-                <Icon name="handbag" type="SimpleLineIcons" size={24} />
-              </Button>
+              )}
+              <StarRating
+                disabled
+                maxStars={5}
+                rating={parseInt(item.average_rating)}
+                containerStyle={[styles.itemMargin, styles.star]}
+                starStyle={{marginEnd: 5}}
+                starSize={14}
+                halfStarEnabled
+                emptyStarColor={accent_color}
+                fullStarColor={accent_color}
+                halfStarColor={accent_color}
+              />
             </View>
+            <Button style={{paddingBottom: 2}} onPress={this._addToCart(item)}>
+              <Icon name="handbag" type="SimpleLineIcons" size={24} />
+            </Button>
           </View>
+          {/* </View> */}
         </>
       </TouchableOpacity>
     );
@@ -533,18 +536,38 @@ class ProductScreen extends React.PureComponent {
   //   );
   // };
 
-  listHeaderComponent = () =>
-    !isEmpty(this.state.categories) && (
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={this.state.categories}
-        keyExtractor={this._categoryKeyExtractor}
-        renderItem={this._renderItemCat}
-        removeClippedSubviews={true}
-        //ListHeaderComponent={this._listHeaderComponent}
-      />
-    );
+  listHeaderComponent = () => (
+    <>
+      <Text
+        style={{
+          fontWeight: "600",
+          fontSize: 16,
+          padding: 16,
+          color: "#000",
+          // flex: 1,
+          alignSelf: "center",
+        }}>
+        {this.state.header != "" ? this.state.header : "Product"}
+      </Text>
+
+      {this.state.title != "" && (
+        <Text style={{marginHorizontal: 16, fontWeight: "600", alignSelf: "center"}}>
+          {this.state.title}
+        </Text>
+      )}
+      {!isEmpty(this.state.categories) && (
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={this.state.categories}
+          keyExtractor={this._categoryKeyExtractor}
+          renderItem={this._renderItemCat}
+          removeClippedSubviews={true}
+          //ListHeaderComponent={this._listHeaderComponent}
+        />
+      )}
+    </>
+  );
 
   _categoryKeyExtractor = item => "category_" + item.id;
 
@@ -562,6 +585,10 @@ class ProductScreen extends React.PureComponent {
     this.setState({gridView: !this.state.gridView});
   };
 
+  gotoPage = () => {
+    this.props.navigation.navigate("Cart");
+  };
+
   render() {
     const {
       products,
@@ -575,7 +602,8 @@ class ProductScreen extends React.PureComponent {
       showLoader,
     } = this.state;
     const {
-      appSettings: {accent_color},
+      appSettings: {accent_color, toolbarbadgecolor},
+      count,
     } = this.props;
     return (
       <Container>
@@ -584,58 +612,40 @@ class ProductScreen extends React.PureComponent {
             width: "100%",
             flexDirection: "row",
             alignItems: "center",
+            justifyContent: "space-between",
             backgroundColor: "#FAECE2",
+            paddingEnd: 8,
           }}>
           <Button onPress={this.goBack} style={{padding: 16}}>
             <Icon color={"#000"} name="keyboard-backspace" type="MaterialIcons" size={24} />
           </Button>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flex: 1,
-            }}>
-            <Text
-              style={{
-                fontWeight: "600",
-                fontSize: 16,
-                paddingHorizontal: 16,
-                color: "#000",
-                flex: 1,
-              }}>
-              {header != "" ? header : "Product"}
-            </Text>
-            {title == "" && (
-              <View style={{flexDirection: "row", alignItems: "center"}}>
-                <TouchableOpacity style={{}} onPress={this._gotoChangeGrid}>
-                  {gridView ? (
-                    <Image
-                      style={{width: 30, height: 30, marginHorizontal: 10, resizeMode: "contain"}}
-                      source={require("../../assets/imgs/grid.png")}
-                    />
-                  ) : (
-                    <Image
-                      style={{width: 30, height: 30, marginHorizontal: 10, resizeMode: "contain"}}
-                      source={require("../../assets/imgs/listing.png")}
-                    />
-                  )}
-                </TouchableOpacity>
-                <Button onPress={this.openSort}>
-                  <Image
-                    style={{width: 30, height: 30, resizeMode: "contain"}}
-                    source={require("../../assets/imgs/sort.png")}
-                  />
-                </Button>
-                <Button onPress={this.openFilter}>
-                  <Image
-                    style={{width: 30, height: 30, marginHorizontal: 10, resizeMode: "contain"}}
-                    source={require("../../assets/imgs/filter.png")}
-                  />
-                </Button>
-              </View>
-            )}
-          </View>
+
+          {title == "" && (
+            <View style={{flexDirection: "row", alignItems: "center"}}>
+              <Button onPress={this.gotoPage}>
+                <SvgCart style={styles.drawerItemIcon} width={18} height={18} />
+                {/* {count > 0 && (
+                    <View
+                      style={[styles.badge, {backgroundColor: toolbarbadgecolor || accent_color}]}>
+                      <Text style={styles.badgeText}>{count}</Text>
+                    </View>
+                  )} */}
+              </Button>
+              <TouchableOpacity style={{}} onPress={this._gotoChangeGrid}>
+                {gridView ? (
+                  <SvgGrid style={styles.drawerItemIcon} width={18} height={18} />
+                ) : (
+                  <SvgList style={styles.drawerItemIcon} width={18} height={18} />
+                )}
+              </TouchableOpacity>
+              <Button onPress={this.openSort}>
+                <SvgSort style={styles.drawerItemIcon} width={18} height={18} />
+              </Button>
+              <Button onPress={this.openFilter}>
+                <SvgFilter style={[styles.drawerItemIcon, {marginEnd: 8}]} width={18} height={18} />
+              </Button>
+            </View>
+          )}
         </View>
         {/* <Toolbar backButton title="PRODUCTS" /> */}
         {/* <View style={styles.filterContainer}>
@@ -645,11 +655,6 @@ class ProductScreen extends React.PureComponent {
           </Button>
         </View> */}
 
-        {title != "" && (
-          <Text style={{marginHorizontal: 16, fontWeight: "600", alignSelf: "center"}}>
-            {title}
-          </Text>
-        )}
         {!isEmpty(products) && gridView ? (
           <FlatList
             data={products}
@@ -751,12 +756,14 @@ function Categories({item, index, navigation}) {
     <TouchableOpacity
       style={[
         {
-          marginTop: 10,
           marginBottom: 15,
           backgroundColor: "#ED7833",
           alignItems: "center",
           borderRadius: 8,
-          padding: 8,
+          paddingVertical: 12,
+          paddingHorizontal: 4,
+          height: 110,
+          justifyContent: "center",
         },
         index == 0 ? {marginStart: 18, marginEnd: 16} : {marginEnd: 16},
       ]}
@@ -777,9 +784,9 @@ function Categories({item, index, navigation}) {
           color: "#fff",
           textAlign: "center",
           fontSize: 10,
-          width: 60,
+          width: width / 5,
           paddingVertical: 2,
-          fontWeight: "700",
+          fontWeight: "500",
         }}>
         {item.name.toUpperCase()}
       </Text>
@@ -836,9 +843,29 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: "#f8f8fa",
   },
+  badge: {
+    position: "absolute",
+    end: 6,
+    top: 6,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  badgeText: {
+    fontSize: 10,
+    color: "#FFF",
+    fontWeight: "600",
+  },
+  drawerItemIcon: {
+    color: "#000000",
+    fontWeight: "900",
+    marginHorizontal: 8,
+  },
 });
 
-const mapStateToProps = state => ({appSettings: state.appSettings});
+const mapStateToProps = state => ({appSettings: state.appSettings, count: state.cartCount});
 
 const mapDispatchToProps = {
   brand,

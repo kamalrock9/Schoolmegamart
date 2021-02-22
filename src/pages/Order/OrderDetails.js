@@ -315,11 +315,13 @@ function OrderDetails({navigation}) {
             </Text>
           </View>
           {!isEmpty(data.coupon_lines) &&
-            data.coupon_lines.map(item => {
+            data.coupon_lines.map((item, index) => {
               return (
-                <View style={styles.footerSummaryView}>
-                  <Text style={styles.text}>{t("COUPON") + " (" + data.code + ")"}</Text>
-                  <Text style={[styles.text, {color: "#000000"}]}>{data.discount}</Text>
+                <View key={item + "sap" + index} style={styles.footerSummaryView}>
+                  <Text style={styles.text}>{t("COUPON") + " (" + item.code + ")"}</Text>
+                  <Text style={[styles.text, {color: "#000000"}]}>
+                    {data.currency_symbol + "" + item.discount}
+                  </Text>
                 </View>
               );
             })}

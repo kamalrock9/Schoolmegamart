@@ -19,6 +19,7 @@
       android:largeHeap="true">
 
       <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+      <meta-data android:name="com.bugsnag.android.API_KEY" android:value="b08eb5a51c4c091fbb23888466fb6a24" />
 
       <activity
         android:name=".MainActivity"

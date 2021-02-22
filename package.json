@@ -13,6 +13,7 @@
     "build": "npx jetify && cd android && ./gradlew clean && ./gradlew assembleRelease && ./gradlew bundleRelease && cd .."
   },
   "dependencies": {
+    "@bugsnag/react-native": "^7.7.0",
     "@ptomasroos/react-native-multi-slider": "^2.2.0",
     "@react-native-community/async-storage": "^1.7.1",
     "@react-native-community/google-signin": "^5.0.0",
@@ -22,7 +23,6 @@
     "axios": "^0.19.1",
     "axios-retry": "^3.1.2",
     "base-64": "^1.0.0",
-    "bugsnag-react-native": "2.23.3",
     "i18next": "^19.0.3",
     "moment": "^2.24.0",
     "prop-types": "^15.7.2",

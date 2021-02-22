@@ -3290,7 +3290,7 @@ function BillingAddresss({getGst}) {
   const [address2, setAddress2] = useState(user.billing.address_2);
   const [counrtyy, setCountryy] = useState(user.billing.country);
   const [state, setState] = useState(user.billing.state);
-  const [gst,setGst] = useState('');
+  const [gst, setGst] = useState("");
 
   const [country, setCountry] = useState([]);
 
@@ -3334,7 +3334,7 @@ function BillingAddresss({getGst}) {
   const onChangeGst = useCallback(text => {
     setGst(text);
     getGst && getGst(text);
-   // dispatchAction(updateBilling({...user.billing, address_2: text}));
+    // dispatchAction(updateBilling({...user.billing, address_2: text}));
   });
 
   const renderOption = settings => {
@@ -3442,7 +3442,7 @@ function BillingAddresss({getGst}) {
         />
 
         <CustomTextInputAddress
-          caretHidden={true}
+          // caretHidden={true}
           viewstyle={{marginTop: 24}}
           textColor={{color: appSettings.accent_color}}
           label={t("EMAIL") + "*"}
@@ -3537,7 +3537,7 @@ function BillingAddresss({getGst}) {
           label={"GST Number"}
           value={gst}
           onChangeText={onChangeGst}
-        />  
+        />
       </ScrollView>
     </View>
   );

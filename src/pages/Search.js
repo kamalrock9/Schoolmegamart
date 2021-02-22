@@ -57,7 +57,7 @@ function Search({navigation}) {
         .then(({data}) => {
           console.log(data);
           setLoading(false);
-          setCate(data.categories);
+          // setCate(data.categories);
           setResults(data.products);
         })
         .catch(error => {
@@ -70,7 +70,8 @@ function Search({navigation}) {
 
   const renderItem = ({item}) => {
     return (
-      <TouchableOpacity onPress={goToPage("ProductScreen", {category_id: item.id})}>
+      <TouchableOpacity
+        onPress={goToPage("ProductScreen", {category_id: {id: item.id, name: item.name}})}>
         <Text style={{marginVertical: 16, fontWeight: "400", fontSize: 12}}>{item.name}</Text>
       </TouchableOpacity>
     );
@@ -128,7 +129,7 @@ function Search({navigation}) {
                 //  paddingTop: 8,
                 flexDirection: "row",
                 borderRadius: 4,
-                elevation: 4,
+                //elevation: 4,
                 height: 40,
               },
             ]}>
@@ -149,14 +150,14 @@ function Search({navigation}) {
             style={{padding: 16, marginTop: 16, flex: 1}}
           />
         )} */}
-        {!isEmpty(cate) && (
+        {/* {!isEmpty(cate) && (
           <FlatList
             data={cate}
             renderItem={renderItem}
             keyExtractor={keyExtractor}
             ItemSeparatorComponent={itemSeparatorComponentCate}
           />
-        )}
+        )} */}
         {/* {!isEmpty(results) && ( */}
         <FlatList
           showsVerticalScrollIndicator={false}
@@ -217,7 +218,7 @@ const styles = StyleSheet.create({
     marginTop: -10,
     paddingBottom: 16,
   },
-  seperator: {backgroundColor: "#d2d2d2", height: 1.35, width: "100%"},
+  seperator: {backgroundColor: "#d2d2d2", height: 1.35, marginVertical: 10, width: "100%"},
 });
 
 export default Search;

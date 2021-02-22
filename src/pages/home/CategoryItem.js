@@ -47,8 +47,8 @@ function CategoryItem({item, index}) {
             color: "white",
             textAlign: "center",
             fontSize: 10,
-            marginTop: 8,
             fontWeight: "500",
+            paddingVertical: 2,
           }}>
           {item.name.toUpperCase()}
         </Text>

@@ -5,7 +5,7 @@ import HTML from "react-native-render-html";
 
 const delRenderer = (htmlAttribs, children, convertedCSSStyles, passProps) => (
   <Text key={passProps.key} style={convertedCSSStyles}>
-    {children} &nbsp;
+    &nbsp; {children} &nbsp;
   </Text>
 );
 
@@ -54,10 +54,11 @@ const styles = StyleSheet.create({
   del: {
     textDecorationLine: "line-through",
     color: "#999999",
-    marginLeft: 20,
+    paddingLeft: 20,
     fontSize: 10,
   },
   ins: {
+    paddingRight: 20,
     color: "#000000",
   },
 });

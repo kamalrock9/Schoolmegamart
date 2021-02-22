@@ -166,7 +166,7 @@ function Reviews({navigation}) {
       {reviewSettings.enable_reviews &&
         (!reviewSettings.review_rating_verification_required ||
           (reviewSettings.review_rating_verification_required &&
-            !reviewSettings.user_bought_product)) && (
+            reviewSettings.user_bought_product)) && (
           <Button
             style={[
               styles.fabIcon,

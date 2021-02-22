@@ -41,12 +41,14 @@ function WishListItem({item, index}) {
           index % 2 == 0 ? {marginStart: 12} : {marginStart: 8},
           {
             width: width / 2 - 16,
-            backgroundColor: "#EAEAF1",
+            // backgroundColor: "#EAEAF1",
             paddingVertical: 20,
             borderRadius: 8,
             marginTop: 8,
             alignItems: "center",
             justifyContent: "center",
+            borderColor: "#f8f8fa",
+            borderWidth: 4,
           },
         ]}>
         {item.images.length > 0 && (
@@ -94,7 +96,7 @@ function WishListItem({item, index}) {
           rating={parseInt(item.average_rating)}
           containerStyle={[styles.itemMargin, styles.star]}
           starStyle={{marginEnd: 5}}
-          starSize={10}
+          starSize={14}
           halfStarEnabled
           emptyStarColor={accent_color}
           fullStarColor={accent_color}

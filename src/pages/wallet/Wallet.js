@@ -116,7 +116,9 @@ function Wallet({navigation}) {
             <Icon type="Entypo" name="plus" color={"#ffffff"} size={18} />
             <Text style={styles.txt}>{t("ADD_MONEY")}</Text>
           </Button>
-          <Button style={[styles.btn, {backgroundColor: accent_color}]} onPress={_gotoReferAndEarn}>
+          <Button
+            style={[styles.btn, {backgroundColor: accent_color, marginEnd: 16}]}
+            onPress={_gotoReferAndEarn}>
             <Icon name="md-share-alt" color={"#ffffff"} size={22} />
             <Text style={styles.txt}>{t("REFER_AND_EARN")}</Text>
           </Button>
@@ -181,14 +183,20 @@ function ItemSeparatorComponent() {
 function TransactionItem({item, index}) {
   return (
     <View style={[styles.card]}>
-      <View style={{flexDirection: "row", justifyContent: "space-between", marginBottom: 8}}>
-        <Text style={styles.details}>{item.details || "No details"}</Text>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          marginBottom: 8,
+          width: "100%",
+        }}>
+        <Text style={[styles.details, {flex: 1}]}>{item.details[0] || "No details"}</Text>
         <HTMLRender
-          html={item.amount ? item.amount : "<b></b>"}
-          baseFontStyle={[{color: item.type == "credit" ? "green" : "red"}, styles.details]}
+          html={item.amount[0] ? item.amount[0] : "<b />"}
+          baseFontStyle={[{color: item.type[0] == "credit" ? "green" : "red"}, styles.details]}
         />
       </View>
-      <Text style={styles.text}>{moment(item.date).format("MMM DD,YYYY")}</Text>
+      <Text style={styles.text}>{moment(item.date[0], "MMMM DD, YYYY").format("MMM DD,YYYY")}</Text>
     </View>
   );
 }
@@ -202,20 +210,22 @@ const styles = StyleSheet.create({
     height: 44,
     flex: 1,
     marginTop: 12,
-    shadowRadius: 2,
+    shadowRadius: 4,
     shadowOpacity: 0.5,
     shadowOffset: {width: 0, height: 2},
-    marginHorizontal: 6,
+    marginStart: 16,
   },
   txt: {color: "#fff", fontSize: 16, marginStart: 5},
   card: {
-    elevation: 1,
+    // elevation: 1,
     shadowRadius: 2,
     shadowOpacity: 0.5,
     shadowOffset: {width: 0, height: 1},
-    backgroundColor: "#fff",
+    //backgroundColor: "#fff",
     padding: 10,
     borderRadius: 4,
+    borderColor: "#a8a8a8",
+    borderWidth: 1,
   },
   details: {
     fontWeight: "500",

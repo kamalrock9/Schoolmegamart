@@ -14,6 +14,7 @@ import moment from "moment";
 import {useTranslation} from "react-i18next";
 import {isEmpty} from "lodash";
 import analytics from "@react-native-firebase/analytics";
+import Toast from "react-native-toast-message";
 
 function Orders({navigation}) {
   const {t} = useTranslation();
@@ -29,7 +30,7 @@ function Orders({navigation}) {
   useEffect(() => {
     trackScreenView("Order Page");
     if (!isEmpty(user)) {
-      const subscription = navigation.addListener("willFocus", () => {
+      const subscription = navigation.addListener("didFocus", () => {
         setpage(0);
       });
       return () => {
@@ -71,28 +72,36 @@ function Orders({navigation}) {
     };
 
     console.log(param);
-    // if (!isEmpty(user)) {
-    setLoading(true);
-    ApiClient.post("/" + user.id + "/order-list", param)
-      .then(({data}) => {
-        console.log(data.data);
-        if (data.status) {
-          unstable_batchedUpdates(() => {
-            let array = page == 0 ? data.data : [...orders, ...data.data];
-            setOrders(array);
-            setHasMore(data.data.length == 10);
+    if (!isEmpty(user)) {
+      console.log("check");
+      setLoading(true);
+      ApiClient.post("/" + user.id + "/order-list", param)
+        .then(({data}) => {
+          console.log(data.data);
+          if (data.status) {
+            unstable_batchedUpdates(() => {
+              let array = page == 0 ? data.data : [...orders, ...data.data];
+              setOrders(array);
+              setHasMore(data.data.length == 10);
+              setLoading(false);
+            });
+          } else {
             setLoading(false);
-          });
-        } else {
+            setOrders([]);
+          }
+        })
+        .catch(error => {
           setLoading(false);
-          setOrders([]);
-        }
-      })
-      .catch(error => {
-        setLoading(false);
-        console.log(error);
+          console.log(error);
+        });
+    } else {
+      Toast.show({
+        type: "error",
+        position: "bottom",
+        text1: "Error",
+        text2: "Please login first.",
       });
-    // }
+    }
   };
 
   const gotoOrderDetailsPage = item => () => {
@@ -208,7 +217,7 @@ function Orders({navigation}) {
           ListEmptyComponent={
             <EmptyList
               loading={loading}
-              label="No Order has been yet."
+              label="No order has been placed yet"
               iconName="list-unordered"
               iconType="Octicons"
             />

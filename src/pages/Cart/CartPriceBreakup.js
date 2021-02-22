@@ -53,7 +53,7 @@ function CartPriceBreakup({applyCoupon, data, removeCoupon, shippingMethod}) {
           <Icon name="ios-arrow-forward" size={24} style={{marginStart: "auto"}} />
         </Button>
 
-        {!isEmpty(data.coupon) && (
+        {data.hasOwnProperty("coupon") && !isEmpty(data.coupon) && (
           <View style={{flexDirection: "row", flexWrap: "wrap"}}>
             {data.coupon.map((item, index) => {
               return (
@@ -137,7 +137,7 @@ function CartPriceBreakup({applyCoupon, data, removeCoupon, shippingMethod}) {
           <Text style={{fontWeight: "600"}}>Tax</Text>
           <HTMLRender html={data.taxes} baseFontStyle={{fontWeight: "600"}} />
         </View>
-        {data.hasOwnProperty("discount_total_amount") && data.discount_total_amount > 0 && (
+        {data.hasOwnProperty("coupon") && data.coupon.length > 0 && (
           <View style={styles.view}>
             <Text style={{color: "green", fontWeight: "600"}}>Total Discount</Text>
             <HTMLRender

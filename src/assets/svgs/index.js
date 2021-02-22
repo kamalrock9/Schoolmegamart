@@ -17,7 +17,12 @@ import SvgWallet from "./Wallet";
 import SvgChat from "./Chat";
 import SvgCart from "./Cart";
 import SvgRefresh from "./Refresh";
-
+import SvgFilter from "./Filter";
+import SvgList from "./List";
+import SvgGrid from "./Grid";
+import SvgSort from "./Sort";
+import SvgSearch from "./Search";
+import SvgLike from "./Like";
 export {
   SvgMenu,
   SvgHome,
@@ -38,4 +43,10 @@ export {
   SvgChat,
   SvgCart,
   SvgRefresh,
+  SvgFilter,
+  SvgList,
+  SvgGrid,
+  SvgSort,
+  SvgSearch,
+  SvgLike,
 };

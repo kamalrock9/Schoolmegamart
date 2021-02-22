@@ -20,6 +20,9 @@ import Modal from "react-native-modal";
 import Toast from "react-native-simple-toast";
 import {deleteItemCart} from "../../store/actions/index";
 import analytics from "@react-native-firebase/analytics";
+import base64 from "base-64";
+import Constants from "../../service/Config";
+import axios from "axios";
 
 class Cart extends React.PureComponent {
   static navigationOptions = {
@@ -74,13 +77,21 @@ class Cart extends React.PureComponent {
   };
 
   ApiCall = params => {
-    let param = {
-      shipping_method: params ? params : "",
-      user_id: 17,
-    };
+    // let param = {
+    //   shipping_method: params ? params : "",
+    //   user_id: 17,
+    // };
     this.setState({loading: true});
-    ApiClient.get("/cart", param)
+    axios
+      .get("https://schoolmegamart.com/wp-json/wc/v2/cart", {
+        headers: {
+          Authorization:
+            "Basic " +
+            base64.encode(Constants.keys.consumerKey + ":" + Constants.keys.consumerSecret),
+        },
+      })
       .then(({data}) => {
+        console.log(data);
         this.setState({loading: false, cart_data: data});
       })
       .catch(() => {
@@ -122,6 +133,7 @@ class Cart extends React.PureComponent {
     this.setState({cart_data});
   };
   removeCoupon = coupon_code => {
+    console.log(coupon_code);
     this.setState({updating: true});
     ApiClient.get("/cart/remove-coupon", {coupon_code})
       .then(({data}) => {

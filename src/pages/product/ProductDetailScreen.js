@@ -481,10 +481,10 @@ class ProductDetailScreen extends React.PureComponent {
       }
     }
     //console.log(JSON.stringify(data));
-    this.setState({loading: true});
+    //this.setState({loading: true});
     ApiClient.post("/cart/add", data)
       .then(({data}) => {
-        this.setState({loading: false});
+        // this.setState({loading: false});
 
         this.setState({
           cartMsg: Array.isArray(data) ? data.map(e => e.message).join(", ") : data.message,
@@ -764,7 +764,7 @@ class ProductDetailScreen extends React.PureComponent {
             {item.images.length > 0 && (
               <Image
                 resizeMode="contain"
-                style={{width: width/3, height: 150}}
+                style={{width: width / 3, height: 150}}
                 source={{uri: item.images[0].src}}
                 indicatorColor={accent_color}
               />
@@ -787,7 +787,7 @@ class ProductDetailScreen extends React.PureComponent {
                 }}>
                 <Text style={{fontSize: 10, color: "#fff", fontWeight: "600"}}>
                   {isFinite(discount)
-                    ? Math.round((discount + Number.EPSILON) * 10) / 10 + "%"
+                    ? "-" + Math.round((discount + Number.EPSILON) * 10) / 10 + "%"
                     : " (SALE)"}
                 </Text>
               </View>
@@ -925,7 +925,7 @@ class ProductDetailScreen extends React.PureComponent {
                 }}
                 keyExtractor={this.keyExtractorSlider}
                 renderItem={this.renderItemSlider}
-                style={{width, height: width}}
+                style={{width, height: width, backgroundColor: "#fff"}}
               />
             )}
             <WishlistIcon style={[styles.right, {backgroundColor: "transparent"}]} item={product} />
@@ -1073,7 +1073,7 @@ class ProductDetailScreen extends React.PureComponent {
                   style={[
                     (!isEmpty(variation) && variation.in_stock) || product.in_stock
                       ? {color: "green"}
-                      : {color: "gray"},
+                      : {color: "red"},
                     {fontWeight: "600"},
                   ]}>
                   {product.in_stock ? "In stock" : "Out of stock"}
@@ -1086,7 +1086,9 @@ class ProductDetailScreen extends React.PureComponent {
                     paddingVertical: 4,
                   }}
                   onPress={() => this.setState({isOpenModal: true})}>
-                  <Text style={{fontWeight: "600", color: "white"}}>Bulk Enquiry?</Text>
+                  <Text style={{fontWeight: "500", color: "white", fontSize: 11}}>
+                    Bulk Enquiry?
+                  </Text>
                   {/* <Image
                     resizeMode="contain"
                     source={{width: "100%", height: aspectHeight((width - 40) / 2 - 9, 124, 36)}}

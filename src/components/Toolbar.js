@@ -8,7 +8,7 @@ import {useSelector} from "react-redux";
 import {useNavigation, useNavigationState} from "react-navigation-hooks";
 import {useTranslation} from "react-i18next";
 import {isEmpty, isArray} from "lodash";
-import {SvgMenu} from "../assets/svgs";
+import {SvgMenu, SvgCart, SvgSearch, SvgLike} from "../assets/svgs";
 
 function Toolbar({
   title,
@@ -21,7 +21,7 @@ function Toolbar({
   walletBalance,
   searchButton,
   paymentpage,
-  image
+  image,
 }) {
   const navigation = useNavigation();
   const {routeName} = useNavigationState();
@@ -51,7 +51,7 @@ function Toolbar({
   return (
     <>
       <StatusBar backgroundColor={primary_color_dark} barStyle="light-content" />
-      <View style={[styles.container, {backgroundColor:primary_color}]}>
+      <View style={[styles.container, {backgroundColor: primary_color}]}>
         {menuButton && (
           <Button onPress={navigation.openDrawer} style={styles.menuButton}>
             <SvgMenu style={styles.drawerItemIcon} width={18} height={18} />
@@ -75,18 +75,18 @@ function Toolbar({
         )}
 
         <Text style={[styles.title, {color: "#000", width: "100%"}]} ellipsizeMode="tail">
-          {title != "" ?  t(title) || t(routeName) : ""}
+          {title != "" ? t(title) || t(routeName) : ""}
         </Text>
 
         {/* {image && <Image source={require("../assets/imgs/HomeIcon.png")} resizeMode="contain" style={{width:80,height:40}} />} */}
-
 
         <View style={styles.right}>
           {searchButton && (
             <Button
               style={[styles.right, {paddingVertical: 16, paddingHorizontal: 6}]}
               onPress={goTo("Search")}>
-              <Icon name="search" type="EvilIcons" size={30} />
+              <SvgSearch style={styles.drawerItemIcon} width={20} height={20} />
+              {/* <Icon name="search" type="EvilIcons" size={30} /> */}
               {/* <Image
                 resizeMode="contain"
                 source={{width: "100%", height: 15}}
@@ -98,7 +98,8 @@ function Toolbar({
             <Button
               onPress={goTo("WishlistScreen")}
               style={[styles.menuButton, {paddingVertical: 16, paddingHorizontal: 6}]}>
-              <Icon name="heart" type="EvilIcons" size={30} />
+              <SvgLike style={styles.drawerItemIcon} width={20} height={20} />
+              {/* <Icon name="heart" type="EvilIcons" size={30} /> */}
               {/* <Image
                 resizeMode="contain"
                 source={{width: "100%", height: 20}}
@@ -115,7 +116,8 @@ function Toolbar({
             <Button
               onPress={goTo("Cart")}
               style={[styles.menuButton, {paddingVertical: 16, paddingHorizontal: 6}]}>
-              <Icon name="cart" type="EvilIcons" size={30} />
+              <SvgCart style={[styles.drawerItemIcon, {marginEnd: 8}]} width={20} height={20} />
+              {/* <Icon name="cart" type="EvilIcons" size={30} /> */}
               {/* <Image
                 resizeMode="contain"
                 source={{width: "100%", height: 15}}
@@ -147,7 +149,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 4,
-    paddingHorizontal:2
+    paddingHorizontal: 2,
     // height: 56,
   },
   badge: {
@@ -174,10 +176,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginStart: 0,
   },
-  menuButton: {padding: 16},
+  menuButton: {paddingStart: 8, paddingVertical: 16},
   drawerItemIcon: {
     color: "#000000",
     fontWeight: "900",
+    marginHorizontal: 4,
   },
 });
 

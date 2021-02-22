@@ -124,7 +124,7 @@ function HomeScreen({navigation}) {
     return (
       <TouchableOpacity onPress={gotoProductPage(item)}>
         <Image
-          style={{height: 80, width: width - 32}}
+          style={{height: 120, width: width - 32}}
           source={{
             uri: item.banner_url
               ? item.banner_url
@@ -199,16 +199,16 @@ function HomeScreen({navigation}) {
                 top: 0,
                 end: 0,
                 backgroundColor: "#FF7272",
-                width: 38,
-                height: 38,
-                borderRadius: 19,
+                width: 36,
+                height: 36,
+                borderRadius: 18,
                 padding: 2,
                 alignItems: "center",
                 justifyContent: "center",
               }}>
               <Text style={{fontSize: 10, color: "#fff", fontWeight: "600"}}>
                 {isFinite(discount)
-                  ? Math.round((discount + Number.EPSILON) * 10) / 10 + "%\nOFF"
+                  ? "-" + Math.round((discount + Number.EPSILON) * 10) / 10 + "%"
                   : "SALE"}
               </Text>
             </View>
@@ -236,11 +236,11 @@ function HomeScreen({navigation}) {
         <View
           style={[
             styles.containerProduct,
-            {width: 90, height: 150, marginEnd: 16, marginStart: index == 0 ? 16 : 0},
+            {width: 90, height: 110, marginEnd: 16, marginStart: index == 0 ? 16 : 0},
           ]}>
           <Image
             resizeMode="contain"
-            style={{width: 90, height: 150}}
+            style={{width: 90, height: 110}}
             source={{
               uri: item.banner_url
                 ? item.banner_url
@@ -302,7 +302,7 @@ function HomeScreen({navigation}) {
                 }}>
                 <Text style={{fontSize: 10, color: "#fff", fontWeight: "600"}}>
                   {isFinite(discount)
-                    ? Math.round((discount + Number.EPSILON) * 10) / 10 + "%"
+                    ? "-" + Math.round((discount + Number.EPSILON) * 10) / 10 + "%"
                     : "SALE"}
                 </Text>
               </View>
@@ -348,7 +348,7 @@ function HomeScreen({navigation}) {
     );
   };
 
-  const _keyExtractorProduct = item => "products_" + item.id;
+  const _keyExtractorProduct = (item, index) => item.id + "products_" + index;
 
   // const onEndReached = () => {
   //   if (!this.state.hasMore) return;
@@ -444,7 +444,7 @@ function HomeScreen({navigation}) {
             />
           </View>
           {/* <View style={{backgroundColor: "#d2d2d2", height: 4}} /> */}
-          <View style={{paddingVertical: 18, paddingHorizontal: 16, backgroundColor: "#f8f8f8"}}>
+          <View style={{paddingTop: 6, paddingHorizontal: 16, backgroundColor: "#f8f8f8"}}>
             <Carousel
               layout={"default"}
               ref={ref => {
@@ -462,7 +462,7 @@ function HomeScreen({navigation}) {
             <Pagination
               dotsLength={isEmpty(layout.banner) ? 1 : layout.banner.length}
               activeDotIndex={activeIndex}
-              containerStyle={{marginTop: -45, marginBottom: -24}}
+              containerStyle={{marginTop: -35, marginBottom: -20}}
               dotStyle={{
                 width: 8,
                 height: 8,
@@ -475,7 +475,7 @@ function HomeScreen({navigation}) {
               inactiveDotStyle={{
                 width: 12,
                 height: 12,
-                backgroundColor: "#fff",
+                backgroundColor: "#000000",
               }}
               inactiveDotOpacity={0.8}
               inactiveDotScale={0.6}
@@ -520,7 +520,10 @@ function HomeScreen({navigation}) {
                         </Text>
                         <Button
                           style={{borderRadius: 4, flexDirection: "row", alignItems: "center"}}
-                          onPress={gotoProductPage("")}>
+                          onPress={gotoProductPage({
+                            id: item.view_all_category_id,
+                            name: item.title,
+                          })}>
                           <Text style={styles.viewAll}>SEE ALL</Text>
                           <Icon
                             style={{backgroundColor: "#ED7833", borderRadius: 12}}
@@ -592,7 +595,10 @@ function HomeScreen({navigation}) {
                         </Text>
                         <Button
                           style={{borderRadius: 4, flexDirection: "row", alignItems: "center"}}
-                          onPress={gotoProductPage("")}>
+                          onPress={gotoProductPage({
+                            id: item.view_all_category_id,
+                            name: item.title,
+                          })}>
                           <Text style={styles.viewAll}>SEE ALL</Text>
                           <Icon
                             style={{backgroundColor: "#ED7833", borderRadius: 12}}
@@ -690,7 +696,10 @@ function HomeScreen({navigation}) {
                         </Text>
                         <Button
                           style={{alignItems: "center", flexDirection: "row", borderRadius: 4}}
-                          onPress={gotoProductPage("")}>
+                          onPress={gotoProductPage({
+                            id: item.view_all_category_id,
+                            name: item.title,
+                          })}>
                           <Text style={styles.viewAll}>SEE ALL</Text>
                           <Icon
                             style={{backgroundColor: "#ED7833", borderRadius: 12}}
@@ -803,7 +812,10 @@ function HomeScreen({navigation}) {
                         </Text>
                         <Button
                           style={{backgroundColor: "green", borderRadius: 4}}
-                          onPress={gotoProductPage("")}>
+                          onPress={gotoProductPage({
+                            id: item.view_all_category_id,
+                            name: item.title,
+                          })}>
                           <Text style={styles.viewAll}>View All</Text>
                         </Button>
                       </View>
@@ -828,7 +840,7 @@ function HomeScreen({navigation}) {
                     </View>
                   </View>
                 ) : (
-                  <View key={item + "Sap"} />
+                  <View key={item + "Sap" + index} />
                 );
               })}
             </View>
@@ -864,7 +876,10 @@ function HomeScreen({navigation}) {
                       </Text>
                       <Button
                         style={{flexDirection: "row", alignItems: "center", borderRadius: 4}}
-                        onPress={gotoProductPage("")}>
+                        onPress={gotoProductPage({
+                          id: item.view_all_category_id,
+                          name: item.title,
+                        })}>
                         <Text style={styles.viewAll}>SEE ALL</Text>
                         <Icon
                           style={{backgroundColor: "#ED7833", borderRadius: 12}}

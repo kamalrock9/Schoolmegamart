@@ -24,11 +24,11 @@ import analytics from "@react-native-firebase/analytics";
 const {width, height} = Dimensions.get("window");
 
 const initialState = {
-  loginEmail: "",
+  loginEmail: "kamlesh@webiixx.com",
   loginPassword: "",
   firstname: "",
   lastname: "",
-  signUpEmail: "",
+  signUpEmail: "", //"test66@gmail.com",
   signUpPhone: "",
   password: "",
   confirmPassword: "",
@@ -266,7 +266,7 @@ function Auth({navigation}) {
           .then(({data}) => {
             console.log(data);
             setLoading(false);
-            if (data.code == 1) {
+            if (data.code) {
               saveDetails(data.details);
               // onClose && onClose();
               Toast.show({
@@ -500,7 +500,7 @@ function Auth({navigation}) {
               />
 
               <TextInput
-                caretHidden={true}
+                //caretHidden={true}
                 placeholder="Email"
                 style={[styles.textinput, {marginTop: 3}]}
                 value={state.loginEmail}
@@ -572,9 +572,13 @@ function Auth({navigation}) {
                 justifyContent: "center",
               }}
               onPress={goToLastIndex}>
-              <Text style={styles.socialBtnText}>{t("DONT_HAVE_ACCOUNT")}</Text>
+              <Text style={[styles.socialBtnText, {fontSize: 14}]}>{t("DONT_HAVE_ACCOUNT")}</Text>
               <Button style={{paddingHorizontal: 8, marginStart: 2}} onPress={goToLastIndex}>
-                <Text style={[styles.socialBtnText, {fontWeight: "600", color: "#F47C20"}]}>
+                <Text
+                  style={[
+                    styles.socialBtnText,
+                    {fontWeight: "600", color: "#F47C20", fontSize: 14},
+                  ]}>
                   Create
                 </Text>
               </Button>
@@ -634,7 +638,7 @@ function Auth({navigation}) {
               />
 
               <TextInput
-                caretHidden={true}
+                // caretHidden={true}
                 placeholder="Email"
                 style={[styles.textinput]}
                 value={state.signUpEmail}
@@ -709,7 +713,10 @@ function Auth({navigation}) {
             </View>
 
             <Text
-              style={[styles.socialBtnText, {marginTop: 15, alignSelf: "center", marginTop: 50}]}>
+              style={[
+                styles.socialBtnText,
+                {marginTop: 15, alignSelf: "center", marginTop: 50, fontSize: 14},
+              ]}>
               or create account using social media
             </Text>
 
@@ -745,10 +752,14 @@ function Auth({navigation}) {
                 justifyContent: "center",
               }}
               onPress={goToFirstIndex}>
-              <Text style={styles.socialBtnText}>{t("HAVE_AN_ACCOUNT")}</Text>
+              <Text style={[styles.socialBtnText, {fontSize: 14}]}>{t("HAVE_AN_ACCOUNT")}</Text>
 
               <Button style={{paddingHorizontal: 8, marginStart: 8}} onPress={goToFirstIndex}>
-                <Text style={[styles.socialBtnText, {fontWeight: "600", color: "#F47C20"}]}>
+                <Text
+                  style={[
+                    styles.socialBtnText,
+                    {fontWeight: "600", color: "#F47C20", fontSize: 14},
+                  ]}>
                   {t("SIGN_IN")}
                 </Text>
               </Button>

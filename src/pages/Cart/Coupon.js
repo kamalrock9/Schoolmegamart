@@ -1,14 +1,17 @@
 import React, {useState, useEffect} from "react";
-import {View, StyleSheet, FlatList, TextInput, Image} from "react-native";
+import {View, StyleSheet, FlatList, TextInput, Image, ActivityIndicator} from "react-native";
 import {Toolbar, Button, Text, Icon, Container, EmptyList} from "components";
 import {useSelector} from "react-redux";
 import Toast from "react-native-simple-toast";
 import {WooCommerce, ApiClient} from "service";
 import moment from "moment";
 import analytics from "@react-native-firebase/analytics";
+import base64 from "base-64";
+import Constants from "../../service/Config";
+import axios from "axios";
 
 function Coupon({onBackButtonPress, applyCoupon}) {
-  const appSettings = useSelector(state => state.appSettings);
+  const {accent_color, primary_color} = useSelector(state => state.appSettings);
   const user = useSelector(state => state.user);
   const [couponCode, setCouponCode] = useState("");
   const [text, setText] = useState("");
@@ -35,17 +38,72 @@ function Coupon({onBackButtonPress, applyCoupon}) {
     await analytics().logScreenView({screen_name: screen, screen_class: screen});
   };
 
-  useEffect(() => {
-    if (couponCode == "") return;
-    let param = {
-      coupon_code: couponCode,
-      user_id: user.id,
-    };
-    console.log(param);
+  // useEffect(() => {
+  //   if (couponCode == "") return;
+  //   let param = {
+  //     coupon_code: couponCode,
+  //     //user_id: user.id,
+  //   };
+  //   console.log(param);
+  //   setLoding(true);
+  //   axios
+  //     .get("https://schoolmegamart.com/wp-json/wc/v2/cart/coupon/?coupon_code=" + couponCode, {
+  //       headers: {
+  //         Authorization:
+  //           "Basic " +
+  //           base64.encode(Constants.keys.consumerKey + ":" + Constants.keys.consumerSecret),
+  //       },
+  //     })
+  //     .then(({data}) => {
+  //       setLoding(false);
+  //       if (data.code) {
+  //         if (data.message && data.message.length > 0) {
+  //           //Toast.show(data.message.join());
+  //           Toast.show(data.message[0].notice);
+  //         } else if (data.message && data.message !== "") {
+  //           Toast.show(data.message);
+  //         } else {
+  //           Toast.show("Coupon code is not valid.");
+  //         }
+  //       } else {
+  //         applyCoupon && applyCoupon(data);
+  //         onBackButtonPress && onBackButtonPress();
+  //       }
+  //     })
+  //     .catch(error => {
+  //       setLoding(false);
+  //     });
+  // }, [couponCode]);
+
+  const setData = () => {
+    //setCouponCode(text);
+    ApplyCoupon(text);
+  };
+
+  const ApplyCoupon = cc => {
+    // let param = {
+    //   coupon_code: couponCode,
+    //   //user_id: user.id,
+    // };
+    console.log(cc);
     setLoding(true);
-    ApiClient.get("/cart/coupon", param)
+    axios
+      .get(
+        "https://schoolmegamart.com/wp-json/wc/v2/cart/coupon/?coupon_code=" +
+          cc +
+          "&user_id=" +
+          user.id,
+        {
+          headers: {
+            Authorization:
+              "Basic " +
+              base64.encode(Constants.keys.consumerKey + ":" + Constants.keys.consumerSecret),
+          },
+        },
+      )
       .then(({data}) => {
         setLoding(false);
+        console.log(data);
         if (data.code) {
           if (data.message && data.message.length > 0) {
             //Toast.show(data.message.join());
@@ -63,10 +121,12 @@ function Coupon({onBackButtonPress, applyCoupon}) {
       .catch(error => {
         setLoding(false);
       });
-  }, [couponCode]);
+  };
 
-  const setData = () => {
-    setCouponCode(text);
+  const SetCouponCode = text => () => {
+    console.log(text);
+    // setCouponCode(text);
+    ApplyCoupon(text);
   };
 
   const _renderItem = ({item, index}) => {
@@ -91,7 +151,7 @@ function Coupon({onBackButtonPress, applyCoupon}) {
             }}>
             <Text
               style={{
-                backgroundColor: appSettings.primary_color,
+                backgroundColor: primary_color,
                 borderRadius: 12,
                 paddingHorizontal: 8,
                 color: "red",
@@ -121,7 +181,7 @@ function Coupon({onBackButtonPress, applyCoupon}) {
             borderRadius: 5,
           }}
         />
-        <Button style={[styles.itemApplyButton]} onPress={() => setCouponCode(item.coupon_code)}>
+        <Button style={[styles.itemApplyButton]} onPress={SetCouponCode(item.coupon_code)}>
           <Text style={{fontWeight: "700"}}>Apply</Text>
         </Button>
       </View>
@@ -132,7 +192,7 @@ function Coupon({onBackButtonPress, applyCoupon}) {
 
   return (
     <Container style={{backgroundColor: "#f0f0f0"}}>
-      <View style={[styles.containerMain, {backgroundColor: appSettings.primary_color}]}>
+      <View style={[styles.containerMain, {backgroundColor: primary_color}]}>
         <Text style={[styles.title, {color: "#000", width: "100%"}]} ellipsizeMode="tail">
           Apply Coupon
         </Text>
@@ -156,18 +216,26 @@ function Coupon({onBackButtonPress, applyCoupon}) {
           placeholder="Apply Promo Code/Voucher"
         />
         <Button
-          style={[styles.headerApplyButton, {backgroundColor: appSettings.accent_color}]}
+          style={[styles.headerApplyButton, {backgroundColor: accent_color}]}
           onPress={setData}>
           <Text style={{color: "#fff", fontWeight: "400"}}>Apply</Text>
         </Button>
       </View>
-      <FlatList
-        data={coupons}
-        renderItem={_renderItem}
-        keyExtractor={_keyExtractor}
-        contentContainerStyle={{padding: 4, flexGrow: 1, backgroundColor: "#f0f0f0"}}
-        ListEmptyComponent={<EmptyList loading={loading} label={"No coupons are available"} />}
-      />
+      {loading ? (
+        <ActivityIndicator
+          style={{flex: 1, backgroundColor: "transparent"}}
+          size={"large"}
+          color={accent_color}
+        />
+      ) : (
+        <FlatList
+          data={coupons}
+          renderItem={_renderItem}
+          keyExtractor={_keyExtractor}
+          contentContainerStyle={{padding: 4, flexGrow: 1, backgroundColor: "#f0f0f0"}}
+          ListEmptyComponent={<EmptyList loading={loading} label={"No coupons are available"} />}
+        />
+      )}
     </Container>
   );
 }

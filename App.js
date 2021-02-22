@@ -5,7 +5,7 @@ import {createStackNavigator} from "react-navigation-stack";
 import {createBottomTabNavigator, createMaterialTopTabNavigator} from "react-navigation-tabs";
 import {createDrawerNavigator} from "react-navigation-drawer";
 import Toast, {BaseToast} from "react-native-toast-message";
-import {Image} from "react-native";
+import {StyleSheet} from "react-native";
 
 //SIDEMENU
 import Drawer from "./src/pages/drawer/Drawer";
@@ -201,7 +201,13 @@ const TabNavigator = createBottomTabNavigator(
           title: "Home",
           tabBarVisible: routeName === "HomeScreen" ? true : false,
           tabBarIcon: ({tintColor}) => (
-            <Icon size={20} type="SimpleLineIcons" name="home" color={tintColor} />
+            <Icon
+              style={styles.icon}
+              size={20}
+              type="SimpleLineIcons"
+              name="home"
+              color={tintColor}
+            />
           ),
         };
       },
@@ -212,6 +218,7 @@ const TabNavigator = createBottomTabNavigator(
         title: "Category",
         tabBarIcon: ({tintColor}) => (
           <Icon
+            style={styles.icon}
             size={22}
             type="MaterialCommunityIcons"
             name="content-duplicate"
@@ -219,13 +226,24 @@ const TabNavigator = createBottomTabNavigator(
           />
         ),
       },
+      tabBarOptions: {
+        tabStyle: {
+          paddingVertical: 10,
+        },
+      },
     },
     OrderStack: {
       screen: OrderStack,
       navigationOptions: {
         title: "Order",
         tabBarIcon: ({tintColor}) => (
-          <Icon size={26} type="SimpleLineIcons" name="list" color={tintColor} />
+          <Icon
+            style={styles.icon}
+            size={26}
+            type="SimpleLineIcons"
+            name="list"
+            color={tintColor}
+          />
           // <Image
           //   source={require("../schoolmegamart/src/assets/imgs/cart.png")}
           //   tintColor={tintColor}
@@ -238,7 +256,7 @@ const TabNavigator = createBottomTabNavigator(
       navigationOptions: {
         title: "Cart",
         tabBarIcon: ({tintColor}) => (
-          <Icon name="cart" type="EvilIcons" size={32} color={tintColor} />
+          <Icon style={styles.icon} name="cart" type="EvilIcons" size={32} color={tintColor} />
           // <Icon size={24} type="AntDesign" name="user" color={tintColor} />
           // <Image
           //   source={require("../schoolmegamart/src/assets/imgs/bottomProfile.png")}
@@ -254,6 +272,9 @@ const TabNavigator = createBottomTabNavigator(
       tabBarOptions: {
         activeTintColor: "#f28529",
         inactiveTintColor: "#8e9ca8",
+        tabStyle: {
+          paddingVertical: 4,
+        },
       },
     },
   },
@@ -296,6 +317,10 @@ const AppNavigator = createSwitchNavigator(
     backBehavior: "none",
   },
 );
+
+const styles = StyleSheet.create({
+  icon: {marginTop: 4},
+});
 
 const AppContainer = createAppContainer(AppNavigator);
 

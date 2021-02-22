@@ -21,11 +21,11 @@ function SliderImageZoom({navigation}) {
   };
 
   return (
-    <Container style={[styles.container, {backgroundColor: primary_color}]}>
-      <Button onPress={goBack} style={{padding: 16, backgroundColor: primary_color}}>
+    <Container style={[styles.container, {backgroundColor: "#fff"}]}>
+      <Button onPress={goBack} style={{padding: 16, backgroundColor: "#fff"}}>
         <Icon color={"#000"} name="cross" type="Entypo" size={24} />
       </Button>
-      <ImageViewer backgroundColor={primary_color} renderIndicator={() => {}} imageUrls={images} />
+      <ImageViewer backgroundColor={"#fff"} renderIndicator={() => {}} imageUrls={images} />
     </Container>
   );
 }

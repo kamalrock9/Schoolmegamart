@@ -36,7 +36,7 @@ import {
   SvgFeedback,
   SvgWallet,
   SvgLogout,
-  SvgChat
+  SvgChat,
 } from "../../assets/svgs";
 
 class Drawer extends React.PureComponent {
@@ -140,14 +140,14 @@ class Drawer extends React.PureComponent {
               style={{fontSize: 54, marginEnd: 10}}
             /> */}
             {isEmpty(user) ? (
-              <TouchableOpacity style={{flexDirection:"row",alignItems:"center"}} onPress={this.openModal}>
-              <Text style={{fontSize: 16, fontWeight: "500"}} >
-                Login
-              </Text>
-              <View style={{height:14,width:2,backgroundColor:"#000000",marginHorizontal:4}}></View>
-              <Text style={{fontSize: 16, fontWeight: "500"}}>
-                Register
-              </Text>
+              <TouchableOpacity
+                style={{flexDirection: "row", alignItems: "center"}}
+                onPress={this.openModal}>
+                <Text style={{fontSize: 16, fontWeight: "500"}}>Login</Text>
+                <View
+                  style={{height: 14, width: 2, backgroundColor: "#000000", marginHorizontal: 4}}
+                />
+                <Text style={{fontSize: 16, fontWeight: "500"}}>Register</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity onPress={this.navigateToScreen("AccountSetting")}>
@@ -160,7 +160,7 @@ class Drawer extends React.PureComponent {
                     ? user.username
                     : ""}
                 </Text>
-                <Text style={{fontSize: 12,marginTop:-5, color: "grey"}}>{user.email}</Text>
+                <Text style={{fontSize: 12, marginTop: -5, color: "grey"}}>{user.email}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -220,12 +220,12 @@ class Drawer extends React.PureComponent {
                   {/* <Image source={require("../../assets/imgs/download.png")} style={styles.img} /> */}
                   <Text style={styles.text}>{t("DOWNLOAD")}</Text>
                 </Button>
-                {/* {wallet_active && (
+                {wallet_active && (
                   <Button style={styles.button} onPress={this.navigateToScreen("WalletStack")}>
-                  <SvgWallet style={styles.drawerItemIcon} width={20} height={20} />
+                    <SvgWallet style={styles.drawerItemIcon} width={20} height={20} />
                     <Text style={styles.text}>{t("WALLET")}</Text>
                   </Button>
-                )} */}
+                )}
                 <View style={styles.divider} />
               </>
             )}
@@ -234,30 +234,30 @@ class Drawer extends React.PureComponent {
               <Button
                 style={styles.button}
                 onPress={this.navigateToScreen("TawkToChat", {uri: direct_tawk_id})}>
-                 <SvgChat style={styles.drawerItemIcon} width={20} height={20} />
+                <SvgChat style={styles.drawerItemIcon} width={20} height={20} />
                 {/* <Image source={require("../../assets/imgs/chat.png")} style={styles.img} /> */}
                 <Text style={styles.text}>{t("CHAT_SUPPORT")}</Text>
               </Button>
             )}
             <Button style={styles.button} onPress={this.contactUs}>
-            <SvgContactus style={styles.drawerItemIcon} width={20} height={20} />
+              <SvgContactus style={styles.drawerItemIcon} width={20} height={20} />
 
               {/* <Image source={require("../../assets/imgs/telephone.png")} style={styles.img} /> */}
               <Text style={styles.text}>{t("CONTACT")}</Text>
             </Button>
             <Button style={styles.button} onPress={this.navigateToScreen("TermAndCondition")}>
-            <SvgTOS style={styles.drawerItemIcon} width={20} height={20} />
+              <SvgTOS style={styles.drawerItemIcon} width={20} height={20} />
               {/* <Image source={require("../../assets/imgs/term.png")} style={styles.img} /> */}
               <Text style={styles.text}>{t("TOS")}</Text>
             </Button>
             <Button style={styles.button} onPress={this.navigateToScreen("giveFeedback")}>
-            <SvgFeedback style={styles.drawerItemIcon} width={20} height={20} />
+              <SvgFeedback style={styles.drawerItemIcon} width={20} height={20} />
               {/* <Image source={require("../../assets/imgs/review.png")} style={styles.img} /> */}
               <Text style={styles.text}>{t("GIVE_FEEDBACK")}</Text>
             </Button>
             {!isEmpty(user) && (
               <Button style={styles.button} onPress={this.navigateToScreen("Logout")}>
-                 <SvgLogout style={styles.drawerItemIcon} width={20} height={20} />
+                <SvgLogout style={styles.drawerItemIcon} width={20} height={20} />
                 {/* <Image source={require("../../assets/imgs/logout.png")} style={styles.img} /> */}
                 <Text style={styles.text}>{t("SIGN_OUT")}</Text>
               </Button>
