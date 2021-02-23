@@ -43,7 +43,7 @@ function Download({navigation}) {
   const loadDownload = () => {
     setLoading(true);
     axios
-      .get("https://schoolmegamart.com/wp-json/wc/v2/customers/" + user.id + "/downloads", {
+      .get("http://13.127.120.31/wp-json/wc/v2/customers/" + user.id + "/downloads", {
         headers: {
           Authorization:
             "Basic " +

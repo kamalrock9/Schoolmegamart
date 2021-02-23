@@ -83,7 +83,7 @@ class Cart extends React.PureComponent {
     // };
     this.setState({loading: true});
     axios
-      .get("https://schoolmegamart.com/wp-json/wc/v2/cart", {
+      .get("http://13.127.120.31/wp-json/wc/v2/cart", {
         headers: {
           Authorization:
             "Basic " +
