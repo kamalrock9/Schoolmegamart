@@ -95,6 +95,7 @@ function Orders({navigation}) {
           console.log(error);
         });
     } else {
+      setOrders([]);
       Toast.show({
         type: "error",
         position: "bottom",

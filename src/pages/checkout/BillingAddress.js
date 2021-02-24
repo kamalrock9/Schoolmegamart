@@ -3454,6 +3454,7 @@ function BillingAddresss({getGst}) {
           viewstyle={{marginTop: 24}}
           textColor={{color: appSettings.accent_color}}
           label={t("PHONE_NUMBER") + "*"}
+          keyboardType="numeric"
           value={phone}
           onChangeText={onChangePhone}
         />
