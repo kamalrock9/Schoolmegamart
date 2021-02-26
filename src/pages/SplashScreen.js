@@ -51,28 +51,8 @@ function SplashScreen({navigation}) {
           Toast.show("Something went wrong! Try again");
         });
     }
-    if (isEmpty(appSettings)) {
-      console.log("wait");
-
-      ApiClient.get("/app-settings")
-        .then(({data}) => {
-          dispatch(saveAppSettings(data));
-          if (data.app_status == "under-maintenance") {
-            setMaintenance(true);
-            return;
-          } else {
-            checkUpdateNeeded(data);
-          }
-        })
-        .catch(() => {
-          Toast.show("Something went wrong! Try again");
-        });
-    } else {
-      // if (appSettings.app_status == "under-maintenance") {
-      //   setMaintenance(true);
-      //   return;
-      // } else {
-      ApiClient.get("/app-settings").then(({data}) => {
+    ApiClient.get("/app-settings")
+      .then(({data}) => {
         dispatch(saveAppSettings(data));
         if (data.app_status == "under-maintenance") {
           setMaintenance(true);
@@ -80,9 +60,10 @@ function SplashScreen({navigation}) {
         } else {
           checkUpdateNeeded(data);
         }
+      })
+      .catch(error => {
+        Toast.show("Something went wrong! Try again");
       });
-      //}
-    }
     dispatch(getCartCount());
   }, []);
 

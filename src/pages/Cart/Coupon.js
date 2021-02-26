@@ -89,7 +89,10 @@ function Coupon({onBackButtonPress, applyCoupon}) {
     setLoding(true);
     axios
       .get(
-        "http://13.127.120.31/wp-json/wc/v2/cart/coupon/?coupon_code=" + cc + "&user_id=" + user.id,
+        "https://schoolmegamart.com/wp-json/wc/v2/cart/coupon/?coupon_code=" +
+          cc +
+          "&user_id=" +
+          user.id,
         {
           headers: {
             Authorization:
