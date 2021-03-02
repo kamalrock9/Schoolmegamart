@@ -24,7 +24,7 @@ import analytics from "@react-native-firebase/analytics";
 const {width, height} = Dimensions.get("window");
 
 const initialState = {
-  loginEmail: "",
+  loginEmail: "kamlesh@webiixx.com",
   loginPassword: "",
   firstname: "",
   lastname: "",
