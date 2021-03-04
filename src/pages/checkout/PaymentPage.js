@@ -90,13 +90,13 @@ function PaymentPage({navigation}) {
 
       case "payumbolt":
         let hash = HashGenerator({
-          key: "bwvmg5wR",
+          key: "LQ9puVEt",
           amount: data.total,
           email: user.billing.email,
           txnId: data.id,
           productName: "product_info",
           firstName: user.billing.first_name,
-          salt: "q7V4lJXKZr",
+          salt: "jPwKYl2xaD",
         });
         console.log(hash);
 
@@ -107,11 +107,11 @@ function PaymentPage({navigation}) {
           firstName: user.billing.first_name,
           email: user.billing.email,
           phone: user.billing.phone,
-          merchantId: "bwvmg5wR",
-          key: "bwvmg5wR",
+          merchantId: "LQ9puVEt",
+          key: "LQ9puVEt",
           successUrl: "https://www.payumoney.com/mobileapp/payumoney/success.php",
           failedUrl: "https://www.payumoney.com/mobileapp/payumoney/failure.php",
-          isDebug: true,
+          isDebug: false,
           hash: hash,
         };
 

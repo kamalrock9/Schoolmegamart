@@ -177,15 +177,15 @@ class TreeView extends React.PureComponent {
                 : "https://user-images.githubusercontent.com/2351721/31314483-7611c488-ac0e-11e7-97d1-3cfc1c79610e.png",
           }}
         />
+
         <Text
           style={{
             fontSize: 14,
             //  paddingStart: 10,
             fontWeight: "600",
             color: "#fff",
-            // alignSelf: "center",
-          }}
-          numberOfLines={1}>
+            textAlign: "center",
+          }}>
           {item.name}
         </Text>
       </TouchableOpacity>

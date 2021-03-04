@@ -9,11 +9,8 @@ import {ApiClient} from "service";
 const {width} = Dimensions.get("window");
 
 function CartPriceBreakup({applyCoupon, data, removeCoupon, shippingMethod}) {
-  // console.log(data);
+  console.log(data);
   const [isCoupon, setIsCoupon] = useState(false);
-  if (data.hasOwnProperty("chosen_shipping_method")) {
-    const [isSelectShipping, setShippingMethod] = useState(data.chosen_shipping_method);
-  }
 
   const toggleCouponModal = () => {
     setIsCoupon(!isCoupon);

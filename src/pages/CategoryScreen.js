@@ -52,7 +52,10 @@ class CategoryScreen extends React.PureComponent {
     return (
       <>
         <Toolbar title="Categories" menuButton cartButton wishListButton searchButton />
-        <ScrollView contentContainerStyle={{paddingHorizontal: 12}}>
+        <ScrollView
+          contentContainerStyle={{
+            paddingHorizontal: 12,
+          }}>
           {this.props.categories.data != undefined && (
             <TreeView
               data={

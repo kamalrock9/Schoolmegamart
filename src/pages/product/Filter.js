@@ -171,7 +171,7 @@ function Filter({onBackPress, onFilter, filterData, attributes, seletedAttr = {}
             <Button
               style={[
                 styles.filterTabs,
-                {backgroundColor: index === tabIndex ? "#FFFFFF" : null},
+                //{backgroundColor: index === tabIndex ? "#FFFFFF" : null},
                 {marginStart: 12, marginTop: 4},
               ]}
               key={"filter_" + item + index}
@@ -472,9 +472,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     //  borderRadius: 20,
     alignItems: "center",
-    borderTopStartRadius: 8,
-    borderTopEndRadius: 8,
-    // marginHorizontal: 10,
   },
   drawerItemIcon: {
     //marginHorizontal: 20,

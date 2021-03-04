@@ -178,6 +178,8 @@ function CheckoutScreen({navigation}) {
         isEmpty(billing.address_1)
       ) {
         Toast.show("Please enter the required filled");
+      } else if (billing.phone.length != 10) {
+        Toast.show("Please enter the valid phone number.");
       } else if (
         stepPos == 2 &&
         (isEmpty(shipping.first_name) ||
@@ -395,6 +397,8 @@ function CheckoutScreen({navigation}) {
         isEmpty(billing.address_1)
       ) {
         Toast.show("Please enter the required filled");
+      } else if (billing.phone.length != 10) {
+        Toast.show("Please enter the valid phone number.");
       } else if (pincode_active) {
         ApiCall(user.billing.postcode, 2);
         const {billing, shipping} = user;

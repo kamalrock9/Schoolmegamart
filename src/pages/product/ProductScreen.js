@@ -311,7 +311,7 @@ class ProductScreen extends React.PureComponent {
     this.setState({showLoader: true});
     ApiClient.post("/cart/add", data)
       .then(({data}) => {
-        console.log(data);
+        console.log(data.message.replace('"', ""));
         this.setState({showLoader: false});
         if (data.code) {
           this.props.getCartCount();

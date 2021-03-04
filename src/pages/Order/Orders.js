@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   unstable_batchedUpdates,
 } from "react-native";
-import {Text, Toolbar, EmptyList} from "components";
+import {Text, Toolbar, EmptyList, HTMLRender} from "components";
 import {WooCommerce, ApiClient} from "service";
 import {useSelector} from "react-redux";
 import moment from "moment";
@@ -151,6 +151,10 @@ function Orders({navigation}) {
         </View>
         <View style={{marginTop: 5}}>
           <Text style={styles.smalltxt}>TOTAL AMOUNT</Text>
+          {/* <HTMLRender
+            html={item.order_total.value ? item.order_total.value : <b />}
+            baseFontStyle={{fontWeight: "600"}}
+          /> */}
           <Text style={[styles.text, styles.font]}>{item.currency_symbol + "" + item.total}</Text>
         </View>
         <View style={{marginTop: 10}}>

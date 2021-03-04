@@ -22,7 +22,7 @@ class Service {
   handleError = error => {
     //console.log(error);
 
-    console.error("Request Failed:", error.config);
+    console.error("Request Failed:", error);
     if (error.response) {
       Toast.show({
         type: "error",

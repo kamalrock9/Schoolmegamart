@@ -24,7 +24,7 @@ import analytics from "@react-native-firebase/analytics";
 const {width, height} = Dimensions.get("window");
 
 const initialState = {
-  loginEmail: "kamlesh@webiixx.com",
+  loginEmail: "",
   loginPassword: "",
   firstname: "",
   lastname: "",
@@ -32,6 +32,7 @@ const initialState = {
   signUpPhone: "",
   password: "",
   confirmPassword: "",
+  couponcode: "",
 };
 
 function reducer(state = initialState, action) {
@@ -265,8 +266,9 @@ function Auth({navigation}) {
         ApiClient.post("/login", param)
           .then(({data}) => {
             console.log(data);
+            console.log("hey");
             setLoading(false);
-            if (data.code) {
+            if (data.code == 11) {
               saveDetails(data.details);
               // onClose && onClose();
               Toast.show({
@@ -282,11 +284,12 @@ function Auth({navigation}) {
                 // navigation.replace("AccountSetting");
               }
             } else {
+              console.log("hello");
               Toast.show({
                 type: "error",
                 position: "bottom",
                 text1: "Error",
-                visibilityTime: 4000,
+                visibilityTime: 2000,
                 text2: data.message,
               });
             }

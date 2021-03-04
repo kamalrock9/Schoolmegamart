@@ -21,6 +21,7 @@ import Modal from "react-native-modal";
 
 function OrderDetails({navigation}) {
   const {accent_color} = useSelector(state => state.appSettings);
+  const user = useSelector(state => state.user);
   const {t} = useTranslation();
   const [loading, setLoading] = useState(false);
   const Data = navigation.getParam("item");
@@ -111,17 +112,24 @@ function OrderDetails({navigation}) {
 
   const _CancelItem = item => () => {
     console.log(item);
-    var bodyFormData = new FormData();
-    bodyFormData.append("order_id", data.id);
-    bodyFormData.append("item_id", item.id);
-    console.log(bodyFormData);
+    if (isEmpty(user)) {
+      Toast.show("Please login first.");
+      return;
+    }
+    // var bodyFormData = new FormData();
+    // bodyFormData.append("order_id_", data.id);
+    // bodyFormData.append("item_id_", item.id);
+    // bodyFormData.append("user_id", user.id);
+    // console.log(bodyFormData);
     setLoading(true);
-    ApiClient.post("/cancel/order-item", bodyFormData)
+    ApiClient.get(
+      "/cancel/order-item/?order_id_=" + data.id + "&item_id_=" + item.id + "&user_id=" + user.id,
+    )
       .then(({data}) => {
         setLoading(false);
         console.log(data);
         if (data.status) {
-          Toast.show(data.msg, Toast.SHORT);
+          Toast.show(data.data, Toast.SHORT);
           setLoading(true);
           ApiClient.get("/get-order-by-id?order_id=" + orderID)
             .then(({data}) => {
@@ -133,6 +141,8 @@ function OrderDetails({navigation}) {
               setLoading(false);
               console.log(error);
             });
+        } else {
+          Toast.show(data.data, Toast.SHORT);
         }
       })
       .catch(error => {
@@ -230,13 +240,20 @@ function OrderDetails({navigation}) {
             <Text style={styles.txt}>{"Qty:" + item.quantity}</Text>
             <Text style={styles.txt}>{data.currency_symbol + "" + item.subtotal}</Text>
           </View>
-          {data.status === "processing" && data.line_items.length > 1 && (
-            <TouchableOpacity
-              style={{backgroundColor: "red", borderRadius: 4, width: 100, alignItems: "center"}}
-              onPress={_CancelItem(item)}>
-              <Text style={{color: "#fff", fontWeight: "600"}}>Cancel Item</Text>
-            </TouchableOpacity>
-          )}
+          {data.status === "processing" &&
+            data.line_items.length > 1 &&
+            (!item.canclled ? (
+              <TouchableOpacity
+                style={{backgroundColor: "red", borderRadius: 4, width: 100, alignItems: "center"}}
+                onPress={_CancelItem(item)}>
+                <Text style={{color: "#fff", fontWeight: "600"}}>Cancel Item</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={{backgroundColor: "red", borderRadius: 4, width: 100, alignItems: "center"}}>
+                <Text style={{color: "#fff", fontWeight: "600"}}>Cancelled</Text>
+              </TouchableOpacity>
+            ))}
         </View>
       </View>
     );
@@ -325,6 +342,30 @@ function OrderDetails({navigation}) {
                 </View>
               );
             })}
+
+          {!isEmpty(data.refunds) && (
+            <View>
+              <Text style={[styles.heading, {marginTop: 16}]}>Cancelled Items</Text>
+              {!isEmpty(data.refunds) &&
+                data.refunds.map((item, index) => {
+                  return (
+                    <View
+                      key={item + "Sap" + index}
+                      style={{flexDirection: "row", justifyContent: "space-between"}}>
+                      <Text style={{flex: 1, paddingEnd: 8}}>{item.reason}</Text>
+                      <Text>{"-" + data.currency_symbol + item.total * -1}</Text>
+                    </View>
+                  );
+                })}
+            </View>
+          )}
+          <View style={styles.footerSummaryView}>
+            <Text style={[styles.text, {fontWeight: "600"}]}>Subtotal</Text>
+            <HTMLRender
+              html={data.cart_subtotal.value ? data.cart_subtotal.value : <b />}
+              baseFontStyle={{fontWeight: "600"}}
+            />
+          </View>
           <View
             style={{
               height: 1.35,
@@ -336,11 +377,15 @@ function OrderDetails({navigation}) {
           />
           <View style={styles.footerSummaryView}>
             <Text style={[styles.text, {fontWeight: "600"}]}>{t("TOTAL") + " Amount"}</Text>
-            <Text style={[styles.text, {fontWeight: "600", color: "#000000"}]}>
+            <HTMLRender
+              html={data.order_total.value ? data.order_total.value : <b />}
+              baseFontStyle={{fontWeight: "600"}}
+            />
+            {/* <Text style={[styles.text, {fontWeight: "600", color: "#000000"}]}>
               {data.prices_include_tax
                 ? data.currency_symbol + "" + data.total + "(Inc. Taxes)"
                 : data.currency_symbol + "" + Number(data.total) + "(Inc. Taxes)"}
-            </Text>
+            </Text> */}
           </View>
         </View>
         {/* <View style={styles.line} /> */}
@@ -449,7 +494,7 @@ function OrderDetails({navigation}) {
               <Text style={{color: "#fff", fontWeight: "600"}}>Cancel Order</Text>
             </Button>
           )}
-        {data.show_refund_button == 1 && data.status != "cancel-request" && (
+        {data.show_refund_button == 1 && data.status == "completed" && (
           <Button
             style={[
               styles.card,

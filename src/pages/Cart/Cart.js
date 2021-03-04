@@ -106,6 +106,7 @@ class Cart extends React.PureComponent {
       quantity: quantity,
     })
       .then(({data}) => {
+        console.log(data);
         this.setState({cart_data: data, updating: false});
       })
       .catch(error => {
@@ -148,6 +149,8 @@ class Cart extends React.PureComponent {
   goBack = () => {
     this.props.navigation.goBack(null);
   };
+
+  keyExtractor = item => item.cart_item_key;
 
   renderItem = ({item, index}) => {
     return (
@@ -198,7 +201,7 @@ class Cart extends React.PureComponent {
             onRefresh={this._handleRefresh}
             data={cart_data.cart_data}
             renderItem={this.renderItem}
-            keyExtractor={keyExtractor}
+            keyExtractor={this.keyExtractor}
             ItemSeparatorComponent={ItemSeparatorComponent}
             contentContainerStyle={{
               flexGrow: 1,
@@ -266,8 +269,6 @@ class Cart extends React.PureComponent {
     );
   }
 }
-
-const keyExtractor = item => item.cart_item_key;
 
 function ItemSeparatorComponent() {
   return <View style={[styles.line, {marginHorizontal: 24, paddingHorizontal: 16}]} />;
