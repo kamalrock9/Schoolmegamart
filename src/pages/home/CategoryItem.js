@@ -43,7 +43,7 @@ function CategoryItem({item, index}) {
         />
         <Text
           style={{
-            width: width / 5,
+            width: width / 4,
             color: "white",
             textAlign: "center",
             fontSize: 10,

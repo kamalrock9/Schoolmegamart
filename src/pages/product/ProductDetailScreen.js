@@ -100,7 +100,7 @@ class ProductDetailScreen extends React.PureComponent {
               return o;
             });
             var newD = {...data, bundled_items: newData};
-            //console.log(newD);
+            console.log(newD);
             this.setState({product: newD, loading: false}, () => {
               this.setUpProduct();
             });
@@ -112,6 +112,19 @@ class ProductDetailScreen extends React.PureComponent {
           this.setState({loading: false});
         });
     } else {
+      if (this.props.navigation.state.params.type == "bundle") {
+        var newData = this.props.navigation.state.params.bundled_items.map(function(el) {
+          var o = Object.assign({}, el);
+          o.quantity = 1;
+          o.checkbox = true;
+          return o;
+        });
+        var newD = {...this.props.navigation.state.params, bundled_items: newData};
+        console.log(newD);
+        this.setState({product: newD, loading: false}, () => {
+          this.setUpProduct();
+        });
+      }
       this.setState({loading: false});
       this.setUpProduct();
     }
@@ -343,14 +356,14 @@ class ProductDetailScreen extends React.PureComponent {
 
   changeCheckbox = (item, index) => () => {
     const {product} = this.state;
-    for (let i = 0; i < product.bundled_items.length; i++) {
-      if (product.bundled_items[index].checkbox) {
-        product.bundled_items[index].checkbox = false;
-      } else {
-        product.bundled_items[index].checkbox = true;
-      }
+    // for (let i = 0; i < product.bundled_items.length; i++) {
+    if (product.bundled_items[index].checkbox) {
+      product.bundled_items[index].checkbox = false;
+    } else {
+      product.bundled_items[index].checkbox = true;
     }
-    //console.log(product);
+    // }
+    console.log(product);
     this.setState({product: product}, () => {
       this.forceUpdate();
     });
@@ -836,7 +849,7 @@ class ProductDetailScreen extends React.PureComponent {
               }}>
               {item.price_html != "" && (
                 <HTMLRender
-                  html={item.price_html}
+                  html={item.price_html ? item.price_html : "<b/>"}
                   containerStyle={styles.itemMargin}
                   baseFontStyle={{fontSize: 12, fontWeight: "700"}}
                 />
@@ -1102,22 +1115,27 @@ class ProductDetailScreen extends React.PureComponent {
                   return (
                     <View
                       key={item.id + "Sap" + index}
-                      style={{flexDirection: "row", marginTop: 16, paddingHorizontal: 16}}>
+                      style={{
+                        flexDirection: "row",
+                        marginTop: 16,
+                        paddingHorizontal: 16,
+                      }}>
                       <Image
                         style={{height: 70, width: 70, borderRadius: 4, marginEnd: 8}}
                         source={{
-                          uri: product_details.image_id
-                            ? product_details.image_id
+                          uri: product_details.hasOwnProperty("images")
+                            ? product_details.images[0].src
                             : "https://kubalubra.is/wp-content/uploads/2017/11/default-thumbnail.jpg",
                         }}
                       />
-                      <View>
+                      <View style={{flex: 1}}>
                         <Text
                           style={{
                             fontSize: 16,
                             marginTop: -4,
                             color: "#000000",
                             fontWeight: "500",
+                            flex: 1,
                           }}>
                           {product_details.name}
                         </Text>
@@ -1137,7 +1155,6 @@ class ProductDetailScreen extends React.PureComponent {
                             <Text>Add for</Text>
                             <HTMLRender
                               html={" " + product.currency_symbol}
-                              containerStyle={{}}
                               baseFontStyle={{fontSize: 14, fontWeight: "700"}}
                             />
                             <Text style={{fontWeight: "700"}}>{product_details.price} each</Text>
@@ -1226,28 +1243,6 @@ class ProductDetailScreen extends React.PureComponent {
                 />
               ) : index == 2 ? (
                 <View style={[styles.cardItem, {marginTop: 30}]}>
-                  {/* <SpecificationRow
-                        leftContent="Categories"
-                        rightContent={product.categories.map(item => item.name).join(", ")}
-                      /> */}
-
-                  {/* {product.hasOwnProperty("total_sales") && (
-                        <SpecificationRow
-                          leftContent="Total Sales"
-                          rightContent={product.total_sales}
-                        />
-                      )} */}
-
-                  {/* {product.hasOwnProperty("stock_quantity") && (
-                        <SpecificationRow
-                          leftContent="Stock Quantity"
-                          rightContent={product.stock_quantity}
-                        />
-                      )} */}
-
-                  {/* {product.hasOwnProperty("sku") && product.sku != "" && (
-                        <SpecificationRow leftContent="SKU" rightContent={product.sku} />
-                      )} */}
                   {product.hasOwnProperty("weight") && product.weight != "" && (
                     <SpecificationRow leftContent="Weight" rightContent={product.weight + " kg"} />
                   )}
@@ -1426,7 +1421,6 @@ class ProductDetailScreen extends React.PureComponent {
                       <View style={{flexDirection: "row"}}>
                         <HTMLRender
                           html={" " + product.currency_symbol}
-                          containerStyle={{}}
                           baseFontStyle={{fontSize: 16, fontWeight: "500"}}
                         />
                         <Text style={{fontSize: 16, fontWeight: "500"}}>

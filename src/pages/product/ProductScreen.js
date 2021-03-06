@@ -762,7 +762,7 @@ function Categories({item, index, navigation}) {
           borderRadius: 8,
           paddingVertical: 12,
           paddingHorizontal: 4,
-          height: 110,
+          // height: 110,
           justifyContent: "center",
         },
         index == 0 ? {marginStart: 18, marginEnd: 16} : {marginEnd: 16},
@@ -784,7 +784,7 @@ function Categories({item, index, navigation}) {
           color: "#fff",
           textAlign: "center",
           fontSize: 10,
-          width: width / 5,
+          width: width / 4,
           paddingVertical: 2,
           fontWeight: "500",
         }}>

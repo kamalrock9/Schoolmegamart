@@ -39,11 +39,15 @@ function NewPassword({navigation}) {
     bodyFormData.append("confirm_password", newConfirm);
     bodyFormData.append("token", Token);
     console.log(bodyFormData);
+    if (newPassword.length < 6 && newConfirm.length < 6) {
+      Toast.show("Password must contain at least 6 characters.");
+      return;
+    }
     if (newPassword == newConfirm) {
       setLoading(true);
       axios
         .post(
-          "https://school.themiixx.com/wp-json/wc/v2/forget-passowrd/app/new-password",
+          "https://schoolmegamart.com/wp-json/wc/v2/forget-passowrd/app/new-password",
           bodyFormData,
         )
         .then(({data}) => {

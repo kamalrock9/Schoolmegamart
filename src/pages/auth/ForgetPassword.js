@@ -35,7 +35,7 @@ function ForgetPassword({navigation}) {
       setloading(true);
       console.log(bodyFormData);
       axios
-        .post("https://school.themiixx.com/wp-json/wc/v2/forget-password/app/send", bodyFormData)
+        .post("https://schoolmegamart.com/wp-json/wc/v2/forget-password/app/send", bodyFormData)
         .then(({data}) => {
           console.log(data);
           setloading(false);

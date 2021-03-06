@@ -77,10 +77,7 @@ class ForgetPasswordOTPVerify extends Component {
     console.log(bodyFormData);
     this.setState({loading: true});
     axios
-      .post(
-        "https://school.themiixx.com/wp-json/wc/v2/forget-passowrd/app/verify-otp",
-        bodyFormData,
-      )
+      .post("https://schoolmegamart.com/wp-json/wc/v2/forget-passowrd/app/verify-otp", bodyFormData)
       .then(({data}) => {
         this.setState({loading: true});
         console.log(data);

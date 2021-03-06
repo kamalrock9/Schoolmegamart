@@ -326,6 +326,16 @@ function Auth({navigation}) {
 
     if (state.firstname != "" && state.signUpEmail != "" && state.password != "") {
       if (reg.test(state.signUpEmail) === true) {
+        if (state.password.length < 6) {
+          Toast.show({
+            type: "error",
+            position: "bottom",
+            text1: "Error",
+            text2: "Password must contain at least 6 characters.",
+            visibilityTime: 4000,
+          });
+          return;
+        }
         if (verifyMob.test(state.signUpPhone) === true && state.signUpPhone.length == 10) {
           setLoading(true);
           ApiClient.post("/register", bodyFormData, {
@@ -335,6 +345,13 @@ function Auth({navigation}) {
               console.log(data);
               setLoading(false);
               if (data.status == 1) {
+                Toast.show({
+                  type: "success",
+                  position: "bottom",
+                  text1: "Success",
+                  text2: "Registered Successfully.",
+                  visibilityTime: 2000,
+                });
                 goToFirstIndex();
                 if (state.couponcode != "") {
                   var param = new FormData();
